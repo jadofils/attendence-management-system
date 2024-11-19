@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring MVC Application</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Basic styling for the page */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: white;
+        }
+        /* Navbar styles */
+        nav {
+            background-color: blue;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            color: white;
+            align-items: center;
+        }
+        nav .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        nav .links {
+            display: flex;
+            gap: 20px;
+        }
+        nav .links a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        /* Footer styles */
+        footer {
+            background-color: blue;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+        /* Content section styles */
+        .content {
+            padding: 20px;
+            margin-bottom: 60px; /* To avoid overlap with the footer */
+        }
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: column;
+                align-items: center;
+            }
+            nav .links {
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">Logo</div>
+        <div class="links">
+            <a href="/signin">LOgin</a>
+            <a href="/register">Register</a>
+            <a href="/services">Services</a>
+            <a href="/contact">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Dynamic content section -->
+    <div class="content">
+        <th:block th:replace="${content}">
+            <!-- Dynamic content will be injected here -->
+        </th:block>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Your Company. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>
