@@ -24,4 +24,19 @@ public class ProgramServiceImpl implements ProgramService {
     public List<Program> getAllPrograms() {
         return programRepository.findAll();
     }
+
+    @Override
+    public Program updateProgram(int programId, Program updatedProgram) {
+        // Find the existing program by ID
+        Program existingProgram = programRepository.findById((long) programId)
+                                                   .orElseThrow(() -> new RuntimeException("Program not found"));
+    
+        // Update the existing program's fields with the new program's details
+        existingProgram.setProgramName(updatedProgram.getProgramName());
+        existingProgram.setProgramDescription(updatedProgram.getProgramDescription());
+        
+        // Save the updated program back to the repository
+        return programRepository.save(existingProgram);
+    }
+    
 }
