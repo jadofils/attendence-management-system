@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-// Program.java
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,9 +15,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "programs")
 public class Program {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long programId;
+    @Column(name = "program_id")  // Optional: explicitly name the column if needed
+    private Long programId;  // This is the field name for the primary key
     
     @Column(nullable = false, unique = true, length = 100)
     private String programName;
