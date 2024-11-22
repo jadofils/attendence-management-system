@@ -11,10 +11,12 @@ import com.codealpha.attendance.model.Program;
 @Repository
 public interface ProgramRepository extends JpaRepository<Program, Long> {
     Optional<Program> findByProgramName(String programName);
-
+    @SuppressWarnings("null")
+    Optional<Program> findById(Long id);
     long count();
 
     List<Program> findByProgramNameContainingIgnoreCase(String programName);
 
     // Fix: Ensure that you're using the correct field names
-    List<Program> findByProgramNameContainingIgnoreCaseOrProgramId(String programName, Long programId);}
+    List<Program> findByProgramNameContainingIgnoreCaseOrProgramId(String programName, Long programId);
+}
