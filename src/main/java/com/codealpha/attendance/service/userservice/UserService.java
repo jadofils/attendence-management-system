@@ -11,4 +11,5 @@ public interface UserService {
     void deleteUser(Long userId);
     long countUsers();
     List<User> searchUsersByUsername(String username);
-    List<User> searchUsersByRole(String keyword);}
+    List<User> searchUsersByRole(String keyword);
+    Object findById(Long userId);}

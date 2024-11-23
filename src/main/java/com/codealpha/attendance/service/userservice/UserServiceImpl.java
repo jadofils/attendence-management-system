@@ -95,5 +95,10 @@ public class UserServiceImpl implements UserService {
         keyword = keyword.trim();
         return userRepository.searchUsersByKeyword(keyword);
     }
+
+    @Override
+    public Object findById(Long userId) {
+        return userRepository.findById(userId);
+    }
     
 }

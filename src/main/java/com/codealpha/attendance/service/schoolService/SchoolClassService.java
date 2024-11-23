@@ -8,6 +8,8 @@ public interface SchoolClassService {
 
     SchoolClass createClass(Long userId, Long courseId, SchoolClass schoolClass);
     void deleteScheduled(Long userId, Long courseId);
+    public SchoolClass updateClass(Long userId,Long classId,SchoolClass updatedSchoolClass);
 
+long count();
 
 }

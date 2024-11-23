@@ -1,6 +1,7 @@
 package com.codealpha.attendance.controller;
 
 import com.codealpha.attendance.model.SchoolClass;
+
 import com.codealpha.attendance.service.schoolService.SchoolClassService;
 
 import jakarta.validation.Valid;
@@ -12,13 +13,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/api/classes")
 public class SchoolClassController {
 
     @Autowired
     private SchoolClassService schoolClassService;
-
     // Endpoint to get all classes
     @GetMapping
     public List<SchoolClass> getAllClasses() {
@@ -49,4 +50,23 @@ public ResponseEntity<String> deleteScheduledClass(@PathVariable Long userId, @P
     }
 }
 
+@PutMapping("/{userId}/{classId}")
+    public ResponseEntity<SchoolClass> updateClass(
+            @PathVariable Long userId,
+            @PathVariable Long classId,
+            @RequestBody SchoolClass updatedSchoolClass) {
+        try {
+            // Call the service method to update the class
+            SchoolClass updatedClass = schoolClassService.updateClass(userId, classId, updatedSchoolClass);
+            return ResponseEntity.ok(updatedClass); // Return the updated class
+        } catch (RuntimeException ex) {
+            // Handle exceptions and return meaningful error responses
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+//get mapping for the counting all classes scheduled 
+@GetMapping("/count-classes")
+public int count(){
+    return (int) schoolClassService.count();
+}
 }

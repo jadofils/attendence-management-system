@@ -61,8 +61,6 @@ public void deleteScheduled(Long userId, Long classId) {
                 throw new RuntimeException("Only instructors or administrators can delete scheduled classes");
             }
             
-            
-
     // Retrieve the class
     SchoolClass scheduledClass = schoolClassRepository.findById(classId)
             .orElseThrow(() -> new RuntimeException("Class not found"));
@@ -74,6 +72,42 @@ public void deleteScheduled(Long userId, Long classId) {
 
     // Delete the scheduled class
     schoolClassRepository.delete(scheduledClass);
+}
+
+
+
+@Override
+public SchoolClass updateClass(Long userId, Long classId, SchoolClass updatedSchoolClass) {
+    // Retrieve the user
+    User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    // Check if the user has the appropriate role
+    if (user.getRole() != UserRole.INSTRUCTOR && user.getRole() != UserRole.ADMINISTRATOR) {
+        throw new RuntimeException("Only instructors or administrators can update scheduled classes");
+    }
+
+    // Retrieve the class
+    SchoolClass scheduledClass = schoolClassRepository.findById(classId)
+            .orElseThrow(() -> new RuntimeException("Class not found"));
+
+    // Check if the class is assigned to this instructor (only if the user is an instructor)
+    if (user.getRole() == UserRole.INSTRUCTOR && 
+        !scheduledClass.getInstructor().getUserId().equals(userId)) {
+        throw new RuntimeException("This class is not assigned to you");
+    }
+
+    // Update only non-referenced fields
+    scheduledClass.setClassCode(updatedSchoolClass.getClassCode());
+    scheduledClass.setClassSchedule(updatedSchoolClass.getClassSchedule());
+
+    // Save the updated class
+    return schoolClassRepository.save(scheduledClass);
+}
+
+//count all classes scheduled
+public long count(){
+    return schoolClassRepository.count();
 }
 
 }
