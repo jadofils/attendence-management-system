@@ -44,7 +44,6 @@ public ResponseEntity<Course> createCourse(@RequestBody Course course, @PathVari
         return ResponseEntity.ok(courseService.getCourseByName(courseName));
     }
 
-   
 
     @GetMapping
     public ResponseEntity<List<Course>> getAllCourses() {

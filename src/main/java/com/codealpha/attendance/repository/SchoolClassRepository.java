@@ -1,13 +1,12 @@
 package com.codealpha.attendance.repository;
+import com.codealpha.attendance.model.SchoolClass;
+import com.codealpha.attendance.model.User;
 
-
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.codealpha.attendance.model.SchoolClass;
-
 public interface SchoolClassRepository extends JpaRepository<SchoolClass, Long> {
-    List<SchoolClass> findByCourseCourseId(Long courseId);
-    List<SchoolClass> findByInstructorUserId(Long instructorId);
+
+    Optional<SchoolClass> findByClassIdAndInstructor(Long classId, User instructor);
 }
