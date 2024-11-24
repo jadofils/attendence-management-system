@@ -43,7 +43,12 @@ public class ProgramController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-
+    @GetMapping("/program/{programId}")
+    public ResponseEntity<Program> getProgram(@PathVariable Long programId) {
+        Program program = programService.getProgramWithCourses(programId);
+        return new ResponseEntity<>(program, HttpStatus.OK);
+    }
+    
     // Find a program by ID
     @GetMapping("/{id}")
     public ResponseEntity<Program> findProgramById(@PathVariable Long id) {

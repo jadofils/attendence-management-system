@@ -117,6 +117,12 @@ public Student findByStudentProgramAndUser(Long studentId, Long programId, Long 
             return List.of();
         }
     }
+
+    public Student getStudentById(Long studentid) {
+        // Fetch the student by ID, and if not found, throw an exception or return null
+        return studentRepository.findById(studentid)
+                .orElseThrow(() -> new RuntimeException("Student not found with id " + studentid));
+    }
     
 
 }

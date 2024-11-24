@@ -27,4 +27,6 @@ public interface ProgramService {
 
     // Search for programs by name or ID
     List<Program> searchPrograms(String searchTerm);
+
+    Program getProgramWithCourses(Long programId);
 }

@@ -39,4 +39,6 @@ public interface StudentService {
     // Method to search students by different parameters
     List<Student> searchStudents(String email, String studentId, Long programId, Long userId);
 
+    Student getStudentById(Long studentid);
+
 }

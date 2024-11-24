@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+
 public interface SchoolClassRepository extends JpaRepository<SchoolClass, Long> {
 
     Optional<SchoolClass> findByClassIdAndInstructor(Long classId, User instructor);

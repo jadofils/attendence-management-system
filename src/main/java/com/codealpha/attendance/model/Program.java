@@ -28,7 +28,7 @@ public class Program {
     private String programDescription;
     
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL)
-    private List<Course> courses;
+      private List<Course> courses;
     
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL)
     private List<Student> students;

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.codealpha.attendance.model.Program;
 import com.codealpha.attendance.repository.ProgramRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @Service
@@ -22,11 +23,13 @@ public class ProgramServiceImpl implements ProgramService {
         return programRepository.save(program);
     }
 
+
+    @Transactional
     @Override
     public List<Program> getAllPrograms() {
-        // Retrieve and return all programs from the repository
         return programRepository.findAll();
     }
+    
 
     @Override
     public Program updateProgram(Long programId, Program updatedProgram) {
@@ -77,6 +80,11 @@ public class ProgramServiceImpl implements ProgramService {
             // If it's not a number, search by program name
             return programRepository.findByProgramNameContainingIgnoreCase(searchTerm);
         }
+    }
+
+    @Override
+    public Program getProgramWithCourses(Long programId) {
+        return programRepository.findProgramWithCourses(programId);
     }
     
 }

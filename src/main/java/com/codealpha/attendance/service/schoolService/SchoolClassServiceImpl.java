@@ -109,5 +109,10 @@ public SchoolClass updateClass(Long userId, Long classId, SchoolClass updatedSch
 public long count(){
     return schoolClassRepository.count();
 }
+public SchoolClass getClassById(Long classid) {
+    // Use the repository to find a class by ID
+    return schoolClassRepository.findById(classid)
+            .orElseThrow(() -> new RuntimeException("Class not found with id " + classid));
+}
 
 }

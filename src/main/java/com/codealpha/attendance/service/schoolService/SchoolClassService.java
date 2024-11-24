@@ -12,4 +12,7 @@ public interface SchoolClassService {
 
 long count();
 
+SchoolClass getClassById(Long classid);
+
+
 }

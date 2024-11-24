@@ -47,6 +47,8 @@ public class Student {
     @JoinColumn(name = "user_id", unique = true)
     private User user;
 
+  
+
    
    
 }

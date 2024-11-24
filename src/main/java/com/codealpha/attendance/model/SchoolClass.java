@@ -32,4 +32,6 @@ public class SchoolClass {
     
     @OneToMany(mappedBy = "attendedClass", cascade = CascadeType.ALL)
     private List<Attendance> attendanceRecords;
+
+
 }
