@@ -7,9 +7,12 @@ import org.springframework.stereotype.Service;
 
 import com.codealpha.attendance.model.Program;
 import com.codealpha.attendance.model.Student;
+import com.codealpha.attendance.model.User;
 import com.codealpha.attendance.repository.ProgramRepository;
 import com.codealpha.attendance.repository.StudentRepository;
+import com.codealpha.attendance.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -18,9 +21,26 @@ public class StudentServiceImplement implements StudentService {
 
     private StudentRepository studentRepository;
     private ProgramRepository programRepository;
+    private UserRepository userRepository;
+
+
 
     @Override
-    public Student saveStudent(Student student) {
+    @Transactional
+    public Student createStudent(Student student, Long userId, Long programId) {
+        // Fetch and validate the Program
+        Program program = programRepository.findById(programId)
+                .orElseThrow(() -> new IllegalArgumentException("The program ID provided does not exist."));
+
+        // Fetch and validate the User
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("The user ID provided does not exist."));
+
+        // Set the User and Program to the student
+        student.setUser(user);
+        student.setProgram(program);
+
+        // Save the student
         return studentRepository.save(student);
     }
 
@@ -32,7 +52,7 @@ public class StudentServiceImplement implements StudentService {
     // Method to fetch all students from the database
     @Override
     public List<Student> findAll() {
-        return studentRepository.findAll();
+        return studentRepository.findAllWithAssociations();
     }
 
     

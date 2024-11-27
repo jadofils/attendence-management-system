@@ -5,9 +5,7 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,9 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.codealpha.attendance.model.Program;
 import com.codealpha.attendance.model.Student;
-import com.codealpha.attendance.model.User;
 import com.codealpha.attendance.repository.ProgramRepository;
 import com.codealpha.attendance.repository.UserRepository;
 import com.codealpha.attendance.service.studentservice.StudentService;
@@ -29,53 +25,32 @@ import com.codealpha.attendance.service.studentservice.StudentService;
 public class StudentController {
 
     private final StudentService studentService;
-    private final UserRepository userRepository;
-    private final ProgramRepository programRepository;
 
     public StudentController(StudentService studentService, UserRepository userRepository, ProgramRepository programRepository) {
         this.studentService = studentService;
-        this.userRepository = userRepository;
-        this.programRepository = programRepository;
+        
     }
 
     @PostMapping
-    public ResponseEntity<Object> createStudent(@RequestBody Student student) {
-        // Validate Program ID
-        Program program = programRepository.findById(student.getProgram().getProgramId()).orElse(null);
-        if (program == null) {
-            return new ResponseEntity<>(new ErrorResponse("Program not found", "The program ID provided does not exist."), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Object> createStudent(
+            @RequestBody Student student,
+            @RequestParam("userId") Long userId,
+            @RequestParam("programId") Long programId) {
+
+        try {
+            // Call service to save the student
+            Student savedStudent = studentService.createStudent(student, userId, programId);
+
+            return new ResponseEntity<>(savedStudent, HttpStatus.CREATED);
+
+        } catch (IllegalArgumentException ex) {
+            return new ResponseEntity<>(new ErrorResponse("Validation error", ex.getMessage()), HttpStatus.BAD_REQUEST);
+
+        } catch (Exception ex) {
+            return new ResponseEntity<>(new ErrorResponse("Unexpected error", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        // Validate User ID
-        User user = userRepository.findById(student.getUser().getUserId()).orElse(null);
-        if (user == null) {
-            return new ResponseEntity<>(new ErrorResponse("User not found", "The user ID provided does not exist."), HttpStatus.BAD_REQUEST);
-        }
-
-        // Set validated program and user
-        student.setProgram(program);
-        student.setUser(user);
-
-        // Save the student
-        Student savedStudent = studentService.saveStudent(student);
-        if (savedStudent == null) {
-            return new ResponseEntity<>(new ErrorResponse("Failed to insert student", "There was an issue while saving the student to the database."), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return new ResponseEntity<>(savedStudent, HttpStatus.CREATED);
     }
-
-    // Handling common errors globally
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGlobalError(Exception e) {
-        return new ResponseEntity<>(new ErrorResponse("Unexpected error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    // Handling invalid request body (400 error)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationError(MethodArgumentNotValidException e) {
-        return new ResponseEntity<>(new ErrorResponse("Validation error", "Invalid data provided in the request body."), HttpStatus.BAD_REQUEST);
-    }
+    
 
 
     // GET endpoint to fetch all students
@@ -109,7 +84,7 @@ public ResponseEntity<Object> updateStudent(
         existingStudent.setEnrollmentDate(updatedStudent.getEnrollmentDate());
 
         // Save updated student
-        Student updated = studentService.saveStudent(existingStudent);
+        Student updated = studentService.updateStudent(existingStudent);
 
         return ResponseEntity.ok(updated);
     } catch (IllegalArgumentException e) {

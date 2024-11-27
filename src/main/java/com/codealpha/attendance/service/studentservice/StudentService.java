@@ -9,7 +9,7 @@ import com.codealpha.attendance.model.Student;
 public interface StudentService {
 
     // Method to save a student
-    Student saveStudent(Student student);
+    Student createStudent(Student student, Long userId, Long programId);
 
     // Method to save a program
     Program saveProgram(Program program);
