@@ -1,16 +1,27 @@
-/* Tailwind config with custom colors */
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: 'class',
+  content: [
+    './src/**/*.{js,jsx,ts,tsx}', // Ensure Tailwind applies styles to your React components
+  ],
   theme: {
     extend: {
-      colors: {
-        primary: '##111827', // Dark 
-        secondary: '##f3f4f6', // Light Blue
-        accent:"#ea580c",//gold color
+      scrollBehavior: {
+        smooth: 'smooth',
       },
-      fontSize:{
-        fontSize:"14px"
-      }
+      colors: {
+        secondary: '#D3D3D3', // Light grey for background (Primary)
+        primary: '#FFFFFF', // White for navbar, footer, dashboard, and cards (Secondary)
+        button: '#1E40AF', // Strong blue for buttons (can be adjusted to a different shade if needed)
+      },
+      fontSize: {
+        base: '14px', // Set the default font size to 14px
+      },
+      textColor: {
+        primary: '#000000', // Black text color for primary color
+        secondary: '#000000', // Black text color for secondary color
+        button: '#FFFFFF', // White text color for buttons for better contrast
+      },
     },
   },
-};
+  plugins: [],
+}
