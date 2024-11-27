@@ -47,8 +47,7 @@ public class Student {
     @JoinColumn(name = "user_id", unique = true)
     private User user;
 
-  
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Course> courses;
 
-   
-   
 }

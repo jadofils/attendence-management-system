@@ -31,4 +31,8 @@ public class Course {
     
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     private List<SchoolClass> classes;
+
+    @ManyToOne(fetch = FetchType.LAZY) // Correctly map to Student
+    @JoinColumn(name = "student_id") // Define the foreign key column
+    private Student student;
 }
