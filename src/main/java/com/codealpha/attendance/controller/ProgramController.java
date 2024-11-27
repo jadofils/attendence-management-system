@@ -53,9 +53,17 @@ public class ProgramController {
     @GetMapping("/{id}")
     public ResponseEntity<Program> findProgramById(@PathVariable Long id) {
         Optional<Program> result = programService.findProgramById(id); // Pass only the ID
-        return result.map(ResponseEntity::ok)
-                     .orElseGet(() -> ResponseEntity.notFound().build());
+    
+        // Checking if the result is present using Optional's method
+        if (result.isEmpty()) {
+            System.out.println("Program with ID " + id + " not found");
+            return ResponseEntity.notFound().build();
+        }
+    
+        // If the program is found, return it wrapped in ResponseEntity
+        return ResponseEntity.ok(result.get());
     }
+    
 
     // Delete a program by ID
     @DeleteMapping("/{id}")

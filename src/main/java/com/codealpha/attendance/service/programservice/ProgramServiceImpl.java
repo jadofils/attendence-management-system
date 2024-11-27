@@ -49,9 +49,22 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public Optional<Program> findProgramById(Long id) {
-        // Find and return the program by its ID
-        return programRepository.findById(id);
+        // Validate input ID
+        if (id == null) {
+            throw new IllegalArgumentException("Program ID must not be null");
+        }
+    
+        // Attempt to find the program by ID
+        Optional<Program> program = programRepository.findById(id);
+        
+        // If no program is found, you could return Optional.empty() or handle it here
+        if (program.isEmpty()) {
+            throw new RuntimeException("Program not found with ID: " + id);
+        }
+    
+        return program;
     }
+    
 
     @Override
     public void deleteProgram(Long id) {
