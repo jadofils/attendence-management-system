@@ -4,7 +4,7 @@ import { FaEnvelope, FaTwitter, FaFacebook, FaInstagram } from 'react-icons/fa';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-secondary text-primary py-6 mt-10 sticky bottom-0 z-50">
+    <footer className="bg-secondary text-primary py-6  sticky bottom-0 z-10">
       <div className="container mx-auto text-center">
         {/* Communication Channels */}
         <div className="mb-4">

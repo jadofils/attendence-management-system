@@ -14,7 +14,7 @@ module.exports = {
         button: '#1E40AF', // Strong blue for buttons (can be adjusted to a different shade if needed)
       },
       fontSize: {
-        base: '15px', // Set the default font size to 14px
+        base: '14px', // Set the default font size to 14px
       },
       textColor: {
         primary: '#000000', // Black text color for primary color
