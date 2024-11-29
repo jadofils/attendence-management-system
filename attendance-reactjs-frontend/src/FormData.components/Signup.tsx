@@ -3,6 +3,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { FaUser, FaLock, FaUpload, FaUsers } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { createUser } from "../service/userService";
+import { useNavigate } from "react-router-dom";
 
 // Define the interface for form inputs
 interface SignupFormInputs {
@@ -13,6 +14,9 @@ interface SignupFormInputs {
 }
 
 const Signup: React.FC = () => {
+
+  const navigate = useNavigate(); // Initialize the navigate function
+
   const {
     register,
     handleSubmit,
@@ -28,11 +32,18 @@ const Signup: React.FC = () => {
       role: data.role,
     };
 
+    console.log("Profile File:", data.profile[0]); // Log file to verify
     createUser(user)
-      .then((response) => console.log(response.data))
+      .then((response) => {
+        alert("User Created Successfully!!")
+        console.log(response.data)
+        navigate("/login"); // Redirect to login page using useNavigate
+
+      }
+    )
       .catch((error) => alert(`Failed to save user: ${error}`));
   };
-
+  
   // Validation rules
   const validateUsername = (value: string) =>
     value.length >= 3 || "Username must be at least 3 characters long";
@@ -44,15 +55,15 @@ const Signup: React.FC = () => {
     (value.length > 0 && ["image/jpeg", "image/png"].includes(value[0].type)) ||
     "Please upload a valid image (JPEG or PNG)";
 
-    const validateRole = (value: string) =>
-      [
-        "SUPERADMIN", 
-        "MODERATOR", 
-        "GUEST", 
-        "STUDENT", 
-        "ADMINISTRATOR", 
-        "INSTRUCTOR"
-      ].includes(value) || "Please select a valid role";
+  const validateRole = (value: string) =>
+    [
+      "SUPERADMIN", 
+      "MODERATOR", 
+      "GUEST", 
+      "STUDENT", 
+      "ADMINISTRATOR", 
+      "INSTRUCTOR"
+    ].includes(value) || "Please select a valid role";
     
   return (
     <section

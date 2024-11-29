@@ -8,7 +8,18 @@ export const createUser = (user: {
   password: string; 
   role: string; 
   profile: File; 
-
 }) => {
-  return axios.post(REST_API_BASE_URL, user);
+  // Create a FormData object to send the data as multipart/form-data
+  const formData = new FormData();
+  formData.append("username", user.username);
+  formData.append("password", user.password);
+  formData.append("role", user.role);
+  formData.append("studentProfile", user.profile); // Make sure the field name matches
+
+  // Send the POST request with form data
+  return axios.post(REST_API_BASE_URL, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 };

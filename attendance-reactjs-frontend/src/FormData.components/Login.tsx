@@ -1,8 +1,7 @@
 import React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { FaUser, FaLock } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-
+import { Link, useNavigate } from 'react-router-dom';
 
 // Define interface for login form inputs
 interface LoginFormInputs {
@@ -11,6 +10,7 @@ interface LoginFormInputs {
 }
 
 const Login: React.FC = () => {
+  const navigate = useNavigate(); // Initialize the navigate function
   const { 
     register, 
     handleSubmit, 
@@ -19,9 +19,33 @@ const Login: React.FC = () => {
     mode: 'onBlur'
   });
 
-  const onSubmit: SubmitHandler<LoginFormInputs> = (data) => {
+  const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     // Handle login logic here
-    console.log(data);
+    console.log('Login data:', data);
+
+    // Mocking the backend validation for username, password, and role
+    const mockDatabase = [
+      { username: 'admin', password: 'admin123', role: 'admin' },
+      { username: 'user1', password: 'user123', role: 'user' },
+      { username: 'student1', password: 'student123', role: 'student' },
+    ];
+
+    const user = mockDatabase.find(
+      (user) => user.username === data.username && user.password === data.password
+    );
+
+    if (user) {
+      // If a matching user is found, check their role and navigate accordingly
+      if (user.role === 'admin') {
+        navigate('/admin-dashboard'); // Redirect to admin dashboard
+      } else if (user.role === 'user') {
+        navigate('/user-dashboard'); // Redirect to user dashboard
+      } else if (user.role === 'student') {
+        navigate('/student-dashboard'); // Redirect to student dashboard
+      }
+    } else {
+      alert('Invalid username or password');
+    }
   };
 
   return (
@@ -91,10 +115,10 @@ const Login: React.FC = () => {
           </button>
         </div>
 
- {/* Sign Up Link */}
- <div className="text-center">
+        {/* Forgot Password Link */}
+        <div className="text-center">
           <p className="text-sm text-gray-600">
-           Don't you Remember your Password? {' '}
+           Forgot your password? {' '}
             <Link 
               to="/forgot-password" 
               className="text-blue-600 hover:underline"
@@ -103,6 +127,7 @@ const Login: React.FC = () => {
             </Link>
           </p>
         </div>
+
         {/* Sign Up Link */}
         <div className="text-center">
           <p className="text-sm text-gray-600">

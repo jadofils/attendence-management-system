@@ -4,7 +4,6 @@ import com.codealpha.attendance.model.User;
 import com.codealpha.attendance.model.UserRole;
 import com.codealpha.attendance.service.userservice.UserService;
 import com.codealpha.attendance.exception.ServiceException;
-import lombok.AllArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,31 +25,45 @@ public class UserController {
 
     // Create user
     @PostMapping
-    public ResponseEntity<User> createUser(
+    public ResponseEntity<?> createUser(
         @RequestParam("username") String username,
         @RequestParam("password") String password,
         @RequestParam("role") String role,
         @RequestParam("studentProfile") MultipartFile studentProfile) {
 
+        // Validate username
+        if (username == null || username.trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                 .body("Username is required and cannot be empty.");
+        }
+
+        // Validate password (e.g., length, strength)
+        if (password == null || password.length() < 8) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                 .body("Password must be at least 8 characters long.");
+        }
+
+        // Convert role to UserRole enum and validate
+        UserRole userRole;
+        try {
+            userRole = UserRole.valueOf(role.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                 .body("Invalid role. Please provide a valid role (e.g., USER, ADMIN).");
+        }
+
         // Create a new User object
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
-
-        // Convert role to UserRole enum
-        try {
-            UserRole userRole = UserRole.valueOf(role.toUpperCase());
-            user.setRole(userRole);
-        } catch (IllegalArgumentException e) {
-            // Invalid role provided, return bad request
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
+        user.setRole(userRole);
 
         // Validate and set profile image
         try {
             validateProfileImage(studentProfile);
         } catch (ServiceException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                 .body(e.getMessage()); // Return specific error message
         }
 
         user.setStudentProfile(studentProfile.getOriginalFilename()); // Save only the filename or path
@@ -58,20 +71,21 @@ public class UserController {
         // Save user using service
         User savedUser = userService.saveUser(user);
 
-        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+        return new ResponseEntity<>(
+            new ApiResponse("User created successfully", savedUser), HttpStatus.CREATED);
     }
 
     // Validate profile image
     public void validateProfileImage(MultipartFile profileImage) {
         if (profileImage == null || profileImage.isEmpty()) {
-            throw new ServiceException("Profile image is required");
+            throw new ServiceException("Profile image is required.");
         }
 
         // Check file size (100MB max size)
         long fileSizeInBytes = profileImage.getSize();
         long maxSizeInBytes = 100 * 1024 * 1024; // 100 MB
         if (fileSizeInBytes > maxSizeInBytes) {
-            throw new ServiceException("Profile image must not exceed 100MB");
+            throw new ServiceException("Profile image must not exceed 100MB.");
         }
 
         // Check file extension
@@ -87,6 +101,8 @@ public class UserController {
             throw new ServiceException("Invalid file name.");
         }
     }
+
+
 
     // Get all users
     @GetMapping
@@ -167,5 +183,31 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Collections.singletonMap("error", "An unexpected error occurred"));
         }
+    }
+}
+class ApiResponse {
+    private String message;
+    private Object data;
+
+    public ApiResponse(String message, Object data) {
+        this.message = message;
+        this.data = data;
+    }
+
+    // Getters and Setters
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
     }
 }
