@@ -26,21 +26,21 @@ public class UserController {
     // Create user
     @PostMapping
     public ResponseEntity<?> createUser(
-        @RequestParam("username") String username,
-        @RequestParam("password") String password,
-        @RequestParam("role") String role,
-        @RequestParam("studentProfile") MultipartFile studentProfile) {
+            @RequestParam("username") String username,
+            @RequestParam("password") String password,
+            @RequestParam("role") String role,
+            @RequestParam("studentProfile") MultipartFile studentProfile) {
 
         // Validate username
         if (username == null || username.trim().isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                 .body("Username is required and cannot be empty.");
+                    .body("Username is required and cannot be empty.");
         }
 
         // Validate password (e.g., length, strength)
         if (password == null || password.length() < 8) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                 .body("Password must be at least 8 characters long.");
+                    .body("Password must be at least 8 characters long.");
         }
 
         // Convert role to UserRole enum and validate
@@ -49,7 +49,7 @@ public class UserController {
             userRole = UserRole.valueOf(role.toUpperCase());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                 .body("Invalid role. Please provide a valid role (e.g., USER, ADMIN).");
+                    .body("Invalid role. Please provide a valid role (e.g., USER, ADMIN).");
         }
 
         // Create a new User object
@@ -63,7 +63,7 @@ public class UserController {
             validateProfileImage(studentProfile);
         } catch (ServiceException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                 .body(e.getMessage()); // Return specific error message
+                    .body(e.getMessage()); // Return specific error message
         }
 
         user.setStudentProfile(studentProfile.getOriginalFilename()); // Save only the filename or path
@@ -72,7 +72,7 @@ public class UserController {
         User savedUser = userService.saveUser(user);
 
         return new ResponseEntity<>(
-            new ApiResponse("User created successfully", savedUser), HttpStatus.CREATED);
+                new ApiResponse("User created successfully", savedUser), HttpStatus.CREATED);
     }
 
     // Validate profile image
@@ -102,8 +102,6 @@ public class UserController {
         }
     }
 
-
-
     // Get all users
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
@@ -121,9 +119,8 @@ public class UserController {
     // Update user
     @PutMapping("/{userId}")
     public ResponseEntity<User> updateUser(
-        @PathVariable Long userId, 
-        @RequestBody User updatedUser
-    ) {
+            @PathVariable Long userId,
+            @RequestBody User updatedUser) {
         User user = userService.updateUser(userId, updatedUser);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
@@ -145,9 +142,8 @@ public class UserController {
     // Search users by username or role
     @GetMapping("/search")
     public ResponseEntity<List<User>> searchUsers(
-        @RequestParam(required = false) String username,
-        @RequestParam(required = false) String keyword
-    ) {
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String keyword) {
         List<User> users;
         if (username != null) {
             users = userService.searchUsersByUsername(username);
@@ -165,15 +161,15 @@ public class UserController {
         try {
             // Call the service to search users by role
             List<User> users = userService.searchUsersByRole(keyword.toUpperCase());
-    
+
             // If users are found, return them in the response
             if (users.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(Collections.singletonMap("message", "No users found for the role: " + keyword));
             }
-            
+
             return ResponseEntity.ok(users);
-            
+
         } catch (IllegalArgumentException e) {
             // Return a bad request response with a more meaningful error message
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -185,6 +181,7 @@ public class UserController {
         }
     }
 }
+
 class ApiResponse {
     private String message;
     private Object data;

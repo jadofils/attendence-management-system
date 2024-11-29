@@ -23,7 +23,7 @@ const Sidebar: React.FC = () => {
       {/* Sidebar */}
       <div
         className={`bg-secondary text-black  relative top-24 rounded left-4 mt- ${
-          isOpen ? "w-96" : "w-16"
+          isOpen ? "w-32" : "w-16"
         } transition-all duration-300  z-20  `}
       >
         {/* Profile Section */}
@@ -91,12 +91,6 @@ const Sidebar: React.FC = () => {
       >
         {isOpen ? <FaTimes /> : <FaBars />}
       </button>
-
-      {/* Main Content */}
-      <div className={`ml-${isOpen ? "78" : "16"} p-6 w-full mt-16`}>
-        <h1 className="text-2xl font-bold">Dashboard Content</h1>
-        <p className="text-gray-500">Your main content goes here.</p>
-      </div>
     </div>
   );
 };

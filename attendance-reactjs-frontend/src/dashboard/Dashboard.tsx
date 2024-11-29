@@ -1,17 +1,14 @@
 import React from 'react';
 import Sidebar from './Sidebar';
-import DashboardMain from './DashboardMain';
 import DashboardNavbar from './DashboardNavBar';
+import DashboardMain from './DashboardMain';
 
 const Dashboard: React.FC = () => {
   return (
     <div className="flex">
       <Sidebar />
       <DashboardNavbar />
-
-      <div className="flex-grow">
-        <DashboardMain />
-      </div>
+   <DashboardMain/>
     </div>
   );
 };
