@@ -11,28 +11,21 @@ import Dashboard from "./dashboard/Dashboard";
 const App: React.FC = () => {
   return (
     <Router>
-      <Routes>
+      <div className="bg-secondary text-primary min-h-screen flex flex-col">
         {/* Layout with Navbar and Footer */}
-        <Route
-          path="/"
-          element={
-            <div className="bg-secondary text-primary min-h-screen flex flex-col">
-              <Navbar />
-              <main className="flex-grow p-6">
-                <Routes>
-                  <Route path="/" element={<Main />} />
-                  <Route path="/signup" element={<Signup />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                </Routes>
-              </main>
-              <Footer />
-            </div>
-          }
-        />
-        {/* Dashboard Route Without Navbar or Footer */}
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
+        <Navbar />
+        <main className="flex-grow p-6">
+          <Routes>
+            <Route path="/" element={<Main />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            {/* Dashboard Route */}
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
     </Router>
   );
 };
