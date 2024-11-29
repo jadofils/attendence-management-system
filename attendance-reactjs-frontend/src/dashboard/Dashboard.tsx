@@ -7,8 +7,9 @@ const Dashboard: React.FC = () => {
   return (
     <div className="flex">
       <Sidebar />
+      <DashboardNavbar />
+
       <div className="flex-grow">
-        <DashboardNavbar />
         <DashboardMain />
       </div>
     </div>
