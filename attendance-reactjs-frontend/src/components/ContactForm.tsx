@@ -56,7 +56,7 @@ const ContactForm: React.FC = () => {
         <div className="mb-5">
           <label
             htmlFor="name"
-            className="block text-sm font-medium text-gray-700 mb-2 flex items-center"
+            className=" text-sm font-medium text-gray-700 mb-2 flex items-center"
           >
             <FaUser className="text-blue-600 mr-2" />
             Full Name
@@ -78,7 +78,7 @@ const ContactForm: React.FC = () => {
         <div className="mb-5">
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-gray-700 mb-2 flex items-center"
+            className=" text-sm font-medium text-gray-700 mb-2 flex items-center"
           >
             <FaEnvelope className="text-blue-600 mr-2" />
             Email
@@ -100,7 +100,7 @@ const ContactForm: React.FC = () => {
         <div className="mb-5">
           <label
             htmlFor="message"
-            className="block text-sm font-medium text-gray-700 mb-2 flex items-center"
+            className=" text-sm font-medium text-gray-700 mb-2 flex items-center"
           >
             <FaPaperPlane className="text-blue-600 mr-2" />
             Message

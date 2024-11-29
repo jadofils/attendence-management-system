@@ -160,7 +160,9 @@ const Main: React.FC = () => {
           </section>
         </div>
       </main>
-      <ContactForm  />
+      <ContactForm/>
+
+    
     </div>
   );
 };
