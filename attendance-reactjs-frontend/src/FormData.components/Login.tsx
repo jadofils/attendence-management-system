@@ -1,16 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { FaUser, FaLock } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
+
+// Define UserRole enum to reflect the available roles
+// eslint-disable-next-line react-refresh/only-export-components
+export enum UserRole {
+  ADMINISTRATOR = 'ADMINISTRATOR',
+  INSTRUCTOR = 'INSTRUCTOR',
+  STUDENT = 'STUDENT',
+  MODERATOR = 'MODERATOR',
+  GUEST = 'GUEST',
+  SUPERADMIN = 'SUPERADMIN',
+}
 
 // Define interface for login form inputs
 interface LoginFormInputs {
   username: string;
   password: string;
+  role: UserRole; // Use UserRole enum for the role field
 }
 
 const Login: React.FC = () => {
   const navigate = useNavigate(); // Initialize the navigate function
+  const [roles, setRoles] = useState<UserRole[]>([]); // State for storing available roles
   const { 
     register, 
     handleSubmit, 
@@ -19,32 +32,35 @@ const Login: React.FC = () => {
     mode: 'onBlur'
   });
 
+  useEffect(() => {
+    // Fetch roles from the signup process or a mock data source
+    const fetchedRoles: UserRole[] = [
+      UserRole.ADMINISTRATOR,
+      UserRole.INSTRUCTOR,
+      UserRole.STUDENT,
+      UserRole.MODERATOR,
+      UserRole.GUEST,
+      UserRole.SUPERADMIN,
+    ]; // This could come from an API or other source
+    setRoles(fetchedRoles);
+  }, []);
+
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
-    // Handle login logic here
     console.log('Login data:', data);
-
-    // Mocking the backend validation for username, password, and role
-    const mockDatabase = [
-      { username: 'admin', password: 'admin123', role: 'admin' },
-      { username: 'user1', password: 'user123', role: 'user' },
-      { username: 'student1', password: 'student123', role: 'student' },
-    ];
-
-    const user = mockDatabase.find(
-      (user) => user.username === data.username && user.password === data.password
-    );
-
-    if (user) {
-      // If a matching user is found, check their role and navigate accordingly
-      if (user.role === 'admin') {
-        navigate('/admin-dashboard'); // Redirect to admin dashboard
-      } else if (user.role === 'user') {
-        navigate('/user-dashboard'); // Redirect to user dashboard
-      } else if (user.role === 'student') {
-        navigate('/student-dashboard'); // Redirect to student dashboard
-      }
-    } else {
-      alert('Invalid username or password');
+    
+    // Navigate based on selected role
+    if (data.role === UserRole.ADMINISTRATOR) {
+      navigate('/admin-dashboard');
+    } else if (data.role === UserRole.INSTRUCTOR) {
+      navigate('/instructor-dashboard');
+    } else if (data.role === UserRole.STUDENT) {
+      navigate('/student-dashboard');
+    } else if (data.role === UserRole.MODERATOR) {
+      navigate('/moderator-dashboard');
+    } else if (data.role === UserRole.GUEST) {
+      navigate('/guest-dashboard');
+    } else if (data.role === UserRole.SUPERADMIN) {
+      navigate('/superadmin-dashboard');
     }
   };
 
@@ -105,6 +121,35 @@ const Login: React.FC = () => {
           )}
         </div>
 
+        {/* Role Dropdown */}
+        <div className="mb-5">
+          <label
+            htmlFor="role"
+            className="text-sm font-medium text-gray-700 mb-2 flex items-center"
+          >
+            Role
+          </label>
+          <select
+            id="role"
+            {...register('role', { 
+              required: 'Role is required'
+            })}
+            className={`w-full px-4 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none ${
+              errors.role ? 'border-red-500' : 'border-gray-300'
+            }`}
+          >
+            <option value="">Select Role</option>
+            {roles.map((role) => (
+              <option key={role} value={role}>
+                {role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()} {/* Capitalize first letter */}
+              </option>
+            ))}
+          </select>
+          {errors.role && (
+            <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>
+          )}
+        </div>
+
         {/* Submit Button */}
         <div className="text-center mb-4">
           <button
@@ -118,12 +163,12 @@ const Login: React.FC = () => {
         {/* Forgot Password Link */}
         <div className="text-center">
           <p className="text-sm text-gray-600">
-           Forgot your password? {' '}
+            Forgot your password? {' '}
             <Link 
               to="/forgot-password" 
               className="text-blue-600 hover:underline"
             >
-             Forgot Password
+              Forgot Password
             </Link>
           </p>
         </div>
