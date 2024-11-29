@@ -2,7 +2,7 @@ import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { FaUser, FaLock, FaUpload, FaUsers } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import  createUser  from "../service/userService";
+import { createUser } from "../service/userService";
 import { useNavigate } from "react-router-dom";
 
 // Define the interface for form inputs
@@ -51,10 +51,27 @@ const Signup: React.FC = () => {
   const validatePassword = (value: string) =>
     value.length >= 6 || "Password must be at least 6 characters long";
 
-  const validateProfile = (value: FileList) =>
-    (value.length > 0 && ["image/jpeg", "image/png"].includes(value[0].type)) ||
-    "Please upload a valid image (JPEG or PNG)";
-
+  const validateProfile = (value: FileList) => {
+    // Check if the file exists, is of valid type (JPEG or PNG), and is less than or equal to 100 MB
+    const file = value[0];
+    const maxSize = 100 * 1024 * 1024; // 100 MB in bytes
+  
+    // Validate file type and size
+    if (file) {
+      if (!["image/jpeg", "image/png"].includes(file.type)) {
+         alert("Please upload a valid image (JPEG or PNG)");
+         return;
+      }
+      if (file.size > maxSize) {
+        alert("File size must be less than or equal to 100 MB");
+        return;
+      }
+    }
+  
+    // Return true if the file is valid
+    return true;
+  };
+  
   const validateRole = (value: string) =>
     [
       "SUPERADMIN", 

@@ -12,18 +12,18 @@ const App: React.FC = () => {
   return (
     <Router>
       <div className="bg-secondary text-primary min-h-screen flex flex-col">
-        {/* Layout with Navbar and Footer */}
-        <Navbar />
-        <main className="flex-grow p-6">
-          <Routes>
-            <Route path="/" element={<Main />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            {/* Dashboard Route */}
-            <Route path="/dashboard" element={<Dashboard />} />
-          </Routes>
-        </main>
+        {/* Conditional rendering of Navbar */}
+        <Routes>
+          {/* Exclude Navbar on Dashboard route */}
+          <Route path="/dashboard" element={<Dashboard />} />
+          {/* Render Navbar for all other routes */}
+          <Route path="/" element={<><Navbar /><Main /></>} />
+          <Route path="/signup" element={<><Navbar /><Signup /></>} />
+          <Route path="/login" element={<><Navbar /><Login /></>} />
+          <Route path="/forgot-password" element={<><Navbar /><ForgotPassword /></>} />
+        </Routes>
+
+        {/* Footer is always visible */}
         <Footer />
       </div>
     </Router>
