@@ -3,20 +3,22 @@ package com.codealpha.attendance.login;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import com.codealpha.attendance.model.User;
 import com.codealpha.attendance.model.UserRole;
+
 
 import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/user/login")
+@CrossOrigin
 public class LoginController {
 
     @Autowired
     private LoginService loginService;
 
-    // Login endpoint to authenticate the user
+    // Login endpoint to authenticate the userimport org.slf4j.Logger;
+
     @PostMapping
     public ResponseEntity<?> authenticateUser(@RequestParam String username, 
                                               @RequestParam String password, 
@@ -32,7 +34,8 @@ public class LoginController {
             User user = loginService.getUserDetails(username);
             session.setAttribute("user", user); // Store user in session
 
-            return ResponseEntity.ok("Login successful"+user);
+            // Return structured response with success message and user data
+            return ResponseEntity.ok(new LoginResponse("Login successful", user));
         } else if ("User does not exist".equals(responseMessage)) {
             return ResponseEntity.status(404).body("User not found");
         } else if ("Invalid password".equals(responseMessage)) {
@@ -44,6 +47,24 @@ public class LoginController {
         }
     }
 
+    // LoginResponse class to wrap the message and user data
+    public static class LoginResponse {
+        private String message;
+        private User user;
+
+        public LoginResponse(String message, User user) {
+            this.message = message;
+            this.user = user;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public User getUser() {
+            return user;
+        }
+    }
     // Additional endpoint to get the user's role (can be useful for debugging or checking session)
     @GetMapping("/role")
     public ResponseEntity<?> getUserRole(@RequestParam String username) {

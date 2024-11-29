@@ -2,7 +2,7 @@ import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { FaUser, FaLock, FaUpload, FaUsers } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { createUser } from "../service/userService";
+import  createUser  from "../service/userService";
 import { useNavigate } from "react-router-dom";
 
 // Define the interface for form inputs

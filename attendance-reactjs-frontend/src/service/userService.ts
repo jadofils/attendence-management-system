@@ -1,25 +1,22 @@
-import axios from "axios";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import axios from 'axios';
 
-const REST_API_BASE_URL = "http://localhost:8080/api/users";
+const BASE_URL = 'http://localhost:8080/api/user/login'; // Adjust URL
 
-// Update the parameter type to match the user object structure
-export const createUser = (user: { 
-  username: string; 
-  password: string; 
-  role: string; 
-  profile: File; 
-}) => {
-  // Create a FormData object to send the data as multipart/form-data
-  const formData = new FormData();
-  formData.append("username", user.username);
-  formData.append("password", user.password);
-  formData.append("role", user.role);
-  formData.append("studentProfile", user.profile); // Make sure the field name matches
+const loginUser = async (data: { username: string, password: string, role: string }) => {
+  try {
+    const response = await axios.post(BASE_URL, data, {
+      headers: {
+        'Content-Type': 'application/json', // Assuming you're sending JSON data
+      },
+    });
 
-  // Send the POST request with form data
-  return axios.post(REST_API_BASE_URL, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+    console.log('Response from backend:', response.data); // Log the full response
+    return response.data; // Return response data to frontend for further processing
+  } catch (error: any) {
+    console.error('Login failed:', error);
+    throw error;
+  }
 };
+
+export default loginUser;
