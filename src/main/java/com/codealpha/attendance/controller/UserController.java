@@ -4,6 +4,7 @@ import com.codealpha.attendance.model.User;
 import com.codealpha.attendance.model.UserRole;
 import com.codealpha.attendance.service.userservice.UserService;
 import com.codealpha.attendance.exception.ServiceException;
+import com.codealpha.attendance.exception.UserException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,72 +24,59 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // Create user
     @PostMapping
     public ResponseEntity<?> createUser(
             @RequestParam("username") String username,
             @RequestParam("password") String password,
             @RequestParam("role") String role,
             @RequestParam("studentProfile") MultipartFile studentProfile) {
+                System.out.println("Username: " + username);
 
-        // Validate username
+
         if (username == null || username.trim().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Username is required and cannot be empty.");
+            throw UserException.badRequest("Username is required and cannot be empty.");
         }
 
-        // Validate password (e.g., length, strength)
         if (password == null || password.length() < 8) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Password must be at least 8 characters long.");
+            throw UserException.badRequest("Password must be at least 8 characters long.");
         }
 
-        // Convert role to UserRole enum and validate
         UserRole userRole;
         try {
             userRole = UserRole.valueOf(role.toUpperCase());
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Invalid role. Please provide a valid role (e.g., USER, ADMIN).");
+            throw UserException.badRequest("Invalid role. Please provide a valid role (e.g., USER, ADMIN).");
         }
 
-        // Create a new User object
+        try {
+            validateProfileImage(studentProfile);
+        } catch (ServiceException e) {
+            throw UserException.badRequest(e.getMessage());
+        }
+
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
         user.setRole(userRole);
+        user.setStudentProfile(studentProfile.getOriginalFilename());
 
-        // Validate and set profile image
-        try {
-            validateProfileImage(studentProfile);
-        } catch (ServiceException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(e.getMessage()); // Return specific error message
-        }
-
-        user.setStudentProfile(studentProfile.getOriginalFilename()); // Save only the filename or path
-
-        // Save user using service
         User savedUser = userService.saveUser(user);
 
         return new ResponseEntity<>(
                 new ApiResponse("User created successfully", savedUser), HttpStatus.CREATED);
     }
 
-    // Validate profile image
-    public void validateProfileImage(MultipartFile profileImage) {
+    private void validateProfileImage(MultipartFile profileImage) {
         if (profileImage == null || profileImage.isEmpty()) {
             throw new ServiceException("Profile image is required.");
         }
 
-        // Check file size (100MB max size)
         long fileSizeInBytes = profileImage.getSize();
-        long maxSizeInBytes = 100 * 1024 * 1024; // 100 MB
+        long maxSizeInBytes = 1000 * 1024 * 1024; // 100 MB
         if (fileSizeInBytes > maxSizeInBytes) {
             throw new ServiceException("Profile image must not exceed 100MB.");
         }
 
-        // Check file extension
         String fileName = profileImage.getOriginalFilename();
         if (fileName != null) {
             String extension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
@@ -101,7 +89,6 @@ public class UserController {
             throw new ServiceException("Invalid file name.");
         }
     }
-
     // Get all users
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
