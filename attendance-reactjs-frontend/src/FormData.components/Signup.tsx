@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { FaUser, FaLock, FaUpload, FaUsers } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -14,6 +14,7 @@ interface SignupFormInputs {
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // Add state to handle error message
 
   const {
     register,
@@ -34,60 +35,72 @@ const Signup: React.FC = () => {
       .then((response) => {
         alert("User Created Successfully!!");
         console.log(response.data);
-        navigate("/login"); // Redirect to login page using useNavigate
+        setErrorMessage("User created successfully!"); // Success message
+        setTimeout(() => {
+          navigate("/login"); // Redirect to login page using useNavigate
+        }, 5000); // Redirect after 5 seconds
       })
       .catch((error) => {
-  // Extract backend-specific error details
-  const errorMessage =
-    error.response?.data?.message || 
-    error.message || 
-    "An unexpected error occurred";
+        const errorMessage =
+          error.response?.data?.message || 
+          error.message || 
+          "An unexpected error occurred";
 
-  const rootCause = 
-    error.response?.data?.rootCause || 
-    error.response?.data?.error || // Fallback to a general 'error' field, if provided
-    "Unknown root cause";
+        const rootCause = 
+          error.response?.data?.rootCause || 
+          error.response?.data?.error || 
+          "Unknown root cause";
 
-  // Alert the combined error message with the root cause
-  alert(`${errorMessage} \nRoot Cause: ${rootCause}`);
-
-  // Log the full error details for debugging
-  console.error("Error details:", error);
-});
-
+        setErrorMessage(`${errorMessage} \nRoot Cause: ${rootCause}`); // Set error message
+        console.error("Error details:", error);
+      });
+  };
+  const validateUsername = (value: string) => {
+    if (value.length < 3) {
+      return "Username must be at least 3 characters long";
+    }
+    return true; // means validation passed
   };
   
-  const validateUsername = (value: string) =>
-    value.length >= 3 || "Username must be at least 3 characters long";
-
-  const validatePassword = (value: string) =>
-    value.length >= 6 || "Password must be at least 6 characters long";
-
-  const validateProfile = (value: FileList) => {
-    const file = value[0];
-    const maxSize = 100 * 1024 * 1024; // 100 MB in bytes
-
-    if (file) {
-      if (!["image/jpeg", "image/png"].includes(file.type)) {
-        return "Please upload a valid image (JPEG or PNG)";
-      }
-      if (file.size > maxSize) {
-        return "File size must be less than or equal to 100 MB";
-      }
+  const validatePassword = (value: string) => {
+    if (value.length < 6) {
+      return "Password must be at least 6 characters long";
     }
     return true;
   };
-
-  const validateRole = (value: string) =>
-    ["SUPERADMIN", "MODERATOR", "GUEST", "STUDENT", "ADMINISTRATOR", "INSTRUCTOR"].includes(value) ||
-    "Please select a valid role";
-
+  
+  const validateProfile = (value: FileList) => {
+    if (value.length === 0) {
+      return "Profile picture is required";
+    }
+    return true;
+  };
+  
+  const validateRole = (value: string) => {
+    if (value === "") {
+      return "Role is required";
+    }
+    return true;
+  };
+  
   return (
     <section
       id="signup-form"
       className="p-6 sm:p-8 max-w-3xl mx-auto shadow-md rounded-lg bg-white border border-gray-200"
     >
       <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">Sign Up</h2>
+
+      {/* Display signup message */}
+      {errorMessage && (
+        <div
+          className={`text-center py-2 px-4 mb-4 rounded-md ${
+            errorMessage.includes('failed') ? 'bg-red-200 text-red-700' : 'bg-green-200 text-green-700'
+          }`}
+        >
+          {errorMessage}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <div className="mb-5">
           <label htmlFor="username" className="flex items-center text-sm font-medium text-gray-700 mb-2">

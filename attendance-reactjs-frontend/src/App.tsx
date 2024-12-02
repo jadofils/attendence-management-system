@@ -1,5 +1,6 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { useState } from "react";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import Navbar from "./components/NavBar";
 import Footer from "./components/Footer";
 import Main from "./components/Main";
@@ -12,26 +13,48 @@ const App: React.FC = () => {
   return (
     <Router>
       <div className="bg-secondary text-primary min-h-screen flex flex-col">
-      
-      <Routes>
+        {/* Main Layout with Navbar and Footer */}
+        <Routes>
+          {/* For /dashboard, do not show Navbar or Footer */}
+          <Route path="/dashboard" element={<DashboardWithoutNavbarFooter />} />
 
-      <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
-
-        {/* Layout with Navbar and Footer */}
-        <Navbar />
-        <main className="flex-grow p-6">
-          <Routes>
-            <Route path="/" element={<Main />} />
+          {/* Layout with Navbar and Footer for other routes */}
+          <Route path="/" element={<Layout />}>
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-            
-          </Routes>
-        </main>
-        <Footer />
+            <Route path="/" element={<Main />} />
+          </Route>
+        </Routes>
       </div>
     </Router>
+  );
+};
+
+// Layout Component for Routes excluding /dashboard
+const Layout: React.FC = () => {
+  return (
+    <>
+      <Navbar />
+      <main className="flex-grow p-6">
+        <Routes>
+          <Route path="/" element={<Main />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+        </Routes>
+      </main>
+      <Footer />
+    </>
+  );
+};
+
+// Component for /dashboard route without Navbar and Footer
+const DashboardWithoutNavbarFooter: React.FC = () => {
+  return (
+    <>
+      <Dashboard />
+    </>
   );
 };
 

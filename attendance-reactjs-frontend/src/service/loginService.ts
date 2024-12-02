@@ -1,25 +1,43 @@
-// loginService.ts
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
 
 // Define the base URL for the API
-const BASE_URL = 'http://localhost:8080/api/user/login'; // Adjust this if necessary
+const BASE_URL = 'http://localhost:8080/api/user/login';
 
-// Function to send the login data to the backend
-const loginUser = async (data: { username: string, password: string, role: string }) => {
+// Define interfaces for the response and login data
+export interface User {
+  id?: number;
+  username: string;
+  email?: string;
+  role: string;
+}
+
+export interface LoginResponse {
+  message: string;
+  user: User;
+}
+
+// Service to handle login requests
+const loginUser = async (data: { username: string; password: string; role: string }): Promise<LoginResponse> => {
   try {
-    // Send the login request
-    const response = await axios.post(BASE_URL, data, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded', // Ensure the content type is form data
-      },
+    // Log data being sent to the backend
+    console.log('Sending login request with data:', data);
+
+    // Send data in the body of the POST request
+    const response = await axios.post(BASE_URL, {
+      username: data.username,
+      password: data.password,
+      role: data.role,
     });
 
-    // Handle success - can return the response data or handle the response accordingly
+    // Log the backend response
+    console.log('Login response:', response.data);
+
+    // Return the response data
     return response.data;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    // Handle error
-    console.error('Login failed:', error.response || error.message);
+    // Log the error details
+    console.log('Login failed:', error.response || error.message);
     throw error;
   }
 };
