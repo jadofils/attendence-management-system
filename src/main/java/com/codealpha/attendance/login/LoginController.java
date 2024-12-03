@@ -1,53 +1,64 @@
 package com.codealpha.attendance.login;
 
+import com.codealpha.attendance.model.User;
+
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.codealpha.attendance.model.User;
-import com.codealpha.attendance.model.UserRole;
 
-@CrossOrigin(origins = "http://localhost:5000", allowCredentials = "true")
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
-@RequestMapping("/api/user/login")
+@RequestMapping("/api/user")
+@CrossOrigin
 public class LoginController {
 
     @Autowired
     private LoginService loginService;
- private UserRole userRole;
-    @PostMapping
-    public ResponseEntity<?> authenticateUser(
-            @RequestParam String username,
-            @RequestParam String password,
-            @RequestParam String role) {
-        
-        // Check if user exists
-        User user = loginService.getUserDetails(username);
-        System.out.println(user);
-        if (user == null) {
-            return ResponseEntity.status(404).body("User does not exist");
-        }
 
-        // Validate password
-        if (!user.getPassword().equals(password)) {
-            return ResponseEntity.status(401).body("Invalid password");
-        }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest, HttpSession session) {
+        String username = loginRequest.get("username");
+        String password = loginRequest.get("password");
+        String role = loginRequest.get("role");
 
-        // Validate role
-        if (!user.getRole().equals(com.codealpha.attendance.model.UserRole.valueOf(role))) {
-            System.out.println(userRole);
-            return ResponseEntity.status(403).body("Role mismatch");
-        }
+        try {
+            // Authenticate user
+            User user = loginService.authenticate(username, password, role);
 
-        // Login successful
-        return ResponseEntity.ok().body(user);
+            // Store user data in session
+            session.setAttribute("user", user);  // Store user object in session
+
+            // Return success response
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Login successful");
+            response.put("user", user);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            // Handle error response
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        }
     }
 
-    @GetMapping("/role")
-    public ResponseEntity<?> getUserRole(@RequestParam String username) {
-        User user = loginService.getUserDetails(username);
+    @GetMapping("/current-user")
+    public ResponseEntity<?> getCurrentUser(HttpSession session) {
+        User user = (User) session.getAttribute("user");
         if (user != null) {
-            return ResponseEntity.ok(user.getRole());
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No user logged in");
         }
-        return ResponseEntity.status(404).body("User not found");
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpSession session) {
+        session.invalidate();  // Invalidate session on logout
+        return ResponseEntity.ok("Logout successful");
     }
 }

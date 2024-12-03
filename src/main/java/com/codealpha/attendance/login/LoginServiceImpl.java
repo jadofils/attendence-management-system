@@ -1,67 +1,44 @@
 package com.codealpha.attendance.login;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-
 import com.codealpha.attendance.model.User;
 import com.codealpha.attendance.model.UserRole;
+import com.codealpha.attendance.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import jakarta.servlet.http.HttpSession;
+import java.util.Optional;
 
 @Service
 public class LoginServiceImpl implements LoginService {
 
     @Autowired
-    private LoginRepository loginRepository;
+    private UserRepository userRepository;
 
     @Override
-    public String authenticate(String username, String password, String role) {
-        // Fetch user from the database by username
-        User user = loginRepository.findByUsername(username);
-        
-        // Check if the user exists
-        if (user == null) {
-            return "User does not exist";
+    public User authenticate(String username, String password, String role) {
+        UserRole userRole;
+
+        // Convert the role string to UserRole enum
+        try {
+            userRole = UserRole.valueOf(role.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid role provided: " + role);
         }
 
-        // Check if the provided password matches the stored password
-        if (!password.equals(user.getPassword())) {
-            return "Invalid password";
+        // Fetch user by username and role
+        Optional<User> userOptional = userRepository.findByUsernameAndRole(username, userRole);
+
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            // Match the plain password
+            if (password.equals(user.getPassword())) {
+                return user; // Authentication successful
+            } else {
+                throw new IllegalArgumentException("Invalid password");
+            }
+        } else {
+            throw new IllegalArgumentException("User not found with username and role: " + username + ", " + role);
         }
-
-        // Check if the provided role matches the user's role
-        if (!role.equals(user.getRole().name())) {
-            return "Role mismatch";
-        }
-
-        // If all checks pass, set user in session and return success message
-        setUserInSession(user);
-        return "Login successful";
-    }
-
-    @Override
-    public UserRole getUserRole(String username) {
-        // Fetch user from the database by username
-        User user = loginRepository.findByUsername(username);
-        
-        if (user != null) {
-            return user.getRole(); // Return the user's role
-        }
-        return null; // User not found
-    }
-
-    // Method to set user in session
-    public void setUserInSession(User user) {
-        // Get the current HTTP session and set the user as an attribute
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        HttpSession session = attributes.getRequest().getSession();
-        session.setAttribute("user", user);
-    }
-
-    @Override
-    public User getUserDetails(String username) {
-       return loginRepository.findByUsername(username);
     }
 }
