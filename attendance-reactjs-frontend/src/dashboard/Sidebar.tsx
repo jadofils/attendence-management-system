@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaChartBar,
   FaCog,
@@ -10,10 +10,25 @@ import {
   FaBookOpen,
   FaUsers,
 } from "react-icons/fa";
-import logo from '../assets/logo.jpeg';
+import logo from "../assets/logo.jpeg";
+import fetchLoggedInUser from "./dashboardServices/loggedInService";
 
 const Sidebar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(true);
+  const [username, setUsername] = useState<string>("Guest");
+  const [role, setRole] = useState<string>("");
+
+  // Fetch logged-in user data
+  useEffect(() => {
+    const getUser = async () => {
+      const user = await fetchLoggedInUser();
+      if (user.username !== "Guest") {
+        setUsername(user.username || "Guest");
+        setRole(user.role || "");
+      }
+    };
+    getUser();
+  }, []);
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -40,8 +55,8 @@ const Sidebar: React.FC = () => {
             </div>
             {isOpen && (
               <div className="ml-3">
-                <p className="text-lg font-semibold">John Doe</p>
-                <p className="text-sm text-gray-500">Admin</p>
+                <p className="text-lg font-semibold">{username}</p>
+                <p className="text-sm text-gray-500">{role}</p>
               </div>
             )}
           </div>
@@ -84,7 +99,6 @@ const Sidebar: React.FC = () => {
               <FaSignOutAlt className="text-blue-600" />
               {isOpen && <span>Logout</span>}
             </li>
-
           </ul>
         </div>
       </div>

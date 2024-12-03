@@ -1,9 +1,7 @@
 package com.codealpha.attendance.login;
 
 import com.codealpha.attendance.model.User;
-
 import jakarta.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +31,9 @@ public class LoginController {
             // Store user data in session
             session.setAttribute("user", user);  // Store user object in session
 
+            // Set session timeout to 3 hours (10800 seconds)
+            session.setMaxInactiveInterval(10800);  // 3 hours in seconds
+
             // Return success response
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Login successful");
@@ -44,21 +45,5 @@ public class LoginController {
             errorResponse.put("error", e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
-    }
-
-    @GetMapping("/current-user")
-    public ResponseEntity<?> getCurrentUser(HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user != null) {
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No user logged in");
-        }
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpSession session) {
-        session.invalidate();  // Invalidate session on logout
-        return ResponseEntity.ok("Logout successful");
     }
 }
