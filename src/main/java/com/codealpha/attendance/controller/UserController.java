@@ -12,6 +12,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -24,14 +29,17 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+   
+    private static final String UPLOAD_DIR = "uploads/";
+
     @PostMapping
     public ResponseEntity<?> createUser(
             @RequestParam("username") String username,
             @RequestParam("password") String password,
             @RequestParam("role") String role,
             @RequestParam("studentProfile") MultipartFile studentProfile) {
-                System.out.println("Username: " + username);
-
+        
+        System.out.println("Username: " + username);
 
         if (username == null || username.trim().isEmpty()) {
             throw UserException.badRequest("Username is required and cannot be empty.");
@@ -54,11 +62,14 @@ public class UserController {
             throw UserException.badRequest(e.getMessage());
         }
 
+        // Save the profile image to the uploads directory
+        String savedFileName = saveProfileImage(studentProfile);
+
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
         user.setRole(userRole);
-        user.setStudentProfile(studentProfile.getOriginalFilename());
+        user.setStudentProfile(savedFileName);  // Store the file name in the database
 
         User savedUser = userService.saveUser(user);
 
@@ -89,6 +100,27 @@ public class UserController {
             throw new ServiceException("Invalid file name.");
         }
     }
+
+    private String saveProfileImage(MultipartFile profileImage) {
+        // Ensure the uploads directory exists
+        File uploadsDir = new File(UPLOAD_DIR);
+        if (!uploadsDir.exists()) {
+            uploadsDir.mkdirs();
+        }
+
+        // Get the file name and create a path for the uploaded file
+        String fileName = profileImage.getOriginalFilename();
+        Path targetPath = Path.of(UPLOAD_DIR, fileName);
+
+        try {
+            // Copy the file to the target path
+            Files.copy(profileImage.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new ServiceException("Failed to save profile image.");
+        }
+
+        return fileName; // Return the file name to store in the database
+    }
     // Get all users
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
@@ -97,21 +129,53 @@ public class UserController {
     }
 
     // Get user by ID
-    @GetMapping("/{userId}")
-    public ResponseEntity<User> getUserById(@PathVariable Long userId) {
-        User user = userService.getUserById(userId);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+   @PutMapping("/{userId}")
+public ResponseEntity<User> updateUser(
+        @PathVariable Long userId,
+        @RequestParam("username") String username,
+        @RequestParam("role") UserRole role,
+        @RequestParam(value = "password", required = false) String password,
+        @RequestParam(value = "studentProfile", required = false) MultipartFile profile) {
+
+    // Create an updated user object
+    User updatedUser = new User();
+    updatedUser.setUsername(username);
+    updatedUser.setRole(role);
+
+    // Optionally update the password
+    if (password != null && !password.isEmpty()) {
+        updatedUser.setPassword(password);
     }
 
-    // Update user
-    @PutMapping("/{userId}")
-    public ResponseEntity<User> updateUser(
-            @PathVariable Long userId,
-            @RequestBody User updatedUser) {
-        User user = userService.updateUser(userId, updatedUser);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    // If a profile image is provided, validate its extension
+    if (profile != null && !profile.isEmpty()) {
+        String fileExtension = getFileExtension(profile.getOriginalFilename());
+        if (!isValidImageExtension(fileExtension)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);  // Return 400 if the file extension is not valid
+        }
+        
+        // Handle the file saving logic here if valid
+        // For example: String profilePath = fileStorageService.storeFile(profile);
+        // updatedUser.setProfilePath(profilePath);
     }
 
+    // Update the user
+    User user = userService.updateUser(userId, updatedUser);
+    return new ResponseEntity<>(user, HttpStatus.OK);
+}
+
+// Helper method to get the file extension
+private String getFileExtension(String filename) {
+    int lastIndexOfDot = filename.lastIndexOf('.');
+    return (lastIndexOfDot == -1) ? "" : filename.substring(lastIndexOfDot + 1).toLowerCase();
+}
+
+// Helper method to check if the file extension is valid
+private boolean isValidImageExtension(String extension) {
+    return List.of("jpeg", "png", "jpg", "svg", "tiff").contains(extension);
+}
+
+    
     // Delete user
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {

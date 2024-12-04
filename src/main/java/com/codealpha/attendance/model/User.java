@@ -25,7 +25,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole role; 
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     @Pattern(
         regexp = ".*\\.(jpeg|png|jpg|svg|tiff)$",
         message = "Profile image must be a valid file type (jpeg, png, jpg, svg, tiff)"

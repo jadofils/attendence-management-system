@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useState, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { FaUser, FaLock, FaUpload, FaUsers } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import { createUser } from "../service/userService";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { createUser, updateUser } from "../service/userService";
+import axios from "axios";
 
 interface SignupFormInputs {
   username: string;
@@ -14,83 +15,157 @@ interface SignupFormInputs {
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState<string | null>(null); // Add state to handle error message
+  const location = useLocation();
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
+    setValue,
+    reset,
     formState: { errors },
   } = useForm<SignupFormInputs>({ mode: "onBlur" });
 
-  const onSubmit: SubmitHandler<SignupFormInputs> = (data) => {
-    const user = {
-      username: data.username,
-      password: data.password,
-      profile: data.profile[0], // Sending the first file
-      role: data.role,
+  // Extract userId from URL query parameters
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const userIdFromUrl = queryParams.get('userId');
+    const username = queryParams.get('username');
+
+    if (userIdFromUrl) {
+      setIsEditMode(true);
+      setUserId(userIdFromUrl);
+      
+      // Pre-fill username from URL
+      if (username) {
+        setValue('username', username);
+      }
+    } else {
+      // Reset form if not in edit mode
+      reset();
+      setIsEditMode(false);
+      setUserId(null);
+    }
+  }, [location.search]);
+
+  // Fetch user data if editing
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!userId) return;
+
+      try {
+        setIsLoading(true);
+        const response = await axios.get(`http://localhost:8080/api/users/${userId}`);
+        const userData = response.data;
+
+        // Populate form with fetched user data
+        setValue('username', userData.username);
+        setValue('role', userData.role);
+        
+        // Note: We don't pre-fill password for security reasons
+        setIsLoading(false);
+      } catch (error) {
+        setErrorMessage('Failed to fetch user data');
+        setIsLoading(false);
+        console.error('Error fetching user data:', error);
+      }
     };
+
+    if (isEditMode) {
+      fetchUserData();
+    }
+  }, [userId, isEditMode]);
+
+  const onSubmit: SubmitHandler<SignupFormInputs> = async (data) => {
+    setIsLoading(true);
+    setErrorMessage(null);
   
-    console.log("Profile File:", data.profile[0]); // Log file to verify
-    createUser(user)
-      .then((response) => {
-        alert("User Created Successfully!!");
-        console.log(response.data);
-        setErrorMessage("User created successfully!"); // Success message
-        setTimeout(() => {
-          navigate("/login"); // Redirect to login page using useNavigate
-        }, 5000); // Redirect after 5 seconds
-      })
-      .catch((error) => {
-        const errorMessage =
-          error.response?.data?.message || 
-          error.message || 
-          "An unexpected error occurred";
-
-        const rootCause = 
-          error.response?.data?.rootCause || 
-          error.response?.data?.error || 
-          "Unknown root cause";
-
-        setErrorMessage(`${errorMessage} \nRoot Cause: ${rootCause}`); // Set error message
-        console.error("Error details:", error);
-      });
+    try {
+      let user;
+      if (isEditMode && userId) {
+        // Prepare update payload with only username and role
+        user = {
+          username: data.username,
+          role: data.role,
+        };
+        await updateUser(userId, user);
+        setErrorMessage("User updated successfully!");
+        setTimeout(() => navigate("/dashboard"), 2000);
+      } else {
+        // Prepare create payload with all fields
+        user = {
+          username: data.username,
+          password: data.password,
+          role: data.role,
+          profile: data.profile[0], // First file
+        };
+        await createUser(user);
+        setErrorMessage("User created successfully!");
+        setTimeout(() => navigate("/login"), 2000);
+      }
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "An unexpected error occurred";
+      const rootCause =
+        error.response?.data?.rootCause ||
+        error.response?.data?.error ||
+        "Unknown root cause";
+  
+      setErrorMessage(`${errorMessage} \nRoot Cause: ${rootCause}`);
+      console.error("Error details:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
+  
+
   const validateUsername = (value: string) => {
     if (value.length < 3) {
       return "Username must be at least 3 characters long";
     }
-    return true; // means validation passed
+    return true;
   };
-  
+
   const validatePassword = (value: string) => {
-    if (value.length < 6) {
-      return "Password must be at least 6 characters long";
+    // Only validate password if not in edit mode or if a password is provided
+    if (!isEditMode || value) {
+      if (value.length < 6) {
+        return "Password must be at least 6 characters long";
+      }
     }
     return true;
   };
-  
+
   const validateProfile = (value: FileList) => {
-    if (value.length === 0) {
+    // Only require profile in create mode
+    if (!isEditMode && value.length === 0) {
       return "Profile picture is required";
     }
     return true;
   };
-  
+
   const validateRole = (value: string) => {
     if (value === "") {
       return "Role is required";
     }
     return true;
   };
-  
+
   return (
     <section
       id="signup-form"
       className="p-6 sm:p-8 max-w-3xl mx-auto shadow-md rounded-lg bg-white border border-gray-200"
     >
-      <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">Sign Up</h2>
+      <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">
+        {isEditMode ? "Update User" : "Sign Up"}
+      </h2>
 
-      {/* Display signup message */}
+      {/* Display signup/update message */}
       {errorMessage && (
         <div
           className={`text-center py-2 px-4 mb-4 rounded-md ${
@@ -109,7 +184,10 @@ const Signup: React.FC = () => {
           <input
             type="text"
             id="username"
-            {...register("username", { required: "Username is required", validate: validateUsername })}
+            {...register("username", { 
+              required: "Username is required", 
+              validate: validateUsername 
+            })}
             className={`w-full px-4 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none ${
               errors.username ? "border-red-500" : "border-gray-300"
             }`}
@@ -124,12 +202,16 @@ const Signup: React.FC = () => {
           <input
             type="password"
             id="password"
-            {...register("password", { required: "Password is required", validate: validatePassword })}
+            {...register("password", { 
+              validate: validatePassword 
+            })}
             className={`w-full px-4 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none ${
               errors.password ? "border-red-500" : "border-gray-300"
             }`}
+            placeholder={isEditMode ? "Leave blank to keep existing password" : ""}
           />
           {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
+          {isEditMode && <p className="text-sm text-gray-600 mt-1">Leave blank to keep existing password</p>}
         </div>
 
         <div className="mb-5">
@@ -139,10 +221,13 @@ const Signup: React.FC = () => {
           <input
             type="file"
             id="profile"
-            {...register("profile", { required: "Profile picture is required", validate: validateProfile })}
+            {...register("profile", { 
+              validate: validateProfile 
+            })}
             className="w-full px-4 py-2 border rounded-md text-sm focus:outline-none"
           />
           {errors.profile && <p className="text-red-500 text-sm mt-1">{errors.profile.message}</p>}
+          {isEditMode && <p className="text-sm text-gray-600 mt-1">Leave blank to keep existing profile picture</p>}
         </div>
 
         <div className="mb-5">
@@ -151,7 +236,10 @@ const Signup: React.FC = () => {
           </label>
           <select
             id="role"
-            {...register("role", { required: "Role is required", validate: validateRole })}
+            {...register("role", { 
+              required: "Role is required", 
+              validate: validateRole 
+            })}
             className={`w-full px-4 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-600 focus:outline-none ${
               errors.role ? "border-red-500" : "border-gray-300"
             }`}
@@ -167,16 +255,21 @@ const Signup: React.FC = () => {
           {errors.role && <p className="text-red-500 text-sm mt-1">{errors.role.message}</p>}
         </div>
 
-        <div className="text-center">
+        <div className="mb-6 flex justify-center">
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-blue-800 transition duration-300"
+            disabled={isLoading}
+            className={`px-6 py-2 text-white rounded-md text-sm font-semibold focus:outline-none ${
+              isLoading 
+                ? "bg-gray-400 cursor-not-allowed" 
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
           >
-            Sign Up
+            {isLoading 
+              ? (isEditMode ? "Updating..." : "Signing Up...") 
+              : (isEditMode ? "Update" : "Sign Up")
+            }
           </button>
-          <p className="text-sm text-gray-600 mt-4">
-            Already have an account? <Link to="/login" className="text-blue-600 hover:underline">Login</Link>
-          </p>
         </div>
       </form>
     </section>
