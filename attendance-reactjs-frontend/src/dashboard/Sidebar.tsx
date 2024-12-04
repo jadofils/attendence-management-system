@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   FaChartBar,
   FaCog,
@@ -63,41 +64,86 @@ const Sidebar: React.FC = () => {
 
           {/* Navigation */}
           <ul className="mt-4 space-y-4 text-base">
-            <li className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer">
-              <FaUser className="text-blue-600" />
-              {isOpen && <span>Users</span>}
+            <li>
+              <Link 
+                to="/users" 
+                className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer"
+              >
+                <FaUser className="text-blue-600" />
+                {isOpen && <span>Users</span>}
+              </Link>
             </li>
-            <li className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer">
-              <FaChartBar className="text-blue-600" />
-              {isOpen && <span>Programs</span>}
+            <li>
+              <Link 
+                to="/programs" 
+                className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer"
+              >
+                <FaChartBar className="text-blue-600" />
+                {isOpen && <span>Programs</span>}
+              </Link>
             </li>
-            <li className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer">
-              <FaUsers className="text-blue-600" />
-              {isOpen && <span>Students</span>}
+            <li>
+              <Link 
+                to="/students" 
+                className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer"
+              >
+                <FaUsers className="text-blue-600" />
+                {isOpen && <span>Students</span>}
+              </Link>
             </li>
-            <li className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer">
-              <FaBookOpen className="text-blue-600" />
-              {isOpen && <span>Courses</span>}
+            <li>
+              <Link 
+                to="/courses" 
+                className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer"
+              >
+                <FaBookOpen className="text-blue-600" />
+                {isOpen && <span>Courses</span>}
+              </Link>
             </li>
-            <li className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer">
-              <FaClipboardList className="text-blue-600" />
-              {isOpen && <span>Classes</span>}
+            <li>
+              <Link 
+                to="/classes" 
+                className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer"
+              >
+                <FaClipboardList className="text-blue-600" />
+                {isOpen && <span>Classes</span>}
+              </Link>
             </li>
-            <li className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer">
-              <FaClipboardList className="text-blue-600" />
-              {isOpen && <span>Attendance</span>}
+            <li>
+              <Link 
+                to="/attendance" 
+                className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer"
+              >
+                <FaClipboardList className="text-blue-600" />
+                {isOpen && <span>Attendance</span>}
+              </Link>
             </li>
-            <li className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer">
-              <FaChartBar className="text-blue-600" />
-              {isOpen && <span>Statistics</span>}
+            <li>
+              <Link 
+                to="/statistics" 
+                className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer"
+              >
+                <FaChartBar className="text-blue-600" />
+                {isOpen && <span>Statistics</span>}
+              </Link>
             </li>
-            <li className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer">
-              <FaCog className="text-blue-600" />
-              {isOpen && <span>Settings</span>}
+            <li>
+              <Link 
+                to="/settings" 
+                className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer"
+              >
+                <FaCog className="text-blue-600" />
+                {isOpen && <span>Settings</span>}
+              </Link>
             </li>
-            <li className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer">
-              <FaSignOutAlt className="text-blue-600" />
-              {isOpen && <span>Logout</span>}
+            <li>
+              <Link 
+                to="/logout" 
+                className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer"
+              >
+                <FaSignOutAlt className="text-blue-600" />
+                {isOpen && <span>Logout</span>}
+              </Link>
             </li>
           </ul>
         </div>

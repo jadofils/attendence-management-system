@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+ 
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/NavBar";
 import Footer from "./components/Footer";
 import Main from "./components/Main";
@@ -8,6 +8,7 @@ import Signup from "./FormData.components/Signup";
 import Login from "./FormData.components/Login";
 import ForgotPassword from "./FormData.components/ForgotPassword";
 import Dashboard from "./dashboard/Dashboard";
+import Users from "./dashboard/Users";
 
 const App: React.FC = () => {
   return (
@@ -16,7 +17,8 @@ const App: React.FC = () => {
         {/* Main Layout with Navbar and Footer */}
         <Routes>
           {/* For /dashboard, do not show Navbar or Footer */}
-          <Route path="/dashboard" element={<DashboardWithoutNavbarFooter />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/dashboard/*" element={<DashboardWithoutNavbarFooter />} />
 
           {/* Layout with Navbar and Footer for other routes */}
           <Route path="/" element={<Layout />}>
@@ -51,11 +53,7 @@ const Layout: React.FC = () => {
 
 // Component for /dashboard route without Navbar and Footer
 const DashboardWithoutNavbarFooter: React.FC = () => {
-  return (
-    <>
-      <Dashboard />
-    </>
-  );
+  return <Dashboard />;
 };
 
 export default App;
