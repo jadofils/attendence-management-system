@@ -4,6 +4,7 @@ import { Link } from "react-router-dom"; // Import Link
 import Sidebar from "./Sidebar"; // Adjust import path
 import DashboardNavbar from "./DashboardNavBar";
 import { fetchUsers } from "./dashboardServices/usersService"; // Import fetchUsers from userService
+import deleteUser from "../service/userService";
 
 interface User {
   userId: number;
@@ -43,6 +44,23 @@ const Users: React.FC = () => {
     );
     setFilteredUsers(filtered);
   }, [searchTerm, users]);
+  
+  const handleDelete = async (userId: number) => {
+    const confirmed = window.confirm("Are you sure you want to delete this user?");
+    if (confirmed) {
+      try {
+        await deleteUser(userId.toString()); // Call deleteUser service
+        setUsers(users.filter((user) => user.userId !== userId)); // Remove deleted user from state
+        setFilteredUsers(filteredUsers.filter((user) => user.userId !== userId)); // Update filtered users
+        alert("User deleted successfully");
+      } catch (error) {
+        console.error("Failed to delete user:", error);
+        alert("Failed to delete user");
+      }
+    }
+  };
+
+
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -172,7 +190,7 @@ const Users: React.FC = () => {
                       </Link>
                       <button
                         className="bg-red-500 text-white py-1 px-3 rounded ml-2"
-                        onClick={() => alert(`Delete user: ${user.username}`)}
+                        onClick={() => handleDelete(user.userId)}
                       >
                         Delete
                       </button>

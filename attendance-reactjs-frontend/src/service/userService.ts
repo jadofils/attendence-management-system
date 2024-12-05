@@ -75,3 +75,25 @@ export const updateUser = (
       throw error.response?.data || error.message; // Propagate the error
     });
 };
+
+// Function to delete a user by ID
+const deleteUser = async (id: string) => {
+  try {
+    // Make a DELETE request to the API
+    const response = await axios.delete(`${REST_API_BASE_URL}/${id}`);
+    
+    // Handle the success response
+    console.log('User deleted successfully:', response.data);
+    return response.data;
+  } catch (error) {
+    // Handle errors
+    if (axios.isAxiosError(error)) {
+      console.error('Error deleting user:', error.response?.data || error.message);
+    } else {
+      console.error('Unexpected error:', error);
+    }
+    throw error; // Optionally, rethrow the error for further handling
+  }
+};
+
+export default deleteUser;
