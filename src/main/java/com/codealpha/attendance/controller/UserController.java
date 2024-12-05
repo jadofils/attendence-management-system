@@ -17,9 +17,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
@@ -29,8 +29,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-   
-    private static final String UPLOAD_DIR = "uploads/";
+    // Directory for initial sign-up profile images
+    private String UPLOAD_DIR = "src/main/java/com/codealpha/attendance/config/uploads/";
+
+    // Directory for updated profile images
+    private String UPLOADED_UPDATED_DIR = "src/main/java/com/codealpha/attendance/config/updatedUploads/";
 
     @PostMapping
     public ResponseEntity<?> createUser(
@@ -62,10 +65,11 @@ public class UserController {
             throw UserException.badRequest(e.getMessage());
         }
 
-        // Save the profile image to the uploads directory
-        String savedFileName = saveProfileImage(studentProfile);
+        // Save the profile image to the initial uploads directory
+        String savedFileName = saveInitialProfileImage(studentProfile);
 
         User user = new User();
+        System.out.println(user);
         user.setUsername(username);
         user.setPassword(password);
         user.setRole(userRole);
@@ -77,105 +81,149 @@ public class UserController {
                 new ApiResponse("User created successfully", savedUser), HttpStatus.CREATED);
     }
 
-    private void validateProfileImage(MultipartFile profileImage) {
-        if (profileImage == null || profileImage.isEmpty()) {
-            throw new ServiceException("Profile image is required.");
+    @PutMapping("/{userId}")
+    public ResponseEntity<User> updateUser(
+            @PathVariable Long userId,
+            @RequestParam("username") String username,
+            @RequestParam("role") String role,
+            @RequestParam(value = "password", required = false) String password,
+            @RequestParam(value = "studentProfile", required = false) MultipartFile studentProfile) {
+    
+        System.out.println("Updating User ID: " + userId);
+    
+        if (username == null || username.trim().isEmpty()) {
+            throw UserException.badRequest("Username is required and cannot be empty.");
         }
-
-        long fileSizeInBytes = profileImage.getSize();
-        long maxSizeInBytes = 1000 * 1024 * 1024; // 100 MB
-        if (fileSizeInBytes > maxSizeInBytes) {
-            throw new ServiceException("Profile image must not exceed 100MB.");
+    
+        UserRole userRole;
+        try {
+            userRole = UserRole.valueOf(role.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw UserException.badRequest("Invalid role. Please provide a valid role (e.g., USER, ADMIN).");
         }
-
-        String fileName = profileImage.getOriginalFilename();
-        if (fileName != null) {
-            String extension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
-            List<String> allowedExtensions = Arrays.asList("jpeg", "png", "jpg", "svg", "tiff");
-
-            if (!allowedExtensions.contains(extension)) {
-                throw new ServiceException("Invalid profile image. Allowed extensions: jpeg, png, jpg, svg, tiff.");
+    
+        User existingUser = userService.getUserById(userId);
+        if (existingUser == null) {
+            throw UserException.notFound("User with ID " + userId + " not found.");
+        }
+    
+        existingUser.setUsername(username);
+        existingUser.setRole(userRole);
+    
+        if (password != null && !password.isEmpty()) {
+            existingUser.setPassword(password);
+        }
+    
+        if (studentProfile != null && !studentProfile.isEmpty()) {
+            try {
+                validateProfileImage(studentProfile);
+                String savedFileName = saveUpdatedProfileImage(studentProfile, existingUser.getStudentProfile());
+                existingUser.setStudentProfile(savedFileName); // Update the profile image
+            } catch (ServiceException e) {
+                throw UserException.badRequest(e.getMessage());
             }
-        } else {
-            throw new ServiceException("Invalid file name.");
         }
+    
+        User updatedUser = userService.updateUser(userId, existingUser);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
-    private String saveProfileImage(MultipartFile profileImage) {
+    private String saveInitialProfileImage(MultipartFile profileImage) {
         // Ensure the uploads directory exists
         File uploadsDir = new File(UPLOAD_DIR);
         if (!uploadsDir.exists()) {
             uploadsDir.mkdirs();
         }
 
-        // Get the file name and create a path for the uploaded file
-        String fileName = profileImage.getOriginalFilename();
-        Path targetPath = Path.of(UPLOAD_DIR, fileName);
+        // Generate a unique file name to prevent overwriting
+        String originalFileName = profileImage.getOriginalFilename();
+        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+        String uniqueFileName = "initial_" + UUID.randomUUID().toString() + fileExtension;
+        Path targetPath = Path.of(UPLOAD_DIR, uniqueFileName);
 
         try {
             // Copy the file to the target path
             Files.copy(profileImage.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new ServiceException("Failed to save profile image.");
+            throw new ServiceException("Failed to save initial profile image.");
         }
 
-        return fileName; // Return the file name to store in the database
-    }
-    // Get all users
-    @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        return uniqueFileName;
     }
 
-    // Get user by ID
-   @PutMapping("/{userId}")
-public ResponseEntity<User> updateUser(
-        @PathVariable Long userId,
-        @RequestParam("username") String username,
-        @RequestParam("role") UserRole role,
-        @RequestParam(value = "password", required = false) String password,
-        @RequestParam(value = "studentProfile", required = false) MultipartFile profile) {
-
-    // Create an updated user object
-    User updatedUser = new User();
-    updatedUser.setUsername(username);
-    updatedUser.setRole(role);
-
-    // Optionally update the password
-    if (password != null && !password.isEmpty()) {
-        updatedUser.setPassword(password);
-    }
-
-    // If a profile image is provided, validate its extension
-    if (profile != null && !profile.isEmpty()) {
-        String fileExtension = getFileExtension(profile.getOriginalFilename());
-        if (!isValidImageExtension(fileExtension)) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);  // Return 400 if the file extension is not valid
+    private String saveUpdatedProfileImage(MultipartFile profileImage, String existingFileName) {
+        // Ensure the updated uploads directory exists
+        File updatedUploadsDir = new File(UPLOADED_UPDATED_DIR);
+        if (!updatedUploadsDir.exists()) {
+            updatedUploadsDir.mkdirs();
         }
-        
-        // Handle the file saving logic here if valid
-        // For example: String profilePath = fileStorageService.storeFile(profile);
-        // updatedUser.setProfilePath(profilePath);
+
+        // Generate a unique file name to prevent overwriting
+        String originalFileName = profileImage.getOriginalFilename();
+        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+        String uniqueFileName = "updated_" + UUID.randomUUID().toString() + fileExtension;
+        Path targetPath = Path.of(UPLOADED_UPDATED_DIR, uniqueFileName);
+
+        try {
+            // Copy the file to the target path
+            Files.copy(profileImage.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+
+            // Delete the existing file if it exists
+            if (existingFileName != null && !existingFileName.isEmpty()) {
+                // Check in both original and updated uploads directories
+                Path existingFilePathOriginal = Path.of(UPLOAD_DIR, existingFileName);
+                Path existingFilePathUpdated = Path.of(UPLOADED_UPDATED_DIR, existingFileName);
+                
+                Files.deleteIfExists(existingFilePathOriginal);
+                Files.deleteIfExists(existingFilePathUpdated);
+            }
+        } catch (IOException e) {
+            throw new ServiceException("Failed to save or delete profile image.");
+        }
+
+        return uniqueFileName;
     }
 
-    // Update the user
-    User user = userService.updateUser(userId, updatedUser);
-    return new ResponseEntity<>(user, HttpStatus.OK);
-}
-
-// Helper method to get the file extension
-private String getFileExtension(String filename) {
-    int lastIndexOfDot = filename.lastIndexOf('.');
-    return (lastIndexOfDot == -1) ? "" : filename.substring(lastIndexOfDot + 1).toLowerCase();
-}
-
-// Helper method to check if the file extension is valid
-private boolean isValidImageExtension(String extension) {
-    return List.of("jpeg", "png", "jpg", "svg", "tiff").contains(extension);
-}
-
+    private void validateProfileImage(MultipartFile profileImage) {
+        // Ensure the file is not empty
+        if (profileImage.isEmpty()) {
+            throw new ServiceException("Profile image cannot be empty.");
+        }
     
+        // Validate file size (e.g., limit to 2 MB)
+        long maxFileSize = 2 * 1024 * 1024; // 2 MB in bytes
+        if (profileImage.getSize() > maxFileSize) {
+            throw new ServiceException("Profile image size exceeds the limit of 2 MB.");
+        }
+    
+        // Validate file type (e.g., only accept JPEG and PNG)
+        String contentType = profileImage.getContentType();
+        if (!"image/jpeg".equalsIgnoreCase(contentType) && !"image/png".equalsIgnoreCase(contentType)) {
+            throw new ServiceException("Only JPEG and PNG image formats are supported.");
+        }
+    
+        // Validate file name to prevent invalid or malicious input
+        String fileName = profileImage.getOriginalFilename();
+        if (fileName == null || fileName.trim().isEmpty()) {
+            throw new ServiceException("Profile image file name is invalid.");
+        }
+    
+        // Optionally, restrict the file extension
+        String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+        if (!fileExtension.equals("jpg") && !fileExtension.equals("jpeg") && !fileExtension.equals("png")) {
+            throw new ServiceException("Only .jpg, .jpeg, and .png file extensions are allowed.");
+        }
+    }
+    
+
+
+       // Get all users
+       @GetMapping
+       public ResponseEntity<List<User>> getAllUsers() {
+           List<User> users = userService.getAllUsers();
+           return new ResponseEntity<>(users, HttpStatus.OK);
+       }
+   
     // Delete user
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId) {

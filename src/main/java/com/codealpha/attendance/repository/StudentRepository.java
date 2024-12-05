@@ -18,7 +18,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     
     Optional<Student> findByProgramProgramIdAndUserUserId(Long programId, Long userId);
     
-    @SuppressWarnings("null")
     Optional<Student> findById(Long studentId);
     
     @Query("SELECT SUM(s.program.programId) FROM Student s")

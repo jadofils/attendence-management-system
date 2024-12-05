@@ -10,7 +10,7 @@ interface User {
   username: string;
   role: string;
   studentProfile: string;
-  Date: string;
+ // Date: string;
 }
 
 const Users: React.FC = () => {
@@ -78,7 +78,7 @@ const Users: React.FC = () => {
               </p>
             </div>
             <div className="bg-primary shadow-md p-4 rounded">
-              <h2 className="text-lg font-semibold">Other Roles</h2>
+              <h2 className="text-lg font-semibold">Other roles</h2>
               <p className="text-2xl">
                 {
                   users.filter(
@@ -118,14 +118,14 @@ const Users: React.FC = () => {
                     Username
                   </th>
                   <th className="sticky top-0 px-5 py-3 border-b-2 border-gray-200 text-sm font-semibold bg-primary z-10">
-                    Role
+                    role
                   </th>
                   <th className="sticky top-0 px-5 py-3 border-b-2 border-gray-200 text-sm font-semibold bg-primary z-10">
                     studentProfile Image
                   </th>
-                  <th className="sticky top-0 px-5 py-3 border-b-2 border-gray-200 text-sm font-semibold bg-primary z-10">
+                  {/* <th className="sticky top-0 px-5 py-3 border-b-2 border-gray-200 text-sm font-semibold bg-primary z-10">
                     Created At
-                  </th>
+                  </th> */}
                   <th className="sticky top-0 px-5 py-3 border-b-2 border-gray-200 text-sm font-semibold bg-primary z-10">
                     Actions
                   </th>
@@ -145,14 +145,14 @@ const Users: React.FC = () => {
                     </td>
                     <td className="px-5 py-3 border-b border-gray-200 text-sm">
                       <img
-                        src={`http://localhost:8080/api/users/uploads/${user.studentProfile}`} // Adjust the base URL according to your backend
+                        src={`http://localhost:8080/uploads/${user.studentProfile}`} // Adjust the base URL according to your backend
                         alt={`${user.username}'s student profile`}
                         className="w-10 h-10 rounded-full border border-gray-300 shadow-md"
                       />
                     </td>
-                    <td className="px-5 py-3 border-b border-gray-200 text-sm">
-                      {new Date(user.Date).toLocaleDateString()}
-                    </td>
+                    {/* <td className="px-5 py-3 border-b border-gray-200 text-sm">
+                      {user.Date}
+                    </td> */}
                     <td className="px-5 py-3 border-b border-gray-200 text-sm">
                       <button
                         className="bg-button text-white py-1 px-3 rounded mr-2"

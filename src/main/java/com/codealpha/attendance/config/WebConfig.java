@@ -1,5 +1,6 @@
 package com.codealpha.attendance.config;
 
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -8,8 +9,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Replace '/path/to/your/uploads/directory/' with the actual path to your uploads directory
+        // Map the "uploads" folder for initial sign-up profiles
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:ile:./uploads/\"");
+                .addResourceLocations("file:src/main/java/com/codealpha/attendance/config/uploads/");
+        
+        // Map the "updatedUploads" folder for profile updates
+        registry.addResourceHandler("/updatedUploads/**")
+                .addResourceLocations("file:src/main/java/com/codealpha/attendance/config/updatedUploads/");
     }
 }

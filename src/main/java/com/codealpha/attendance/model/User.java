@@ -1,5 +1,10 @@
 package com.codealpha.attendance.model;
 
+
+import java.sql.Date;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
@@ -31,4 +36,5 @@ public class User {
         message = "Profile image must be a valid file type (jpeg, png, jpg, svg, tiff)"
     )
     private String studentProfile;
+
 }
