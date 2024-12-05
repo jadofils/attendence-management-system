@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { FaUser, FaLock } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import loginUser, { User } from '../service/loginService';
+import loginUser, { User } from '../service/users/loginService';
 
 // Define interface for login form inputs
 interface LoginFormInputs {

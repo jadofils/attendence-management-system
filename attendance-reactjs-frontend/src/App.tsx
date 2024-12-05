@@ -8,7 +8,8 @@ import Signup from "./FormData.components/Signup";
 import Login from "./FormData.components/Login";
 import ForgotPassword from "./FormData.components/ForgotPassword";
 import Dashboard from "./dashboard/Dashboard";
-import Users from "./dashboard/Users";
+import Users from "./dashboard/users/Users";
+import Students from "./dashboard/students/Students";
 
 const App: React.FC = () => {
   return (
@@ -17,7 +18,8 @@ const App: React.FC = () => {
         {/* Main Layout with Navbar and Footer */}
         <Routes>
           {/* For /dashboard, do not show Navbar or Footer */}
-          <Route path="/users" element={<Users />} />
+          <Route path="/dashbaord/users" element={<Users />} />
+          <Route path="/dashbaord/students" element={<Students />} />
           <Route path="/dashboard/*" element={<DashboardWithoutNavbarFooter />} />
 
           {/* Layout with Navbar and Footer for other routes */}

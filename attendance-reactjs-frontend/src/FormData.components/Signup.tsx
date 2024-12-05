@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { FaUser, FaLock, FaUpload, FaUsers } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
-import { createUser, updateUser } from "../service/userService";
+import { createUser, updateUser } from "../service/users/userService";
 import axios from "axios";
 
 interface SignupFormInputs {

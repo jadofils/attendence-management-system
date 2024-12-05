@@ -45,7 +45,7 @@ public class StudentController {
 
         } catch (IllegalArgumentException ex) {
             return new ResponseEntity<>(new ErrorResponse("Validation error", ex.getMessage()), HttpStatus.BAD_REQUEST);
-
+         
         } catch (Exception ex) {
             return new ResponseEntity<>(new ErrorResponse("Unexpected error", ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }

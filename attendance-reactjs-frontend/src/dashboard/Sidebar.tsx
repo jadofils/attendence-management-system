@@ -66,7 +66,7 @@ const Sidebar: React.FC = () => {
           <ul className="mt-4 space-y-4 text-base">
             <li>
               <Link 
-                to="/users" 
+                to="/dashbaord/users" 
                 className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer"
               >
                 <FaUser className="text-blue-600" />
@@ -84,7 +84,7 @@ const Sidebar: React.FC = () => {
             </li>
             <li>
               <Link 
-                to="/students" 
+                to="/dashbaord/students" 
                 className="flex items-center space-x-3 hover:bg-gray-700 hover:text-white p-2 rounded cursor-pointer"
               >
                 <FaUsers className="text-blue-600" />

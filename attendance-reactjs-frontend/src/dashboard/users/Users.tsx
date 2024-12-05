@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Sidebar from "./Sidebar";
-import DashboardNavbar from "./DashboardNavBar";
-import { fetchUsers } from "./dashboardServices/usersService";
-import deleteUser from "../service/userService";
+import Sidebar from "../Sidebar";
+import DashboardNavbar from "../DashboardNavBar";
+import { fetchUsers } from "../dashboardServices/usersService";
+import deleteUser from "../../service/users/userService";
 import UserDetailsModal from "./user-details";
 import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
 
