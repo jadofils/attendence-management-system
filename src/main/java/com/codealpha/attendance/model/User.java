@@ -1,9 +1,7 @@
 package com.codealpha.attendance.model;
 
 
-import java.sql.Date;
 
-import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;

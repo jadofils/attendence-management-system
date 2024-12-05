@@ -97,3 +97,17 @@ const deleteUser = async (id: string) => {
 };
 
 export default deleteUser;
+
+
+export const searchUsers = async (name: string) => {
+  try {
+    const response = await axios.get(`${REST_API_BASE_URL}/search`, {
+      params: { name },
+    });
+    return response.data; // Assume response.data is an array of users
+  } catch (error) {
+    console.error('Error searching users:', error);
+    throw error;
+  }
+};
+

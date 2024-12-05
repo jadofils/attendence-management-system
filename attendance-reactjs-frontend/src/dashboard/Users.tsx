@@ -1,17 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; // Import Link
-import Sidebar from "./Sidebar"; // Adjust import path
+import { Link } from "react-router-dom";
+import Sidebar from "./Sidebar";
 import DashboardNavbar from "./DashboardNavBar";
-import { fetchUsers } from "./dashboardServices/usersService"; // Import fetchUsers from userService
+import { fetchUsers } from "./dashboardServices/usersService";
 import deleteUser from "../service/userService";
+import UserDetailsModal from "./user-details";
+import { FiEdit, FiEye, FiTrash2 } from "react-icons/fi";
 
 interface User {
   userId: number;
   username: string;
   role: string;
   studentProfile: string;
- // Date: string;
 }
 
 const Users: React.FC = () => {
@@ -20,6 +21,7 @@ const Users: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -44,14 +46,18 @@ const Users: React.FC = () => {
     );
     setFilteredUsers(filtered);
   }, [searchTerm, users]);
-  
+
   const handleDelete = async (userId: number) => {
-    const confirmed = window.confirm("Are you sure you want to delete this user?");
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this user?"
+    );
     if (confirmed) {
       try {
-        await deleteUser(userId.toString()); // Call deleteUser service
-        setUsers(users.filter((user) => user.userId !== userId)); // Remove deleted user from state
-        setFilteredUsers(filteredUsers.filter((user) => user.userId !== userId)); // Update filtered users
+        await deleteUser(userId.toString());
+        setUsers(users.filter((user) => user.userId !== userId));
+        setFilteredUsers(
+          filteredUsers.filter((user) => user.userId !== userId)
+        );
         alert("User deleted successfully");
       } catch (error) {
         console.error("Failed to delete user:", error);
@@ -60,7 +66,16 @@ const Users: React.FC = () => {
     }
   };
 
+  const handleViewUser = (user: User) => {
+    setSelectedUser(user);
+  };
+  const closeUserModal = () => {
+    setSelectedUser(null);
+  };
 
+
+
+  
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -72,6 +87,11 @@ const Users: React.FC = () => {
 
   return (
     <div>
+      {/* User Details Modal */}
+      {selectedUser && (
+        <UserDetailsModal user={selectedUser} onClose={closeUserModal} />
+      )}
+
       <Sidebar />
       <DashboardNavbar />
 
@@ -80,23 +100,23 @@ const Users: React.FC = () => {
         <div className="max-w-[95%] mx-auto mr-52">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-4">
             <div className="bg-primary shadow-md p-4 rounded">
-              <h2 className="text-lg font-semibold">Total Users</h2>
+              <h2 className="text-lg font-semibold text-blue-600">Total Users</h2>
               <p className="text-2xl">{users.length}</p>
             </div>
             <div className="bg-primary shadow-md p-4 rounded">
-              <h2 className="text-lg font-semibold">Active Users</h2>
+              <h2 className="text-lg font-semibold text-blue-600">Active Users</h2>
               <p className="text-2xl">
                 {users.filter((user) => user.role === "active").length}
               </p>
             </div>
             <div className="bg-primary shadow-md p-4 rounded">
-              <h2 className="text-lg font-semibold">Admins</h2>
+              <h2 className="text-lg font-semibold text-blue-600">Admins</h2>
               <p className="text-2xl">
                 {users.filter((user) => user.role === "admin").length}
               </p>
             </div>
             <div className="bg-primary shadow-md p-4 rounded">
-              <h2 className="text-lg font-semibold">Other roles</h2>
+              <h2 className="text-lg font-semibold text-blue-600">Other roles</h2>
               <p className="text-2xl">
                 {
                   users.filter(
@@ -129,22 +149,19 @@ const Users: React.FC = () => {
             <table className="min-w-[95%] leading-normal bg-secondary">
               <thead>
                 <tr className="bg-primary text-left">
-                  <th className="sticky top-0 px-5 py-3 border-b-2 border-gray-200 text-sm font-semibold bg-primary z-10">
+                  <th className="sticky top-0 px-5 py-3 border-b-2 border-gray-200 text-sm font-semibold text-blue-600 bg-primary z-10">
                     ID
                   </th>
-                  <th className="sticky top-0 px-5 py-3 border-b-2 border-gray-200 text-sm font-semibold bg-primary z-10">
+                  <th className="sticky top-0 px-5 py-3 border-b-2 border-gray-200 text-sm font-semibold text-blue-600 bg-primary z-10">
                     Username
                   </th>
-                  <th className="sticky top-0 px-5 py-3 border-b-2 border-gray-200 text-sm font-semibold bg-primary z-10">
-                    role
+                  <th className="sticky top-0 px-5 py-3 border-b-2 border-gray-200 text-sm font-semibold text-blue-600 bg-primary z-10">
+                    Role
                   </th>
-                  <th className="sticky top-0 px-5 py-3 border-b-2 border-gray-200 text-sm font-semibold bg-primary z-10">
-                    studentProfile Image
+                  <th className="sticky top-0 px-5 py-3 border-b-2 border-gray-200 text-sm font-semibold text-blue-600 bg-primary z-10">
+                    Student Profile Image
                   </th>
-                  {/* <th className="sticky top-0 px-5 py-3 border-b-2 border-gray-200 text-sm font-semibold bg-primary z-10">
-                    Created At
-                  </th> */}
-                  <th className="sticky top-0 px-5 py-3 border-b-2 border-gray-200 text-sm font-semibold bg-primary z-10">
+                  <th className="sticky top-0 px-5 py-3 border-b-2 border-gray-200 text-sm font-semibold text-blue-600 bg-primary z-10">
                     Actions
                   </th>
                 </tr>
@@ -163,37 +180,26 @@ const Users: React.FC = () => {
                     </td>
                     <td className="px-5 py-3 border-b border-gray-200 text-sm">
                       <img
-                        src={`http://localhost:8080/uploads/${user.studentProfile}`} // Adjust the base URL according to your backend
+                        src={`http://localhost:8080/uploads/${user.studentProfile}`}
                         alt={`${user.username}'s student profile`}
                         className="w-10 h-10 rounded-full border border-gray-300 shadow-md"
                       />
                     </td>
-                    {/* <td className="px-5 py-3 border-b border-gray-200 text-sm">
-                      {user.Date}
-                    </td> */}
-                    <td className="px-5 py-3 border-b border-gray-200 text-sm">
-                      <button
-                        className="bg-button text-white py-1 px-3 rounded mr-2"
-                        onClick={() =>
-                          alert(
-                            `View user: ${user.username} and ${user.userId}`
-                          )
-                        }
-                      >
-                        View
-                      </button>
+                    <td className="px-5 py-3 border-b border-gray-200 text-sm flex items-center">
+                      <FiEye
+                        className="text-blue-500 hover:text-blue-700 cursor-pointer mr-4"
+                        onClick={() => handleViewUser(user)}
+                      />
                       <Link
                         to={`/signup?userId=${user.userId}&username=${user.username}`}
-                        className="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded shadow-md transition duration-300"
+                        className="text-green-500 hover:text-green-700 cursor-pointer mr-4"
                       >
-                        Update
+                        <FiEdit />
                       </Link>
-                      <button
-                        className="bg-red-500 text-white py-1 px-3 rounded ml-2"
+                      <FiTrash2
+                        className="text-red-500 hover:text-red-700 cursor-pointer"
                         onClick={() => handleDelete(user.userId)}
-                      >
-                        Delete
-                      </button>
+                      />
                     </td>
                   </tr>
                 ))}
