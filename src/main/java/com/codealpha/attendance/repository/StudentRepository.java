@@ -40,6 +40,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     // Modified to handle numeric userId search
     @Query("SELECT s FROM Student s WHERE CAST(s.user.userId AS string) LIKE CONCAT('%', :userId, '%')")
     List<Student> findByUserIdContaining(@Param("userId") String userId);
-    @Query("SELECT s FROM Student s JOIN FETCH s.program JOIN FETCH s.user")
-    List<Student> findAllWithAssociations();
+
+
+
+    List<Student> findAll();
 }

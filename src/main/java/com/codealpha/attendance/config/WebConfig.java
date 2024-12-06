@@ -11,10 +11,10 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Map the "uploads" folder for initial sign-up profiles
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:src/main/java/com/codealpha/attendance/config/uploads/");
+                .addResourceLocations("file:src/main/java/com/codealpha/attendance/uploads/");
         
         // Map the "updatedUploads" folder for profile updates
         registry.addResourceHandler("/updatedUploads/**")
-                .addResourceLocations("file:src/main/java/com/codealpha/attendance/config/updatedUploads/");
+                .addResourceLocations("file:src/main/java/com/codealpha/attendance/updatedUploads/");
     }
 }

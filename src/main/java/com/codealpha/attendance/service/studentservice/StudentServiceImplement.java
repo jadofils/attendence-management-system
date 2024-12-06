@@ -3,6 +3,7 @@ package com.codealpha.attendance.service.studentservice;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.codealpha.attendance.model.Program;
@@ -49,12 +50,9 @@ public class StudentServiceImplement implements StudentService {
         return programRepository.save(program);
     }
 
-    // Method to fetch all students from the database
-    @Override
     public List<Student> findAll() {
-        return studentRepository.findAllWithAssociations();
+        return studentRepository.findAll(); // Ensure this method is fetching all rows
     }
-
     
   public Optional<Student> findByProgramAndUser(Long programId, Long userId) {
     return studentRepository.findByProgramProgramIdAndUserUserId(programId, userId);
@@ -143,6 +141,7 @@ public Student findByStudentProgramAndUser(Long studentId, Long programId, Long 
         return studentRepository.findById(studentid)
                 .orElseThrow(() -> new RuntimeException("Student not found with id " + studentid));
     }
+
     
 
 }

@@ -30,10 +30,10 @@ public class UserController {
     private UserService userService;
 
     // Directory for initial sign-up profile images
-    private String UPLOAD_DIR = "src/main/java/com/codealpha/attendance/config/uploads/";
+    private String UPLOAD_DIR = "src/main/java/com/codealpha/attendance/uploads/";
 
     // Directory for updated profile images
-    private String UPLOADED_UPDATED_DIR = "src/main/java/com/codealpha/attendance/config/updatedUploads/";
+    private String UPLOADED_UPDATED_DIR = "src/main/java/com/codealpha/attendance/updatedUploads/";
 
     @PostMapping
     public ResponseEntity<?> createUser(

@@ -1,6 +1,9 @@
 package com.codealpha.attendance.model;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,5 +36,6 @@ public class Course {
     private List<SchoolClass> classes;
 
     @ManyToMany(mappedBy = "courses")
+        @JsonBackReference
     private List<Student> students;
 }
