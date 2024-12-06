@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    public void addResourceHandlers(@SuppressWarnings("null") ResourceHandlerRegistry registry) {
         // Map the "uploads" folder for initial sign-up profiles
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:src/main/java/com/codealpha/attendance/uploads/");

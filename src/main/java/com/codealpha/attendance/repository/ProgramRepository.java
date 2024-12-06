@@ -13,6 +13,7 @@ import com.codealpha.attendance.model.Program;
 @Repository
 public interface ProgramRepository extends JpaRepository<Program, Long> {
     Optional<Program> findByProgramName(String programName);
+    @SuppressWarnings("null")
     Optional<Program> findById(Long id);
     long count();
 

@@ -137,6 +137,7 @@ public class UserController {
 
         // Generate a unique file name to prevent overwriting
         String originalFileName = profileImage.getOriginalFilename();
+        @SuppressWarnings("null")
         String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
         String uniqueFileName = "initial_" + UUID.randomUUID().toString() + fileExtension;
         Path targetPath = Path.of(UPLOAD_DIR, uniqueFileName);
@@ -160,6 +161,7 @@ public class UserController {
 
         // Generate a unique file name to prevent overwriting
         String originalFileName = profileImage.getOriginalFilename();
+        @SuppressWarnings("null")
         String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
         String uniqueFileName = "updated_" + UUID.randomUUID().toString() + fileExtension;
         Path targetPath = Path.of(UPLOADED_UPDATED_DIR, uniqueFileName);
