@@ -2,102 +2,95 @@ package com.codealpha.attendance.service.programservice;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.codealpha.attendance.dto.ProgramDTO;
+import com.codealpha.attendance.model.Course;
 import com.codealpha.attendance.model.Program;
 import com.codealpha.attendance.repository.ProgramRepository;
 
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ProgramServiceImpl implements ProgramService {
 
     private final ProgramRepository programRepository;
 
     @Override
-    public Program saveProgram(Program program) {
-        // Save the program and return the saved entity
-        return programRepository.save(program);
-    }
+    public ProgramDTO saveProgram(ProgramDTO programDTO) {
+        // Convert DTO to Entity
+        Program program = new Program();
+        program.setProgramName(programDTO.getProgramName());
+        program.setProgramDescription(programDTO.getProgramDescription());
 
-
-    @Transactional
-    @Override
-    public List<Program> getAllPrograms() {
-        return programRepository.findAll();
-    }
-    
-
-    @Override
-    public Program updateProgram(Long programId, Program updatedProgram) {
-        // Check if the program exists in the repository
-        Optional<Program> existingProgram = programRepository.findById(programId);
-        if (existingProgram.isPresent()) {
-            Program program = existingProgram.get();
-            // Update program fields as necessary
-            program.setProgramName(updatedProgram.getProgramName());
-            program.setProgramDescription(updatedProgram.getProgramDescription());
-            // Save and return the updated program
-            return programRepository.save(program);
-        } else {
-            throw new RuntimeException("Program not found with ID: " + programId);
-        }
+        // Save entity and return DTO
+        Program savedProgram = programRepository.save(program);
+        return convertToDTO(savedProgram);
     }
 
     @Override
-    public Optional<Program> findProgramById(Long id) {
-        // Validate input ID
-        if (id == null) {
-            throw new IllegalArgumentException("Program ID must not be null");
-        }
-    
-        // Attempt to find the program by ID
-        Optional<Program> program = programRepository.findById(id);
-        
-        // If no program is found, you could return Optional.empty() or handle it here
-        if (program.isEmpty()) {
-            throw new RuntimeException("Program not found with ID: " + id);
-        }
-    
-        return program;
+    public List<ProgramDTO> getAllPrograms() {
+        return programRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
-    
+
+    @Override
+    public ProgramDTO findProgramById(Long id) {
+        Program program = programRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Program not found with ID: " + id));
+        return convertToDTO(program);
+    }
+
+    @Override
+    public ProgramDTO updateProgram(Long programId, ProgramDTO updatedProgramDTO) {
+        Program program = programRepository.findById(programId)
+                .orElseThrow(() -> new RuntimeException("Program not found with ID: " + programId));
+
+        program.setProgramName(updatedProgramDTO.getProgramName());
+        program.setProgramDescription(updatedProgramDTO.getProgramDescription());
+
+        return convertToDTO(programRepository.save(program));
+    }
 
     @Override
     public void deleteProgram(Long id) {
-        // Check if the program exists before deleting
-        Optional<Program> program = programRepository.findById(id);
-        if (program.isPresent()) {
-            programRepository.deleteById(id);
-        } else {
-            throw new IllegalArgumentException("Program not found with ID: " + id);
+        if (!programRepository.existsById(id)) {
+            throw new RuntimeException("Program not found with ID: " + id);
         }
+        programRepository.deleteById(id);
     }
 
     @Override
     public long countPrograms() {
-        // Count the total number of programs and return
         return programRepository.count();
     }
 
-    @Override
-    public List<Program> searchPrograms(String searchTerm) {
-        try {
-            // Try to parse the searchTerm as an ID (Long)
-            Long programId = Long.parseLong(searchTerm);
-            return programRepository.findByProgramNameContainingIgnoreCaseOrProgramId(searchTerm, programId);
-        } catch (NumberFormatException e) {
-            // If it's not a number, search by program name
-            return programRepository.findByProgramNameContainingIgnoreCase(searchTerm);
-        }
+   private ProgramDTO convertToDTO(Program program) {
+    ProgramDTO dto = new ProgramDTO();
+    dto.setProgramId(program.getProgramId());
+    dto.setProgramName(program.getProgramName());
+    dto.setProgramDescription(program.getProgramDescription());
+
+    // Set course names
+    if (program.getCourses() != null) {
+        dto.setCourseNames(program.getCourses().stream()
+                .map(Course::getCourseName) // Ensure Course has this method
+                .collect(Collectors.toList()));
     }
 
-    @Override
-    public Program getProgramWithCourses(Long programId) {
-        return programRepository.findProgramWithCourses(programId);
+    // Set student full names (firstName + lastName)
+    if (program.getStudents() != null) {
+        dto.setStudentNames(program.getStudents().stream()
+                .map(student -> student.getFirstName() + " " + student.getLastName()) // Combine names
+                .collect(Collectors.toList()));
     }
-    
+
+    return dto;
+}
+
 }
