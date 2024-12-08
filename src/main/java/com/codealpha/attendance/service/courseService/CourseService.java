@@ -1,15 +1,19 @@
 package com.codealpha.attendance.service.courseService;
 
-import com.codealpha.attendance.model.Course;
+
+import com.codealpha.attendance.dto.CourseDTO;
 
 import java.util.List;
 
 public interface CourseService {
-    Course createCourse(Course course, Long programId);
-    Course updateCourse(Long courseId, Course updatedCourse);
+
+    CourseDTO createCourse(CourseDTO courseDTO);
+
+    CourseDTO updateCourse(Long courseId, CourseDTO courseDTO);
+
+    CourseDTO getCourseById(Long courseId);
+
+    List<CourseDTO> getAllCourses();
+
     void deleteCourse(Long courseId);
-    Course getCourseById(Long courseId);
-    Course getCourseByName(String courseName);
-    Long countCourses();
-    List<Course> getAllCourses();
 }

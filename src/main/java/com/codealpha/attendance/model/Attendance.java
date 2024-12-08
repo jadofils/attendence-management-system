@@ -2,6 +2,8 @@ package com.codealpha.attendance.model;
 
 import java.time.LocalDate;
 
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,6 +14,7 @@ import lombok.*;
 @Builder
 @Entity
 @Table(name = "attendance")
+@EntityListeners(AuditingEntityListener.class)
 public class Attendance {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
