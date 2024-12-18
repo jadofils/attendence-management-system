@@ -19,31 +19,32 @@ public class LoginController {
     private LoginService loginService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest, HttpSession session) {
-        String username = loginRequest.get("username");
-        String password = loginRequest.get("password");
-        String role = loginRequest.get("role");
-
+    public ResponseEntity<?> login(
+            @RequestParam("username") String username,
+            @RequestParam("password") String password,
+            @RequestParam("role") String role,
+            HttpSession session) {
+    
         try {
             // Authenticate user
             User user = loginService.authenticate(username, password, role);
-
+    
             // Store user data in session
-            session.setAttribute("user", user);  // Store user object in session
-
-            // Set session timeout to 3 hours (10800 seconds)
-            session.setMaxInactiveInterval(10800);  // 3 hours in seconds
-
-            // Return success response
+            session.setAttribute("user", user);
+            session.setMaxInactiveInterval(10800); // 3 hours timeout
+    
+            // Response
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Login successful");
-            response.put("user", user);
+            response.put("userId", user.getUserId());
+            response.put("username", user.getUsername());
+            response.put("role", user.getRole());
+    
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            // Handle error response
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
     }
-}
+}    

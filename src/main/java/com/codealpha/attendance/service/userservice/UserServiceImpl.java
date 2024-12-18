@@ -1,105 +1,102 @@
 package com.codealpha.attendance.service.userservice;
 
+import com.codealpha.attendance.dto.UserDTO;
 import com.codealpha.attendance.model.User;
 import com.codealpha.attendance.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
+
 import lombok.AllArgsConstructor;
 
-import org.hibernate.service.spi.ServiceException;
+import com.codealpha.attendance.model.UserRole;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
-   
-    @Transactional
-public User saveUser(User user) {
-    // Check if username already exists
-    if (userRepository.existsByUsername(user.getUsername())) {
-        throw new ServiceException("Username already exists");
-    }
-    return userRepository.save(user);
-}
-
-
-
 
     @Override
-    @Transactional(readOnly = true)
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public UserDTO saveUser(UserDTO userDTO) {
+        User user = dtoToEntity(userDTO);
+        User savedUser = userRepository.save(user);
+        return entityToDto(savedUser);
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public User getUserById(Long userId) {
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(this::entityToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserDTO getUserById(Long userId) {
         return userRepository.findById(userId)
-            .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+                .map(this::entityToDto)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @Override
-    @Transactional
-    public User updateUser(Long userId, User updatedUser) {
-        // Fetch existing user
-        User existingUser = getUserById(userId);
-        
-        // Update fields
-        existingUser.setUsername(updatedUser.getUsername());
-        existingUser.setPassword(updatedUser.getPassword());
-        existingUser.setRole(updatedUser.getRole());
-        existingUser.setStudentProfile(updatedUser.getStudentProfile());
-        
-        validateProfileImage(existingUser.getStudentProfile());
-        return userRepository.save(existingUser);
+    public UserDTO updateUser(Long userId, UserDTO updatedUserDTO) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setUsername(updatedUserDTO.getUsername());
+        user.setRole(updatedUserDTO.getRole());
+        user.setStudentProfile(updatedUserDTO.getStudentProfile());
+
+        if (updatedUserDTO.getPassword() != null && !updatedUserDTO.getPassword().isEmpty()) {
+            user.setPassword(updatedUserDTO.getPassword());
+        }
+
+        User updatedUser = userRepository.save(user);
+        return entityToDto(updatedUser);
     }
 
     @Override
-    @Transactional
     public void deleteUser(Long userId) {
-        // Verify user exists before deletion
-        User existingUser = getUserById(userId);
-        userRepository.delete(existingUser);
+        userRepository.deleteById(userId);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public long countUsers() {
         return userRepository.count();
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<User> searchUsersByUsername(String username) {
-        return userRepository.findByUsernameContainingIgnoreCase(username);
-    }
-
-   
-
-    private void validateProfileImage(String profileImage) {
-        if (profileImage == null || !profileImage.matches(".*\\.(jpeg|png|jpg|svg|tiff)$")) {
-            throw new IllegalArgumentException(
-                "Invalid profile image. Allowed extensions: jpeg, png, jpg, svg, tiff."
-            );
-        }
+    public List<UserDTO> searchUsersByUsername(String username) {
+        return userRepository.findByUsernameContainingIgnoreCase(username).stream()
+                .map(this::entityToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<User> searchUsersByRole(String keyword) {
-        if (keyword == null || keyword.trim().isEmpty()) {
-            throw new IllegalArgumentException("Keyword cannot be null or empty");
-        }
-        // Trim spaces to avoid issues with search query
-        keyword = keyword.trim();
-        return userRepository.searchUsersByKeyword(keyword);
+    public List<UserDTO> searchUsersByRole(String role) {
+        return userRepository.findByRole(UserRole.valueOf(role.toUpperCase())).stream()
+                .map(this::entityToDto)
+                .collect(Collectors.toList());
     }
 
-    @Override
-    public Object findById(Long userId) {
-        return userRepository.findById(userId);
+    private User dtoToEntity(UserDTO userDTO) {
+        return User.builder()
+                .userId(userDTO.getUserId())
+                .username(userDTO.getUsername())
+                .password(userDTO.getPassword())
+                .role(userDTO.getRole())
+                .studentProfile(userDTO.getStudentProfile())
+                .build();
     }
-    
+
+    private UserDTO entityToDto(User user) {
+        return UserDTO.builder()
+                .userId(user.getUserId())
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .role(user.getRole())
+                .studentProfile(user.getStudentProfile())
+                .build();
+    }
 }

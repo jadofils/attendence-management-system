@@ -1,11 +1,10 @@
 package com.codealpha.attendance.model;
 
-
-
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+
+import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
@@ -13,7 +12,9 @@ import lombok.*;
 @Builder
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements Serializable {  // Implement Serializable
+
+    private static final long serialVersionUID = 1L;  // Recommended for Serializable classes
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +27,7 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private UserRole role; 
+    private UserRole role;
 
     @Column(nullable = true)
     @Pattern(
@@ -34,5 +35,4 @@ public class User {
         message = "Profile image must be a valid file type (jpeg, png, jpg, svg, tiff)"
     )
     private String studentProfile;
-
 }

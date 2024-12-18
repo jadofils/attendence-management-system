@@ -17,28 +17,37 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public User authenticate(String username, String password, String role) {
         UserRole userRole;
-
+    
         // Convert the role string to UserRole enum
         try {
             userRole = UserRole.valueOf(role.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid role provided: " + role);
         }
-
-        // Fetch user by username and role
-        Optional<User> userOptional = userRepository.findByUsernameAndRole(username, userRole);
-
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-
-            // Match the plain password
-            if (password.equals(user.getPassword())) {
-                return user; // Authentication successful
-            } else {
-                throw new IllegalArgumentException("Invalid password");
-            }
-        } else {
-            throw new IllegalArgumentException("User not found with username and role: " + username + ", " + role);
+    
+        // Trim input username
+        String trimmedUsername = username.trim();
+    
+        // Check if the username exists
+        Optional<User> userByUsername = userRepository.findByUsername(trimmedUsername);
+        if (userByUsername.isEmpty()) {
+            throw new IllegalArgumentException("Username does not exist: " + trimmedUsername);
         }
+    
+        // Check if the role matches for the username
+        Optional<User> userOptional = userRepository.findByUsernameAndRole(trimmedUsername, userRole);
+        if (userOptional.isEmpty()) {
+            throw new IllegalArgumentException("The provided role does not match for the username: " + trimmedUsername);
+        }
+    
+        // Validate the password
+        User user = userOptional.get();
+        if (!password.equals(user.getPassword().trim())) { // Trim password comparison as well
+            throw new IllegalArgumentException("Password is incorrect for the username and role provided.");
+        }
+    
+        // Successful authentication
+        return user;
     }
+    
 }

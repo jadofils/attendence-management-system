@@ -1,15 +1,16 @@
 package com.codealpha.attendance.service.userservice;
 
-import com.codealpha.attendance.model.User;
 import java.util.List;
 
+import com.codealpha.attendance.dto.UserDTO;
+
 public interface UserService {
-    User saveUser(User user);
-    List<User> getAllUsers();
-    User getUserById(Long userId);
-    User updateUser(Long userId, User updatedUser);
+    UserDTO saveUser(UserDTO userDTO);
+    List<UserDTO> getAllUsers();
+    UserDTO getUserById(Long userId);
+    UserDTO updateUser(Long userId, UserDTO updatedUserDTO);
     void deleteUser(Long userId);
     long countUsers();
-    List<User> searchUsersByUsername(String username);
-    List<User> searchUsersByRole(String keyword);
-    Object findById(Long userId);}
+    List<UserDTO> searchUsersByUsername(String username);
+    List<UserDTO> searchUsersByRole(String role);
+}
