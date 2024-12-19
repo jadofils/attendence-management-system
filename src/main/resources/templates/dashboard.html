@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Index</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet" th:href="@{/css/contact.css}">
-    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -39,19 +38,10 @@
 </head>
 <body>
     <!-- Include Navbar -->
-    <div th:replace="~{layout/base::page_navbar}"></div>
-    <div th:replace="~{layout/base::page_about}"></div>
-    <div th:replace="~{layout/base::page_contact}"></div>
-    <div th:replace="~{layout/base::page_login}"></div>
-    <div th:replace="~{layout/base::page_register}"></div>
-
-
+    <div th:replace="~{dashboardLayout/base::page_navbar}"></div>
+    <div th:replace="~{dashboardLayout/base::page_sidebar}"></div>
     <!-- Main Content -->
-    <div class="main-content">
-        <h1>Welcome to the School Attendance System</h1>
-        <p>Managing attendance has never been easier. Explore our system to see how it can help your institution.</p>
-    </div>
-    <!-- Include Footer -->
-    <div th:replace="~{layout/base::page_footer}"></div>
+    <div th:replace="~{dashboardLayout/base::page_mainConenet}"></div>
+
 </body>
 </html>

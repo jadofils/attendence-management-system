@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - School Attendance System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar" th:fragment="page_navbar">
+        <div class="navbar-brand">
+            <img th:src="@{/images/logo.png}" alt="Logo"> <!-- Replace with your logo -->
+            <span>School Attendance System</span>
+        </div>
+        <ul>
+            <li><a href="#notifications">Notifications</a></li>
+            <li><a href="#profile">Profile</a></li>
+            <li><a href="#settings">Settings</a></li>
+            <li><a href="#logout">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" th:fragment="page_sidebar">
+            <!-- Profile Section -->
+            <div class="profile-section">
+                <img th:src="@{/images/profile.png}"alt="Profile Image" class="profile-img"> <!-- Replace with dynamic profile image -->
+                <h3>John Doe</h3>
+                <p class="email">johndoe@example.com</p>
+            </div>
+
+            <!-- Random Links -->
+            <ul class="random-links">
+                <li><a href="#link1">Link 1</a></li>
+                <li><a href="#link2">Link 2</a></li>
+                <li><a href="#link3">Link 3</a></li>
+                <li><a href="#link4">Link 4</a></li>
+                <li><a href="#link5">Link 5</a></li>
+                <li><a href="#link6">Link 6</a></li>
+                <li><a href="#link7">Link 7</a></li>
+                <li><a href="#link8">Link 8</a></li>
+            </ul>
+        </aside>
+        <!-- Main Content -->
+        <main class="main-content" th:fragment="page_mainConenet">
+            <section id="dashboard">
+                <h1>Welcome to the Dashboard</h1>
+                <p>Here you can manage attendance, view reports, and perform other tasks.</p>
+            </section>
+        </main>
+    </div>
+
+    
+</body>
+</html>

@@ -17,19 +17,4 @@ public class PageController {
     public String showDashboardPage() {
         return "dashboard"; // Returns dashboard.html
     }
-
-    @GetMapping("/register")
-    public String showRegisterPage() {
-        return "register"; // Returns register.html
-    }
-
-    @GetMapping("/login")
-    public String showLoginPage() {
-        return "login"; // Returns login.html
-    }
-
-    @GetMapping("/forget")
-    public String showForgetPage() {
-        return "forget"; // Returns forget.html
-    }
 }

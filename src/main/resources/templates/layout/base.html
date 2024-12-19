@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Attendance System</title>
+    <style>
+       
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar" th:fragment="page_navbar">
+        <div class="navbar-brand">
+            <img th:src="@{/images/logo.png}" alt="Logo"> <!-- Replace with your logo -->
+            <span>School Attendance System</span>
+        </div>
+        <ul>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#contact">Contact Us</a></li>
+            <li><a href="#login">Login</a></li>
+            <li><a href="#register">Register</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>Welcome to the School Attendance System</h1>
+        <p>Your one-stop solution for managing attendance efficiently and effectively.</p>
+    </div>
+
+    <!-- About Us Section -->
+    <section id="about" th:fragment="page_about">
+        <h2>About Us</h2>
+        <p>We provide an innovative platform for attendance management, ensuring accuracy and ease of use.</p>
+    </section>
+
+   
+
+        <section id="contact" th:fragment="page_contact">
+            <h2>Contact Us</h2>
+            <p>If you have any questions, feel free to reach out to us using the form below.</p>
+            <form th:action="@{/sendEmail}" method="post">
+                <label for="name">Your Name:</label>
+                <input type="text" id="name" name="name" placeholder="Enter your name" required>
+        
+                <label for="email">Your Email:</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+        
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" rows="5" placeholder="Write your message here" required></textarea>
+        
+                <button type="submit">Send Message</button>
+            </form>
+        </section>
+        
+    
+
+
+    <section id="login" class="login-container" th:fragment="page_login">
+        <h2>Login</h2>
+        <form>
+            <label for="role">Select Role:</label>
+            <select id="role" name="role" required>
+                <option value="" disabled selected>Choose your role</option>
+                <option value="student">Student</option>
+                <option value="teacher">Teacher</option>
+                <option value="parent">Parent</option>
+                <option value="admin">Admin</option>
+                <option value="staff">Staff</option>
+            </select>
+    
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username" required>
+    
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+    
+            <a href="#" class="forgot-password">Forgot Password?</a>
+    
+            <button type="submit">Login</button>
+            <p>Don't have an account? <a href="/signup" class="signup-link">Sign Up</a></p>
+        </form>
+    </section>
+    
+
+    <!-- Register Section -->
+    <section id="register" th:fragment="page_register">
+        <h2>Register</h2>
+        <form>
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+    
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+    
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+    
+            <label for="confirm-password">Confirm Password:</label>
+            <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
+    
+            <button type="submit">Register</button>
+        </form>
+    </section>
+    
+
+    <!-- Footer -->
+    <footer class="footer" th:fragment="page_footer">
+        <div class="footer-icons">
+            <a href="#" target="_blank">&#128076;</a>
+            <a href="#" target="_blank">&#128077;</a>
+            <a href="#" target="_blank">&#128591;</a>
+            <a href="#" target="_blank">&#128293;</a>
+        </div>
+        <p>&copy; <span id="currentYear"></span> School Attendance System. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Set the current year dynamically
+        document.getElementById("currentYear").textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

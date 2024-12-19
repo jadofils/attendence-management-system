@@ -1,0 +1,93 @@
+/* General Layout */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Dashboard Layout */
+.dashboard-layout {
+    display: flex;
+    flex: 1;
+}
+
+/* Sidebar */
+.sidebar {
+    background-color: #19378a; /* Dark blue */
+    color: white;
+    width: 200px; /* Reduced width */
+    padding: 15px; /* Slightly reduced padding */
+    position: fixed;
+    top: 12vh; /* Adjusted top margin to align with navbar */
+    bottom: 0;
+    overflow-y: auto;
+    font-size: 0.9rem; /* Reduced font size for the sidebar */
+}
+
+/* Profile Section */
+.profile-section {
+    margin-bottom: 20px;
+}
+
+.profile-section .profile-img {
+    display: block; /* Normal display for the image */
+    width: 80px; /* Smaller width */
+    height: 80px; /* Equal height to ensure circular shape */
+    margin: 0 auto 10px; /* Center-align image and add spacing below */
+    border-radius: 50%; /* Fully rounded image */
+    border: 2px solid white; /* White border for a clean look */
+    object-fit: cover; /* Ensures the image fits well without distortion */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for better contrast */
+}
+
+.profile-section .username {
+    font-size: 1rem; /* Slightly smaller username font */
+    margin: 5px 0;
+    color: #ffffff; /* White */
+    text-align: center; /* Center-align username */
+}
+
+.profile-section .email {
+    font-size: 0.8rem; /* Slightly smaller email font */
+    color: #d1d1d1; /* Light gray */
+    text-align: center;
+}
+
+/* Navigation Links */
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li {
+    margin-bottom: 10px; /* Reduced space between links */
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 0.9rem; /* Reduced font size for links */
+    display: block;
+    padding: 8px; /* Slightly reduced padding */
+    border-radius: 4px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.sidebar ul li a:hover {
+    background-color: #00d1b2; /* Light blue for hover effect */
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 220px; /* Adjusted for reduced sidebar width */
+    padding: 20px;
+    flex: 1;
+}
+
+.main-content section {
+    margin-bottom: 20px;
+}

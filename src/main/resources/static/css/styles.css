@@ -1,0 +1,209 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9; /* Light background */
+    margin: 0;
+    padding: 0;
+    color: #333; /* Dark text */
+}
+
+/* Navbar Styling */
+.navbar {
+    background-color: #19378a; /* Dark blue */
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed; /* Navbar remains fixed at the top */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* Ensures it stays above all content */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow */
+}
+
+/* Logo and Brand */
+.navbar .navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adds space between logo and text */
+}
+
+.navbar .navbar-brand img {
+    height: 50px;
+    width: auto; /* Maintains aspect ratio */
+    border-radius: 5px; /* Optional rounded corners */
+    object-fit: contain; /* Ensures the image fits well */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow */
+}
+
+/* Navigation Links */
+.navbar ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 4px; /* Rounded edges */
+    transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+}
+
+.navbar ul li a:hover {
+    color: #19378a; /* Dark blue text */
+    background-color: #00d1b2; /* Light blue background */
+}
+
+/* Section Styling */
+section {
+    padding: 50px 20px;
+    max-width: 800px;
+    margin: auto;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+section h2 {
+    font-size: 2rem;
+    color: #19378a; /* Dark blue */
+    margin-bottom: 20px;
+}
+
+/* Form Styling */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 0 auto;
+    max-width: 400px;
+}
+
+form label {
+    text-align: left;
+    font-weight: bold;
+    color: #19378a; /* Dark blue */
+}
+
+form input,
+form select,
+form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    background-color: #f9f9f9;
+}
+
+form input:focus,
+form select:focus,
+form textarea:focus {
+    outline: none;
+    border-color: #19378a; /* Highlighted border */
+    box-shadow: 0 0 5px rgba(25, 55, 138, 0.3);
+}
+
+form textarea {
+    resize: vertical;
+}
+
+/* Buttons */
+form button {
+    background-color: #19378a;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    width: 100%;
+}
+
+form button:hover {
+    background-color: #1453a3; /* Slightly lighter blue */
+}
+
+/* Forgot Password and Links */
+form .forgot-password {
+    text-align: right;
+    color: #19378a;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+form .forgot-password:hover {
+    text-decoration: underline;
+}
+
+form p {
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+form p a {
+    color: #19378a;
+    text-decoration: none;
+}
+
+form p a:hover {
+    text-decoration: underline;
+}
+
+/* Success and Error Messages */
+.success-message,
+.error-message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Footer */
+.footer {
+    background-color: #19378a; /* Dark blue */
+    color: white;
+    text-align: center;
+    padding: 15px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000; /* Ensure it stays above other content */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow effect */
+}
+
+.footer-icons a {
+    color: white;
+    margin: 0 10px;
+    font-size: 1.2rem;
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
+}
+
+.footer-icons a:hover {
+    color: #00d1b2; /* Light blue */
+}
