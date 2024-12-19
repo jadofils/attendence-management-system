@@ -6,7 +6,6 @@
     <title>Index</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/contact.css}">
-    <link rel="stylesheet" th:href="@{/css/login.css}">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -35,6 +34,7 @@
             font-size: 1.1rem;
             color: #555;
         }
+      
     </style>
 </head>
 <body>
@@ -42,7 +42,6 @@
     <div th:replace="~{layout/base::page_navbar}"></div>
     <div th:replace="~{layout/base::page_about}"></div>
     <div th:replace="~{layout/base::page_contact}"></div>
-    <div th:replace="~{layout/base::page_login}"></div>
     <div th:replace="~{layout/base::page_register}"></div>
 
 
@@ -53,5 +52,6 @@
     </div>
     <!-- Include Footer -->
     <div th:replace="~{layout/base::page_footer}"></div>
+    
 </body>
 </html>

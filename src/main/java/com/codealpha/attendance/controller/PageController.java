@@ -17,4 +17,9 @@ public class PageController {
     public String showDashboardPage() {
         return "dashboard"; // Returns dashboard.html
     }
+    
+    @GetMapping("/login")
+    public String login() {
+        return "login"; // Returns dashboard.html
+    }
 }

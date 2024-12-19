@@ -3,12 +3,8 @@ package com.codealpha.attendance.login;
 import com.codealpha.attendance.model.User;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RestController
 @RequestMapping("/api/user")
@@ -19,32 +15,39 @@ public class LoginController {
     private LoginService loginService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(
+    public String login(
             @RequestParam("username") String username,
             @RequestParam("password") String password,
             @RequestParam("role") String role,
-            HttpSession session) {
-    
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
         try {
             // Authenticate user
             User user = loginService.authenticate(username, password, role);
-    
-            // Store user data in session
+
+            // Store user data in the session
             session.setAttribute("user", user);
+            session.setAttribute("role", user.getRole());
+            session.setAttribute("username", user.getUsername());
             session.setMaxInactiveInterval(10800); // 3 hours timeout
-    
-            // Response
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "Login successful");
-            response.put("userId", user.getUserId());
-            response.put("username", user.getUsername());
-            response.put("role", user.getRole());
-    
-            return ResponseEntity.ok(response);
+
+            // Store success message in RedirectAttributes
+            redirectAttributes.addFlashAttribute("message", "Login successful. Redirecting to dashboard...");
+            return "redirect:/login"; // Redirect to the index page
+
         } catch (IllegalArgumentException e) {
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+            // Store error message in RedirectAttributes
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/login"; // Redirect back to the login page
         }
     }
-}    
+
+    @GetMapping("/clear-messages")
+    public String clearMessages(HttpSession session) {
+        // Clear session messages
+        session.removeAttribute("message");
+        session.removeAttribute("error");
+        return "login"; // Return to the login page
+    }
+}

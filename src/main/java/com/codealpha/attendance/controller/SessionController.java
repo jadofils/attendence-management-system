@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SessionController {
 
-    @GetMapping("/Y")
+    @GetMapping("/getUserSession")
     public ResponseEntity<?> getSessionUser(HttpSession session) {
         // Retrieve the user object from the session
         User sessionUser = (User) session.getAttribute("user");
