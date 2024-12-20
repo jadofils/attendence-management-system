@@ -6,6 +6,8 @@
     <title>Index</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -41,7 +43,84 @@
     <div th:replace="~{dashboardLayout/base::page_navbar}"></div>
     <div th:replace="~{dashboardLayout/base::page_sidebar}"></div>
     <!-- Main Content -->
-    <div th:replace="~{dashboardLayout/base::page_mainConenet}"></div>
+    <div th:replace="~{'dashboardLayout/base' :: page_mainContent}"></div>
+   
     
+    <script>       
+        // Attendance Graph
+        const attendanceCtx = document.getElementById('attendanceGraph').getContext('2d');
+        new Chart(attendanceCtx, {
+            type: 'bar',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May'],
+                datasets: [{
+                    label: 'Attendance',
+                    data: [80, 85, 78, 90, 95],
+                    backgroundColor: 'rgba(25, 55, 138, 0.7)',
+                }],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                },
+            },
+        });
+
+        // Performance Graph
+        const performanceCtx = document.getElementById('performanceGraph').getContext('2d');
+        new Chart(performanceCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Math', 'Science', 'History', 'Art', 'Physical Ed'],
+                datasets: [{
+                    label: 'Performance',
+                    data: [75, 88, 80, 70, 95],
+                    backgroundColor: 'rgba(0, 209, 178, 0.7)',
+                }],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                },
+            },
+        });
+
+        // Reports Graph
+        const reportsCtx = document.getElementById('reportsGraph').getContext('2d');
+        new Chart(reportsCtx, {
+            type: 'bar',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                datasets: [{
+                    label: 'Reports',
+                    data: [45, 60, 50, 70, 90, 85, 65, 75, 80, 95, 110, 120],
+                    backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                    },
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            },
+        });
+
+        
+    </script>
 </body>
 </html>

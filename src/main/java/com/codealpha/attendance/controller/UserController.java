@@ -70,6 +70,13 @@ public class UserController {
     
         return new ResponseEntity<>(new ApiResponse("User created successfully", savedUser), HttpStatus.CREATED);
     }
+
+    // Fetch user details by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
+        UserDTO user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
+    }
     
     @PutMapping("/{userId}")
     public ResponseEntity<UserDTO> updateUser(

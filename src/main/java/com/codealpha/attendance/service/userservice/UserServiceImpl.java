@@ -39,6 +39,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
+   
+
     @Override
     public UserDTO updateUser(Long userId, UserDTO updatedUserDTO) {
         User user = userRepository.findById(userId)

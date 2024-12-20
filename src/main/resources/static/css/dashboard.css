@@ -12,19 +12,20 @@ body {
 .dashboard-layout {
     display: flex;
     flex: 1;
+    flex-wrap: wrap; /* Allows wrapping for smaller screens */
 }
 
 /* Sidebar */
 .sidebar {
-    background-color: #19378a; /* Dark blue */
+    background-color: #19378a;
     color: white;
-    width: 200px; /* Reduced width */
-    padding: 15px; /* Slightly reduced padding */
+    width: 200px;
+    padding: 15px;
     position: fixed;
-    top: 12vh; /* Adjusted top margin to align with navbar */
+    top: 12vh;
     bottom: 0;
     overflow-y: auto;
-    font-size: 0.9rem; /* Reduced font size for the sidebar */
+    font-size: 0.9rem;
 }
 
 /* Profile Section */
@@ -33,26 +34,26 @@ body {
 }
 
 .profile-section .profile-img {
-    display: block; /* Normal display for the image */
-    width: 80px; /* Smaller width */
-    height: 80px; /* Equal height to ensure circular shape */
-    margin: 0 auto 10px; /* Center-align image and add spacing below */
-    border-radius: 50%; /* Fully rounded image */
-    border: 2px solid white; /* White border for a clean look */
-    object-fit: cover; /* Ensures the image fits well without distortion */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for better contrast */
+    display: block;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 10px;
+    border-radius: 50%;
+    border: 2px solid white;
+    object-fit: cover;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .profile-section .username {
-    font-size: 1rem; /* Slightly smaller username font */
+    font-size: 1rem;
     margin: 5px 0;
-    color: #ffffff; /* White */
-    text-align: center; /* Center-align username */
+    color: #ffffff;
+    text-align: center;
 }
 
 .profile-section .email {
-    font-size: 0.8rem; /* Slightly smaller email font */
-    color: #d1d1d1; /* Light gray */
+    font-size: 0.8rem;
+    color: #d1d1d1;
     text-align: center;
 }
 
@@ -64,30 +65,168 @@ body {
 }
 
 .sidebar ul li {
-    margin-bottom: 10px; /* Reduced space between links */
+    margin-bottom: 10px;
 }
 
 .sidebar ul li a {
     color: white;
     text-decoration: none;
-    font-size: 0.9rem; /* Reduced font size for links */
+    font-size: 0.9rem;
     display: block;
-    padding: 8px; /* Slightly reduced padding */
+    padding: 8px;
     border-radius: 4px;
     transition: background-color 0.3s ease-in-out;
 }
 
 .sidebar ul li a:hover {
-    background-color: #00d1b2; /* Light blue for hover effect */
+    background-color: #00d1b2;
 }
 
 /* Main Content */
 .main-content {
-    margin-left: 220px; /* Adjusted for reduced sidebar width */
+    margin-left: 220px;
     padding: 20px;
     flex: 1;
 }
 
-.main-content section {
-    margin-bottom: 20px;
+/* Cards Section */
+.cards-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap; /* Allow cards to wrap on smaller screens */
+    margin-top: 20px;
+}
+
+.card {
+    background-color: #19378a;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    width: 100px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-left: 10px;
+}
+
+.card-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.card-number {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Graphs Section */
+.graphs-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap; /* Allow graphs to stack on smaller screens */
+    margin-top: 40px;
+}
+
+.graph {
+    width: 45%;
+    margin: 10px 0;
+}
+
+.graph h3 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+canvas {
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+/* Media Queries */
+
+/* Medium Screens (Tablets and Small Desktops) */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 180px;
+    }
+
+    .main-content {
+        margin-left: 190px;
+        padding: 15px;
+    }
+
+    .cards-container {
+        justify-content: space-between;
+    }
+
+    .card {
+        width: 120px;
+        padding: 15px;
+    }
+
+    .graphs-container {
+        flex-direction: column; /* Stack graphs vertically */
+        align-items: center;
+    }
+
+    .graph {
+        width: 80%; /* Reduce graph width for smaller screens */
+    }
+}
+
+/* Small Screens (Phones) */
+@media (max-width: 768px) {
+    .sidebar {
+        position: static;
+        width: 100%;
+        top: 0;
+        padding: 10px;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 10px;
+    }
+
+    .cards-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card {
+        width: 90%;
+    }
+
+    .graphs-container {
+        flex-direction: column;
+    }
+
+    .graph {
+        width: 90%;
+    }
+}
+
+/* Extra Small Screens (Very Small Phones) */
+@media (max-width: 576px) {
+    .sidebar ul li a {
+        font-size: 0.8rem;
+        padding: 5px;
+    }
+
+    .card {
+        padding: 10px;
+    }
+
+    .card-title {
+        font-size: 1rem;
+    }
+
+    .card-number {
+        font-size: 1.5rem;
+    }
+
+    .graph h3 {
+        font-size: 1rem;
+    }
 }

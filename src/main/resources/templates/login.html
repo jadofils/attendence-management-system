@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -89,32 +89,24 @@
 </head>
 <body>
     <!-- Navbar -->
-    <div th:replace="~{layout/base::page_navbar}"></div>
+    <div th:replace="~{layout/base :: page_navbar}"></div>
 
     <!-- Login Section -->
-    <section id="login" class="login-container" th:fragment="page_login">
+    <section id="login" class="login-container">
         <h2>Login</h2>
 
-        <!-- Logout Success Message -->
-        <div class="alert alert-success" th:if="${message}">
-            <p th:text="${message}"></p>
-        </div>
-
-        <!-- Success Message -->
-        <div class="alert alert-success" id="success-message" th:if="${session.message}">
-            <p th:text="${session.message}"></p>
-        </div>
-
-        <!-- Error Message -->
-        <div class="alert alert-danger" id="error-message" th:if="${session.error}">
-            <p th:text="${session.error}"></p>
-        </div>
+        <!-- Alert Messages -->
+        <!-- Flash message from RedirectAttributes -->
+        <div class="alert alert-success" th:if="${message}" th:text="${message}"></div>
+        
+        <!-- Error message from RedirectAttributes -->
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
 
         <!-- Login Form -->
         <form th:action="@{/api/user/login}" method="post" id="loginForm">
             <!-- Role Dropdown -->
             <label for="role">Select Role:</label>
-            <select id="role" name="role">
+            <select id="role" name="role" required>
                 <option value="" disabled selected>Choose your role</option>
                 <option value="ADMINISTRATOR">Administrator</option>
                 <option value="INSTRUCTOR">Instructor</option>
@@ -127,26 +119,30 @@
 
             <!-- Username -->
             <label for="username">Username:</label>
-            <input type="text" id="username" name="username" placeholder="Enter your username">
+            <input type="text" id="username" name="username" placeholder="Enter your username" required>
             <div class="error-message" id="usernameError">Please enter your username.</div>
 
             <!-- Password -->
             <label for="password">Password:</label>
-            <input type="password" id="password" name="password" placeholder="Enter your password">
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
             <div class="error-message" id="passwordError">Please enter your password.</div>
 
             <!-- Forgot Password -->
-            <a href="#" class="forgot-password">Forgot Password?</a>
+            <a th:href="@{/forgot-password}" class="forgot-password">Forgot Password?</a>
 
             <!-- Submit Button -->
             <button type="submit">Login</button>
 
             <!-- Sign Up Link -->
-            <p>Don't have an account? <a href="/signup" class="signup-link">Sign Up</a></p>
+            <p>Don't have an account? <a th:href="@{/signup}" class="signup-link">Sign Up</a></p>
         </form>
 
-        <!-- JavaScript for Validation -->
-        <script>
+        <!-- JavaScript for Validation and Redirection -->
+        <script th:inline="javascript">
+            // Get messages from Thymeleaf
+            const message = /*[[${message}]]*/ null;
+            const error = /*[[${error}]]*/ null;
+            
             document.getElementById('loginForm').addEventListener('submit', function (event) {
                 let valid = true;
 
@@ -186,21 +182,23 @@
                 }
             });
 
-            // Automatically redirect to /dashboard only if the success message is present and valid
-            const successMessage = document.getElementById('success-message');
-            if (!successMessage && successMessage.textContent.includes("Login successful")) {
+            // Handle redirect based on success message
+            if (message && message.includes("Login successful")) {
                 setTimeout(() => {
-                    window.location.href = '/login';
-                }, 3000); // Redirect after 3 seconds
-            }else{
+                    window.location.href = /*[[@{/dashboard}]]*/ '/dashboard';
+                }, 2000);
+            }
+
+            // Clear messages after display
+            if (message || error) {
                 setTimeout(() => {
-                    window.location.href = '/dashboard';
-                }, 3000);  
+                    fetch(/*[[@{/api/user/clear-messages}]]*/ '/api/user/clear-messages');
+                }, 3000);
             }
         </script>
     </section>
 
     <!-- Footer -->
-    <div th:replace="~{layout/base::page_footer}"></div>
+    <div th:replace="~{layout/base :: page_footer}"></div>
 </body>
 </html>

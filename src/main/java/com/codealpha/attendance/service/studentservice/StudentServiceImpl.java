@@ -44,20 +44,41 @@ public class StudentServiceImpl implements StudentService {
     }
 
     private StudentDTO convertToDTO(Student student) {
+        // Map course IDs and names
         List<Long> courseIds = student.getCourses() != null 
             ? student.getCourses().stream()
                 .map(Course::getCourseId)
-                .collect(Collectors.toList()) 
+                .collect(Collectors.toList())
             : List.of();
-
+    
+        List<String> courseNames = student.getCourses() != null 
+            ? student.getCourses().stream()
+                .map(Course::getCourseName)
+                .collect(Collectors.toList())
+            : List.of();
+    
+        // Map program details
         Long programId = student.getProgram() != null 
             ? student.getProgram().getProgramId() 
             : null;
-        
+    
+        String programName = student.getProgram() != null 
+            ? student.getProgram().getProgramName() 
+            : null;
+    
+        // Map user details
         Long userId = student.getUser() != null 
             ? student.getUser().getUserId() 
             : null;
-
+    
+        String userName = student.getUser() != null 
+            ? student.getUser().getUsername() 
+            : null;
+    
+        // String userEmail = student.getUser() != null 
+        //     ? student.getUser().getEmail() 
+        //     : null;
+    
         return new StudentDTO(
             student.getStudentId(),
             student.getFirstName(),
@@ -66,10 +87,15 @@ public class StudentServiceImpl implements StudentService {
             student.getPhoneNumber(),
             student.getEnrollmentDate(),
             programId,
+            programName,    // Added program name
             userId,
-            courseIds
+            userName,       // Added user name
+            //userEmail,      // Added user email
+            courseIds,
+            courseNames     // Added course names
         );
     }
+    
 
     @Override
     @Transactional(readOnly = true)
