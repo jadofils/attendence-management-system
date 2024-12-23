@@ -1,0 +1,50 @@
+<!-- Update Program Modal -->
+<div id="updateProgramModal" class="modal" th:fragment="update_form">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeModal('updateProgramModal')">&times;</span>
+        <h2>Update Program</h2>
+
+        <!-- Form Starts Here -->
+        <form id="updateProgramForm">
+
+            <!-- Success or Error Messages -->
+            <div>
+                <div style="color: green;">
+                    <p id="successMessage"></p>
+                </div>
+                <div style="color: red;">
+                    <p id="errorMessage"></p>
+                </div>
+            </div>
+
+            <!-- Program Fields -->
+            <label for="programName">Program Name:</label>
+            <input type="text" id="programName" name="programName" value="" required>
+
+            <label for="programDescription">Description:</label>
+            <textarea id="programDescription" name="programDescription" required></textarea>
+
+            <!-- Courses Dropdown (multi-select) -->
+            <label for="courseNames">Select Courses:</label>
+            <select id="courseNames" name="courseNames" multiple required>
+                <option th:each="course : ${courses}" th:value="${course}" th:text="${course}"></option>
+            </select>
+
+            <!-- Student Names (multi-select) -->
+            <label for="studentNames">Select Students:</label>
+            <select id="studentNames" name="studentNames" multiple required>
+                <option th:each="student : ${students}" th:value="${student}" th:text="${student}"></option>
+            </select>
+
+            <!-- Submit Button -->
+            <button type="button" id="submitUpdateForm" style="background-color: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                Update Program
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Update Button Fragment -->
+<a th:fragment="updateBtn" href="#" class="update-link" onclick="openUpdateModal(this.getAttribute('data-program-id'))" th:attr="data-program-id=${program.programId}" title="Update">
+    <i class="fas fa-edit"></i>
+</a>

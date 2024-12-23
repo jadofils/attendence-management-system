@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Course List</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+
+    <style>
+        :root {
+            --primary-color: #19378a;
+            --primary-light: #2a4ba8;
+            --primary-dark: #122a6d;
+            --accent-color: #4d638c;
+            --light-gray: #f5f7fa;
+            --border-color: #e1e5eb;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: #f8f9fc;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-size: 2em;
+            text-align: center;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-left: 12rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(25, 55, 138, 0.1);
+        }
+
+        .add-course-button {
+            padding: 10px 15px;
+            border: none;
+            background-color: var(--primary-color);
+            color: #fff;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .add-course-button:hover {
+            background-color: var(--primary-light);
+            transform: scale(1.05);
+        }
+
+        .course-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            margin-left: 15rem;
+            overflow-x: auto;
+        }
+
+        .course-table th,
+        .course-table td {
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .course-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .course-table tbody tr:nth-child(even) {
+            background-color: var(--light-gray);
+        }
+
+        .course-table tbody tr:hover {
+            background-color: rgba(25, 55, 138, 0.05);
+        }
+
+        .action-icons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-icons a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .action-icons a:hover {
+            color: var(--primary-light);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 50%;
+            max-height: 80%;
+            overflow-y: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .close-button {
+            float: right;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-button:hover {
+            color: #f00;
+        }
+
+        .submit-button {
+            padding: 10px 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .submit-button:hover {
+            background-color: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{dashboardLayout/base::page_navbar}"></div>
+    <div th:replace="~{dashboardLayout/base::page_sidebar}"></div>
+
+    <div class="container">
+        <h1>All Courses</h1>
+
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search for courses..."
+                onkeyup="searchTable()">
+            <a href="#" class="add-course-link">
+                <button class="add-course-button" onclick="openModal(); openInsertModal();">Add New Course</button>
+            </a>
+        </div>
+
+        <!-- Insert and Update Modal -->
+        <div id="updateFormContainer" th:replace="~{courses/update::update_form}"></div>
+        <div id="insertFormContainer" th:replace="~{courses/insertModel::insert_form}"></div>
+
+        <!-- Courses Table -->
+        <table class="course-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Course Name</th>
+                    <th>Description</th>
+                    <th>Credits</th>
+                    <th>Program ID</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="courseTableBody">
+                <tr th:each="course : ${courses}">
+                    <td th:text="${course.courseId}"></td>
+                    <td th:text="${course.courseName}"></td>
+                    <td th:text="${course.courseDescription}"></td>
+                    <td th:text="${course.credits}"></td>
+                    <td th:text="${course.programId}"></td>
+                    <td class="action-icons">
+                        <!-- Update Link -->
+                        <a th:fragment="updateBtn" href="#" class="update-link" 
+                           onclick="openUpdateModal(this.getAttribute('data-course-id'))" 
+                           th:attr="data-course-id=${course.courseId}" 
+                           title="Update">
+                            <i class="fas fa-edit"></i>
+                        </a>
+
+                        <!-- View Link -->
+                        <a href="#" class="view-link" 
+                           th:attr="data-course-id=${course.courseId}" 
+                           title="View">
+                            <i class="fas fa-eye"></i>
+                        </a>
+
+                        <!-- Delete Link -->
+                        <a href="#" class="delete-link" 
+                           th:attr="data-course-id=${course.courseId}" 
+                           title="Delete">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button id="loadMoreBtn" onclick="loadMore()">Load More</button>
+    </div>
+</body>
+</html>

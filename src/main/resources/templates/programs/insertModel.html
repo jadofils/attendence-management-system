@@ -1,0 +1,48 @@
+<!-- Insert Program Modal -->
+<div id="addProgramModal" class="modal" th:fragment="insert_form">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeModal()">&times;</span>
+        <h2>Add New Program</h2>
+
+        <!-- Form Starts Here -->
+        <form th:action="@{/api/programs}" method="post" th:object="${programDTO}">
+
+            <!-- Success or Error Messages -->
+            <div th:fragment="error_success_message">
+                <div th:if="${success}" style="color: green;">
+                    <p th:text="${success}"></p>
+                </div>
+                <div th:if="${error}" style="color: red;">
+                    <p th:text="${error}"></p>
+                </div>
+            </div>
+
+            <!-- Program Fields -->
+            <label for="programName">Program Name:</label>
+            <input type="text" id="programName" th:field="*{programName}" name="programName" required>
+
+            <label for="programDescription">Description:</label>
+            <textarea id="programDescription" th:field="*{programDescription}" required></textarea>
+
+            <!-- Courses Dropdown (multi-select) -->
+            <label for="courseNames">Select Courses:</label>
+            <select id="courseNames" th:field="*{courseNames}" multiple required>
+                <option th:each="course : ${courses}" th:value="${course}" th:text="${course}"></option>
+            </select>
+
+            <!-- Student Names (multi-select) -->
+            <label for="studentNames">Select Students:</label>
+            <select id="studentNames" th:field="*{studentNames}" multiple required>
+                <option th:each="student : ${students}" th:value="${student}" th:text="${student}"></option>
+            </select>
+
+            <!-- Submit Button -->
+            <button type="submit" style="background-color: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Add Program</button>
+        </form>
+    </div>
+</div>
+
+<!-- Update Button Fragment -->
+<a th:fragment="updateBtn" href="#" class="update-link" onclick="openUpdateModal(this.getAttribute('data-program-id'))" th:attr="data-program-id=${program.programId}" title="Update">
+    <i class="fas fa-edit"></i>
+</a>
