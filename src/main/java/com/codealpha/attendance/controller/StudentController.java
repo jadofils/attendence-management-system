@@ -26,7 +26,6 @@ public class StudentController {
         return studentService.getAllStudents();
     }
 
-
     @PostMapping("/{userId}")
     public ResponseEntity<StudentDTO> createStudent(
             @RequestBody StudentDTO studentDTO, 

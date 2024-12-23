@@ -230,9 +230,16 @@ public void deleteStudent(Long studentId) {
 
 @Override
 public Student getStudentById(Long studentId) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'getStudentById'");
+    // Fetch the student or throw an exception if not found
+    Student existingStudent = studentRepository.findById(studentId)
+        .orElseThrow(() -> 
+            new IllegalArgumentException("Student with ID " + studentId + " does not exist.")
+        );
+    
+    // Return the fetched student object
+    return existingStudent;
 }
+
 
 
 }

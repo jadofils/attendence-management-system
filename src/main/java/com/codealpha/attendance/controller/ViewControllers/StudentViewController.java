@@ -16,6 +16,11 @@ import com.codealpha.attendance.dto.CourseDTO;
 import com.codealpha.attendance.dto.ProgramDTO;
 import com.codealpha.attendance.dto.StudentDTO;
 import com.codealpha.attendance.dto.UserDTO;
+import com.codealpha.attendance.service.courseService.CourseService;
+import com.codealpha.attendance.service.programservice.ProgramService;
+import com.codealpha.attendance.service.studentservice.StudentService;
+import com.codealpha.attendance.service.userservice.UserService;
+
 
 @Controller
 @RequestMapping("/students")
@@ -24,6 +29,12 @@ public class StudentViewController {
     @Autowired
     private RestTemplate restTemplate;
 
+private StudentService studentService;
+private UserService userService;
+private ProgramService programService;
+private CourseService courseService;
+
+    @SuppressWarnings("null")
     @GetMapping
     public String getAllStudents(Model model) {
         String studentApiUrl = "http://localhost:8080/api/students/all";
@@ -120,6 +131,7 @@ public class StudentViewController {
     List<Long> studentUserIds = students.stream()
                                         .map(StudentDTO::getUserId)
                                         .collect(Collectors.toList());
+    @SuppressWarnings("null")
     List<UserDTO> availableUsers = allUsers.stream()
                                            .filter(user -> !studentUserIds.contains(user.getUserId()))
                                            .collect(Collectors.toList());
@@ -147,4 +159,18 @@ public class StudentViewController {
     model.addAttribute("courses", courseResponse.getBody());
 }
 
+@GetMapping("/students/edit/{id}")
+public String editStudent(@PathVariable Long id, Model model) {
+    StudentDTO student = studentService.getStudentDataById(id); // Fetch student data
+    model.addAttribute("studentDTO", student);
+
+    // Static dropdown data
+    model.addAttribute("users", userService.getAllUsers());
+    model.addAttribute("programs", programService.getAllPrograms());
+    model.addAttribute("courses", courseService.getAllCourses());
+
+    return "students/update";
 }
+
+}
+

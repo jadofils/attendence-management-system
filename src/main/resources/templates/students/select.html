@@ -263,69 +263,12 @@
             <input type="text" id="searchInput" class="search-input" placeholder="Search for students..."
                 onkeyup="searchTable()">
             <a href="#" class="add-student-link">
-                <button class="add-student-button" onclick="openModal()">Add New Student</button>            </a>
-        </div>
-
-        <div id="addStudentModal" class="modal">
-            <div class="modal-content">
-                <span class="close-button" onclick="closeModal()">&times;</span>
-                <h2>Add New Student</h2>
-
-                <!-- Form Starts Here -->
-                <form th:action="@{/students/add}" method="post" th:object="${studentDTO}">
-
-                    <!-- Success or Error Messages -->
-                    <div th:fragment="error_success_message">
-                        <div th:if="${success}" style="color: green;">
-                            <p th:text="${success}"></p>
-                        </div>
-                        <div th:if="${error}" style="color: red;">
-                            <p th:text="${error}"></p>
-                        </div>
-                    </div>
-                    <!-- User Dropdown -->
-                    <label for="userId">Select User:</label>
-                    <select id="userId" name="userId" required>
-                        <option value="">Select a User</option>
-                        <option th:each="user : ${users}" th:value="${user.userId}" th:text="${user.username}"></option>
-                    </select>
-
-                    <!-- Program Dropdown -->
-                    <label for="programId">Select Program:</label>
-                    <select id="programId" th:field="*{programId}" required>
-                        <option value="">Select a Program</option>
-                        <option th:each="program : ${programs}" th:value="${program.programId}"
-                            th:text="${program.programName}"></option>
-                    </select>
-                    <!-- Courses Dropdown (multi-select) -->
-                    <label for="courseIds">Select Courses:</label>
-                    <select id="courseIds" th:field="*{courseIds}" multiple required>
-                        <option th:each="course : ${courses}" th:value="${course.courseId}"
-                            th:text="${course.courseName}"></option>
-                    </select>
-                    <!-- Student Fields -->
-                    <label for="firstName">First Name:</label>
-                    <input type="text" id="firstName" th:field="*{firstName}" required>
-
-                    <label for="lastName">Last Name:</label>
-                    <input type="text" id="lastName" th:field="*{lastName}" required>
-
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" th:field="*{email}" required>
-
-                    <label for="phoneNumber">Phone Number:</label>
-                    <input type="tel" id="phoneNumber" th:field="*{phoneNumber}" required>
-
-                    <label for="enrollmentDate">Enrollment Date:</label>
-                    <input type="date" id="enrollmentDate" th:field="*{enrollmentDate}" required>
-
-                    <!-- Submit Button -->
-                    <button type="submit">Add Student</button>
-                </form>
+                <button class="add-student-button" onclick="openModal(); openInsertModal();">Add New Student</button>
             </div>
-        </div>
 
 
+        <div id="updateFormContainer" th:replace="~{students/update::update_form}"></div>
+        <div id="insertFormContainer" th:replace="~{students/insertModel::insert_form}"></div>
 
         <table class="student-table">
             <thead>
@@ -357,15 +300,29 @@
                             th:text="${courseName} + (iterStat.last ? '' : ', ')"></span>
                     </td>
                     <td class="action-icons">
-                        <a href="#" onclick="openUpdateModal(this.getAttribute('data-id'))" data-id="[[${student.studentId}]]" title="Update"><i class="fas fa-edit"></i></a>
-
-                       
-                                <a href="#" class="view-link" th:attr="data-student-id=${student.studentId}">
+                        <!-- Update Link -->
+                        <a href="#" class="update-link" 
+                           onclick="openUpdateModal(this.getAttribute('data-student-id'))" 
+                           th:attr="data-student-id=${student.studentId}" 
+                           title="Update">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        
+                        <!-- View Link -->
+                        <a href="#" class="view-link" 
+                           th:attr="data-student-id=${student.studentId}" 
+                           title="View">
                             <i class="fas fa-eye"></i>
-                            <a href="#" class="delete-link" th:attr="data-student-id=${student.studentId}">
-                                <i class="fas fa-trash-alt"></i>
-                            </a>
+                        </a>
+                        
+                        <!-- Delete Link -->
+                        <a href="#" class="delete-link" 
+                           th:attr="data-student-id=${student.studentId}" 
+                           title="Delete">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
                     </td>
+                    
                 </tr>
             </tbody>
         </table>
@@ -397,103 +354,92 @@
             </div>
         </div>
     </div>
-
-
-    <div id="updateStudentModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="closeModal()">&times;</span>
-            <h2>Update Student</h2>
     
-            <!-- Form Starts Here -->
-            <form id="updateStudentForm" th:action="@{/students/update/{studentId}(studentId=${studentDTO.studentId})}" method="post" th:object="${studentDTO}">
-    
-                <!-- Success or Error Messages -->
-                <div th:fragment="error_success_message">
-                    <div th:if="${success}" style="color: green;">
-                        <p th:text="${success}"></p>
-                    </div>
-                    <div th:if="${error}" style="color: red;">
-                        <p th:text="${error}"></p>
-                    </div>
-                </div>
-    
-                <!-- User Dropdown -->
-                <label for="userId">Select User:</label>
-                <select id="userId" name="userId" required>
-                    <option value="">Select a User</option>
-                    <option th:each="user : ${users}" th:value="${user.userId}" th:text="${user.username}" th:selected="${user.userId == studentDTO.userId}"></option>
-                </select>
-    
-                <!-- Program Dropdown -->
-                <label for="programId">Select Program:</label>
-                <select id="programId" th:field="*{programId}" required>
-                    <option value="">Select a Program</option>
-                    <option th:each="program : ${programs}" th:value="${program.programId}" th:text="${program.programName}" th:selected="${program.programId == studentDTO.programId}"></option>
-                </select>
-    
-                <!-- Courses Dropdown (multi-select) -->
-                <label for="courseIds">Select Courses:</label>
-                <select id="courseIds" th:field="*{courseIds}" multiple required>
-                    <option th:each="course : ${courses}" th:value="${course.courseId}" th:text="${course.courseName}" th:selected="${studentDTO.courseIds.contains(course.courseId)}"></option>
-                </select>
-    
-                <!-- Student Fields -->
-                <label for="firstName">First Name:</label>
-                <input type="text" id="firstName" th:field="*{firstName}" required>
-    
-                <label for="lastName">Last Name:</label>
-                <input type="text" id="lastName" th:field="*{lastName}" required>
-    
-                <label for="email">Email:</label>
-                <input type="email" id="email" th:field="*{email}" required>
-    
-                <label for="phoneNumber">Phone Number:</label>
-                <input type="tel" id="phoneNumber" th:field="*{phoneNumber}" required>
-    
-                <label for="enrollmentDate">Enrollment Date:</label>
-                <input type="date" id="enrollmentDate" th:field="*{enrollmentDate}" required>
-    
-                <!-- Submit Button -->
-                <button type="submit">Update Student</button>
-            </form>
-        </div>
-    </div>
-    
-   
-   
-    
-    <!-- JavaScript to Open Modal -->
-    <script th:src="@{/js/script.js}"></script>
+     <script th:src="@{/js/script.js}"></script>
     <script th:src="@{/js/models.js}"></script>
-   <!-- JavaScript to Open Modal -->
+    
+  <!-- JavaScript for Update Modal -->
 <script>
+    // Open Update Modal
     function openUpdateModal(studentId) {
-        fetch(`/api/students/update/` + studentId)
+        // Set studentId in session storage
+        sessionStorage.setItem('selectedStudentId', studentId);
+
+        // Alert the student ID to confirm it's stored
+        alert("Selected Student ID: " + studentId);
+
+        // Fetch student data based on ID
+        fetch(`/api/students/${studentId}`)
             .then(response => response.json())
             .then(data => {
-                document.getElementById('userId').value = data.userId;
-                document.getElementById('programId').value = data.programId;
-                document.getElementById('firstName').value = data.firstName;
-                document.getElementById('lastName').value = data.lastName;
-                document.getElementById('email').value = data.email;
-                document.getElementById('phoneNumber').value = data.phoneNumber;
-                document.getElementById('enrollmentDate').value = data.enrollmentDate;
+                // Populate the form fields
+                document.getElementById('userName').value = data.userName || '';
+                document.getElementById('programId').value = data.programId || '';
+                document.getElementById('firstName').value = data.firstName || '';
+                document.getElementById('lastName').value = data.lastName || '';
+                document.getElementById('email').value = data.email || '';
+                document.getElementById('phoneNumber').value = data.phoneNumber || '';
+                document.getElementById('enrollmentDate').value = data.enrollmentDate || '';
 
-                // Show modal
+                // Populate multi-select courses
+                const courseIds = data.courseIds || [];
+                const courseOptions = document.getElementById('courseIds').options;
+                for (let option of courseOptions) {
+                    option.selected = courseIds.includes(parseInt(option.value));
+                }
+
+                // Open modal
                 document.getElementById('updateStudentModal').style.display = 'block';
-            });
+            })
+            .catch(err => console.error('Error loading student data:', err));
     }
 
-    function closeModal() {
-        document.getElementById('updateStudentModal').style.display = 'none';
+    // Submit Update Form
+    document.getElementById('submitUpdateForm').addEventListener('click', () => {
+        const studentId = sessionStorage.getItem('selectedStudentId');
+
+        const formData = {
+            userName: document.getElementById('userName').value,
+            programId: document.getElementById('programId').value,
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            email: document.getElementById('email').value,
+            phoneNumber: document.getElementById('phoneNumber').value,
+            enrollmentDate: document.getElementById('enrollmentDate').value,
+            courseIds: Array.from(document.getElementById('courseIds').selectedOptions).map(opt => opt.value)
+        };
+
+        fetch(`/api/students/update/${studentId}`, {
+            method: 'PUT', // Use PUT method
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('Student updated successfully!');
+                window.location.reload();
+            } else {
+                alert('Failed to update student.');
+            }
+        })
+        .catch(err => console.error('Error updating student:', err));
+    });
+
+    // Close Modal
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
     }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('updateStudentModal');
+        if (event.target === modal) {
+            closeModal('updateStudentModal');
+        }
+    };
 </script>
-
-</body>
-
-</html>
-
-
 </body>
 
 </html>

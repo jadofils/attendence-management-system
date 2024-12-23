@@ -1,0 +1,59 @@
+
+<div id="addStudentModal" class="modal" th:fragment="insert_form">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeModal()">&times;</span>
+        <h2>Add New Student</h2>
+
+        <!-- Form Starts Here -->
+        <form th:action="@{/students/add}" method="post" th:object="${studentDTO}">
+
+            <!-- Success or Error Messages -->
+            <div th:fragment="error_success_message">
+                <div th:if="${success}" style="color: green;">
+                    <p th:text="${success}"></p>
+                </div>
+                <div th:if="${error}" style="color: red;">
+                    <p th:text="${error}"></p>
+                </div>
+            </div>
+            <!-- User Dropdown -->
+            <label for="userId">Select User:</label>
+            <select id="userId" name="userId" required>
+                <option value="">Select a User</option>
+                <option th:each="user : ${users}" th:value="${user.userId}" th:text="${user.username}"></option>
+            </select>
+
+            <!-- Program Dropdown -->
+            <label for="programId">Select Program:</label>
+            <select id="programId" th:field="*{programId}" required>
+                <option value="">Select a Program</option>
+                <option th:each="program : ${programs}" th:value="${program.programId}"
+                    th:text="${program.programName}"></option>
+            </select>
+            <!-- Courses Dropdown (multi-select) -->
+            <label for="courseIds">Select Courses:</label>
+            <select id="courseIds" th:field="*{courseIds}" multiple required>
+                <option th:each="course : ${courses}" th:value="${course.courseId}"
+                    th:text="${course.courseName}"></option>
+            </select>
+            <!-- Student Fields -->
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" th:field="*{firstName}" required>
+
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" th:field="*{lastName}" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" th:field="*{email}" required>
+
+            <label for="phoneNumber">Phone Number:</label>
+            <input type="tel" id="phoneNumber" th:field="*{phoneNumber}" required>
+
+            <label for="enrollmentDate">Enrollment Date:</label>
+            <input type="date" id="enrollmentDate" th:field="*{enrollmentDate}" required>
+
+            <!-- Submit Button -->
+            <button type="submit">Add Student</button>
+        </form>
+    </div>
+</div>
