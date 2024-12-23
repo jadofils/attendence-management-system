@@ -8,7 +8,8 @@ import com.codealpha.attendance.model.Student;
 public interface StudentService {
     List<StudentDTO> getAllStudents();
 
-    Student getStudentById(Long studentid);
+    Student getStudentById(Long studentId);
+    StudentDTO getStudentDataById(Long studentId);
 
     StudentDTO saveStudent(StudentDTO studentDTO,Long userId);
 

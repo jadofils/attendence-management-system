@@ -99,11 +99,26 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     @Transactional(readOnly = true)
-    public Student getStudentById(Long studentId) {
-        return studentRepository.findById(studentId)
-            .orElseThrow(() -> new RuntimeException("Student not found with ID: " + studentId));
-    }
+    public StudentDTO getStudentDataById(Long studentId) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found with ID: " + studentId));
 
+        // Convert entity to DTO
+        return new StudentDTO(
+                student.getStudentId(),
+                student.getFirstName(),
+                student.getLastName(),
+                student.getEmail(),
+                student.getPhoneNumber(),
+                student.getEnrollmentDate(),
+                student.getProgram().getProgramId(),
+                student.getProgram().getProgramName(),
+                student.getUser().getUserId(),
+                student.getUser().getUsername(),
+                student.getCourses().stream().map(course -> course.getCourseId()).collect(Collectors.toList()),
+                student.getCourses().stream().map(course -> course.getCourseName()).collect(Collectors.toList())
+        );
+    }
 
 
    @Override
@@ -211,6 +226,12 @@ public void deleteStudent(Long studentId) {
 
     // Remove the student
     studentRepository.delete(existingStudent);
+}
+
+@Override
+public Student getStudentById(Long studentId) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'getStudentById'");
 }
 
 

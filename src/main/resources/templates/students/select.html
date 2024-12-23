@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <title>Student List</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -44,7 +45,6 @@
             gap: 10px;
             align-items: center;
             margin-left: 12rem;
-
         }
 
         .search-input {
@@ -62,6 +62,27 @@
             box-shadow: 0 0 0 3px rgba(25, 55, 138, 0.1);
         }
 
+        .add-student-link {
+            text-decoration: none;
+        }
+
+        .add-student-button {
+            padding: 12px 20px;
+            border: none;
+            background-color: var(--primary-color);
+            color: #fff;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .add-student-button:hover {
+            background-color: var(--primary-hover-color);
+            transform: scale(1.05);
+        }
+
+
         .student-table {
             width: 100%;
             border-collapse: collapse;
@@ -70,7 +91,8 @@
             overflow-x: auto;
         }
 
-        .student-table th, .student-table td {
+        .student-table th,
+        .student-table td {
             padding: 12px 15px;
             border: 1px solid var(--border-color);
             text-align: left;
@@ -114,8 +136,122 @@
                 overflow-x: auto;
             }
         }
+
+        /* Dropdown Styles */
+        .searchable-dropdown .courseDropdown {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+            /* Ensure background visibility */
+            color: black;
+            /* Ensure text is visible */
+        }
+
+        .searchable-dropdown option {
+            background-color: white;
+            color: black;
+            padding: 5px;
+        }
+
+        .searchable-dropdown option:hover {
+            background-color: var(--primary-light);
+            color: white;
+        }
+
+        /* Modal Styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 50%;
+            max-height: 80%;
+            /* Adjust height to ensure scrolling if needed */
+            overflow-y: auto;
+            /* Enable vertical scrolling */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .close-button {
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-button:hover {
+            color: #f00;
+        }
+
+        .submit-button {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .submit-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 50%;
+            max-height: 80%;
+            overflow-y: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .close-button {
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-button:hover {
+            color: #f00;
+        }
+
+        .student-details-card,
+        .confirm-delete-card,
+        .form-modal-card {
+            padding: 20px;
+            border: 1px solid #e1e5eb;
+            border-radius: 10px;
+            background-color: #f8f9fc;
+            margin-top: 20px;
+        }
+
+        .confirm-delete-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
     </style>
 </head>
+
 <body>
     <div th:replace="~{dashboardLayout/base::page_navbar}"></div>
     <div th:replace="~{dashboardLayout/base::page_sidebar}"></div>
@@ -124,8 +260,72 @@
         <h1>All Students</h1>
 
         <div class="search-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="Search for students..." onkeyup="searchTable()">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search for students..."
+                onkeyup="searchTable()">
+            <a href="#" class="add-student-link">
+                <button class="add-student-button" onclick="openModal()">Add New Student</button>            </a>
         </div>
+
+        <div id="addStudentModal" class="modal">
+            <div class="modal-content">
+                <span class="close-button" onclick="closeModal()">&times;</span>
+                <h2>Add New Student</h2>
+
+                <!-- Form Starts Here -->
+                <form th:action="@{/students/add}" method="post" th:object="${studentDTO}">
+
+                    <!-- Success or Error Messages -->
+                    <div th:fragment="error_success_message">
+                        <div th:if="${success}" style="color: green;">
+                            <p th:text="${success}"></p>
+                        </div>
+                        <div th:if="${error}" style="color: red;">
+                            <p th:text="${error}"></p>
+                        </div>
+                    </div>
+                    <!-- User Dropdown -->
+                    <label for="userId">Select User:</label>
+                    <select id="userId" name="userId" required>
+                        <option value="">Select a User</option>
+                        <option th:each="user : ${users}" th:value="${user.userId}" th:text="${user.username}"></option>
+                    </select>
+
+                    <!-- Program Dropdown -->
+                    <label for="programId">Select Program:</label>
+                    <select id="programId" th:field="*{programId}" required>
+                        <option value="">Select a Program</option>
+                        <option th:each="program : ${programs}" th:value="${program.programId}"
+                            th:text="${program.programName}"></option>
+                    </select>
+                    <!-- Courses Dropdown (multi-select) -->
+                    <label for="courseIds">Select Courses:</label>
+                    <select id="courseIds" th:field="*{courseIds}" multiple required>
+                        <option th:each="course : ${courses}" th:value="${course.courseId}"
+                            th:text="${course.courseName}"></option>
+                    </select>
+                    <!-- Student Fields -->
+                    <label for="firstName">First Name:</label>
+                    <input type="text" id="firstName" th:field="*{firstName}" required>
+
+                    <label for="lastName">Last Name:</label>
+                    <input type="text" id="lastName" th:field="*{lastName}" required>
+
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" th:field="*{email}" required>
+
+                    <label for="phoneNumber">Phone Number:</label>
+                    <input type="tel" id="phoneNumber" th:field="*{phoneNumber}" required>
+
+                    <label for="enrollmentDate">Enrollment Date:</label>
+                    <input type="date" id="enrollmentDate" th:field="*{enrollmentDate}" required>
+
+                    <!-- Submit Button -->
+                    <button type="submit">Add Student</button>
+                </form>
+            </div>
+        </div>
+
+
 
         <table class="student-table">
             <thead>
@@ -153,12 +353,18 @@
                     <td th:text="${student.programName}"></td>
                     <td th:text="${student.userName}"></td>
                     <td>
-                        <span th:each="courseName, iterStat : ${student.courseNames}" th:text="${courseName} + (iterStat.last ? '' : ', ')"></span>
+                        <span th:each="courseName, iterStat : ${student.courseNames}"
+                            th:text="${courseName} + (iterStat.last ? '' : ', ')"></span>
                     </td>
                     <td class="action-icons">
-                        <a th:href="@{'/students/update/' + ${student.studentId}}" title="Update"><i class="fas fa-edit"></i></a>
-                        <a th:href="@{'/students/view/' + ${student.studentId}}" title="View"><i class="fas fa-eye"></i></a>
-                        <a th:href="@{'/students/delete/' + ${student.studentId}}" title="Delete"><i class="fas fa-trash-alt"></i></a>
+                        <a href="#" onclick="openUpdateModal(this.getAttribute('data-id'))" data-id="[[${student.studentId}]]" title="Update"><i class="fas fa-edit"></i></a>
+
+                       
+                                <a href="#" class="view-link" th:attr="data-student-id=${student.studentId}">
+                            <i class="fas fa-eye"></i>
+                            <a href="#" class="delete-link" th:attr="data-student-id=${student.studentId}">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
                     </td>
                 </tr>
             </tbody>
@@ -167,53 +373,127 @@
         <button id="loadMoreBtn" onclick="loadMore()">Load More</button>
     </div>
 
-    <script th:inline="javascript">
-        const allStudents = /*[[${students}]]*/ [];
-        let visibleRows = 20;
-        let filteredStudents = [...allStudents];
 
-        function searchTable() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            filteredStudents = allStudents.filter(student => 
-                Object.values(student).some(value => value && value.toString().toLowerCase().includes(searchTerm))
-            );
-            visibleRows = 20;
-            updateTableDisplay();
-        }
+    <!-- Modal for Student Details -->
+    <div id="studentModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('studentModal')">&times;</span>
+            <h2>Student Details</h2>
+            <div id="studentDetails" class="student-details-card"></div>
+        </div>
+    </div>
 
-        function loadMore() {
-            visibleRows += 5;
-            updateTableDisplay();
-        }
+    <!-- Modal for Delete Confirmation -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal('deleteModal')">&times;</span>
+            <h2>Confirm Deletion</h2>
+            <div id="deleteDetails" class="confirm-delete-card">
+                <p>Are you sure you want to delete this student?</p>
+                <div class="confirm-delete-buttons">
+                    <button id="confirmDelete">Yes</button>
+                    <button onclick="closeModal('deleteModal')">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        function updateTableDisplay() {
-            const tableBody = document.getElementById('studentTableBody');
-            tableBody.innerHTML = '';
 
-            filteredStudents.slice(0, visibleRows).forEach(student => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${student.studentId}</td>
-                    <td>${student.firstName}</td>
-                    <td>${student.lastName}</td>
-                    <td>${student.email}</td>
-                    <td>${student.phoneNumber}</td>
-                    <td>${student.enrollmentDate}</td>
-                    <td>${student.programName}</td>
-                    <td>${student.userName}</td>
-                    <td>${student.courseNames.join(', ')}</td>
-                    <td>
-                        <a href="/students/update/${student.studentId}" title="Update"><i class="fas fa-edit"></i></a>
-                        <a href="/students/view/${student.studentId}" title="View"><i class="fas fa-eye"></i></a>
-                        <a href="/students/delete/${student.studentId}" title="Delete"><i class="fas fa-trash-alt"></i></a>
-                    </td>`;
-                tableBody.appendChild(row);
+    <div id="updateStudentModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <h2>Update Student</h2>
+    
+            <!-- Form Starts Here -->
+            <form id="updateStudentForm" th:action="@{/students/update/{studentId}(studentId=${studentDTO.studentId})}" method="post" th:object="${studentDTO}">
+    
+                <!-- Success or Error Messages -->
+                <div th:fragment="error_success_message">
+                    <div th:if="${success}" style="color: green;">
+                        <p th:text="${success}"></p>
+                    </div>
+                    <div th:if="${error}" style="color: red;">
+                        <p th:text="${error}"></p>
+                    </div>
+                </div>
+    
+                <!-- User Dropdown -->
+                <label for="userId">Select User:</label>
+                <select id="userId" name="userId" required>
+                    <option value="">Select a User</option>
+                    <option th:each="user : ${users}" th:value="${user.userId}" th:text="${user.username}" th:selected="${user.userId == studentDTO.userId}"></option>
+                </select>
+    
+                <!-- Program Dropdown -->
+                <label for="programId">Select Program:</label>
+                <select id="programId" th:field="*{programId}" required>
+                    <option value="">Select a Program</option>
+                    <option th:each="program : ${programs}" th:value="${program.programId}" th:text="${program.programName}" th:selected="${program.programId == studentDTO.programId}"></option>
+                </select>
+    
+                <!-- Courses Dropdown (multi-select) -->
+                <label for="courseIds">Select Courses:</label>
+                <select id="courseIds" th:field="*{courseIds}" multiple required>
+                    <option th:each="course : ${courses}" th:value="${course.courseId}" th:text="${course.courseName}" th:selected="${studentDTO.courseIds.contains(course.courseId)}"></option>
+                </select>
+    
+                <!-- Student Fields -->
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" th:field="*{firstName}" required>
+    
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" th:field="*{lastName}" required>
+    
+                <label for="email">Email:</label>
+                <input type="email" id="email" th:field="*{email}" required>
+    
+                <label for="phoneNumber">Phone Number:</label>
+                <input type="tel" id="phoneNumber" th:field="*{phoneNumber}" required>
+    
+                <label for="enrollmentDate">Enrollment Date:</label>
+                <input type="date" id="enrollmentDate" th:field="*{enrollmentDate}" required>
+    
+                <!-- Submit Button -->
+                <button type="submit">Update Student</button>
+            </form>
+        </div>
+    </div>
+    
+   
+   
+    
+    <!-- JavaScript to Open Modal -->
+    <script th:src="@{/js/script.js}"></script>
+    <script th:src="@{/js/models.js}"></script>
+   <!-- JavaScript to Open Modal -->
+<script>
+    function openUpdateModal(studentId) {
+        fetch(`/api/students/update/` + studentId)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('userId').value = data.userId;
+                document.getElementById('programId').value = data.programId;
+                document.getElementById('firstName').value = data.firstName;
+                document.getElementById('lastName').value = data.lastName;
+                document.getElementById('email').value = data.email;
+                document.getElementById('phoneNumber').value = data.phoneNumber;
+                document.getElementById('enrollmentDate').value = data.enrollmentDate;
+
+                // Show modal
+                document.getElementById('updateStudentModal').style.display = 'block';
             });
+    }
 
-            document.getElementById('loadMoreBtn').style.display = visibleRows < filteredStudents.length ? 'block' : 'none';
-        }
+    function closeModal() {
+        document.getElementById('updateStudentModal').style.display = 'none';
+    }
+</script>
 
-        document.addEventListener('DOMContentLoaded', updateTableDisplay);
-    </script>
 </body>
+
+</html>
+
+
+</body>
+
 </html>

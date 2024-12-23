@@ -41,6 +41,8 @@
 <body>
     <!-- Include Navbar -->
     <div th:replace="~{dashboardLayout/base::page_navbar}"></div>
+    <div th:replace="~{students/select::error_success_message}"></div>
+
     <div th:replace="~{dashboardLayout/base::page_sidebar}"></div>
     <!-- Main Content -->
     <div th:replace="~{'dashboardLayout/base' :: page_mainContent}"></div>
@@ -122,5 +124,6 @@
 
         
     </script>
+
 </body>
 </html>

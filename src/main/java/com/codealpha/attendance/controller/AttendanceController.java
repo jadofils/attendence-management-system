@@ -1,5 +1,6 @@
 package com.codealpha.attendance.controller;
 
+import com.codealpha.attendance.dto.StudentDTO;
 import com.codealpha.attendance.model.Attendance;
 import com.codealpha.attendance.model.SchoolClass;
 import com.codealpha.attendance.model.Student;

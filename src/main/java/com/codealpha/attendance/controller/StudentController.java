@@ -16,6 +16,11 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
+    @GetMapping("/{id}")
+    public ResponseEntity<StudentDTO> getStudentById(@PathVariable Long id) {
+        StudentDTO studentDTO = studentService.getStudentDataById(id);
+        return ResponseEntity.ok(studentDTO);
+    }
     @GetMapping("/all")
     public List<StudentDTO> getAllStudents() {
         return studentService.getAllStudents();
@@ -28,6 +33,7 @@ public class StudentController {
             @PathVariable Long userId) {
         // Call service method with studentDTO and userId
         StudentDTO savedStudent = studentService.saveStudent(studentDTO, userId);
+        System.out.println(savedStudent+" "+userId);
         return ResponseEntity.ok(savedStudent);
     }
 
