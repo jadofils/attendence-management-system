@@ -1,0 +1,38 @@
+<!-- Insert Class Modal -->
+<div id="insertClassModal" class="modal" th:fragment="insert_form">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeModal('insertClassModal')">&times;</span>
+        <h2>Add New Class</h2>
+
+        <!-- Form Starts Here -->
+        <form id="insertClassForm" method="post">
+
+            <!-- Success or Error Messages -->
+            <div>
+                <div style="color: green;">
+                    <p id="insertSuccessMessage"></p>
+                </div>
+                <div style="color: red;">
+                    <p id="insertErrorMessage"></p>
+                </div>
+            </div>
+
+            <!-- Course Dropdown -->
+            <label for="insertCourseId">Select Course:</label>
+            <select id="insertCourseId" name="courseId" required>
+                <option value="">Select a Course</option>
+                <option th:each="course : ${courses}" th:value="${course.courseId}" th:text="${course.courseName}"></option>
+            </select>
+
+            <!-- Class Fields -->
+            <label for="insertClassCode">Class Code:</label>
+            <input type="text" id="insertClassCode" name="classCode" required>
+
+            <label for="insertClassSchedule">Schedule:</label>
+            <input type="text" id="insertClassSchedule" name="classSchedule" required>
+
+            <!-- Submit Button -->
+            <button type="submit" style="background-color: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Add Class</button>
+        </form>
+    </div>
+</div>

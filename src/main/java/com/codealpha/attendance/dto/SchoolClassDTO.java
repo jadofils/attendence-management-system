@@ -4,8 +4,9 @@ public class SchoolClassDTO {
     private Long classId;
     private String classCode;
     private String classSchedule;
-    private Long courseId;  // Direct field for the courseId
-    private Long programId; // Direct field for the programId
+    private Long courseId;     // Direct field for the courseId
+    private Long programId;    // Direct field for the programId
+    private Long instructorId; // Use Long instead of User
 
     // Getters and Setters
     public Long getClassId() {
@@ -46,5 +47,13 @@ public class SchoolClassDTO {
 
     public void setProgramId(Long programId) {
         this.programId = programId;
+    }
+
+    public Long getInstructorId() {
+        return instructorId;
+    }
+
+    public void setInstructorId(Long instructorId) {
+        this.instructorId = instructorId;
     }
 }

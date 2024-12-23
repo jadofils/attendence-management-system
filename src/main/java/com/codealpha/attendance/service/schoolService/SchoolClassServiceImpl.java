@@ -1,5 +1,6 @@
 package com.codealpha.attendance.service.schoolService;
 
+import com.codealpha.attendance.dto.SchoolClassDTO;
 import com.codealpha.attendance.model.Course;
 import com.codealpha.attendance.model.SchoolClass;
 import com.codealpha.attendance.model.User;
@@ -30,89 +31,88 @@ public class SchoolClassServiceImpl implements SchoolClassService {
         return schoolClassRepository.findAll();
     }
 
-    public SchoolClass createClass(Long userId, Long courseId, SchoolClass schoolClass) {
+    public SchoolClass createClass(Long userId, SchoolClassDTO schoolClassDTO) {
         User instructor = userRepository.findById(userId).orElseThrow(() -> 
                 new RuntimeException("Instructor not found with id: " + userId));
-        
+
         if (instructor.getRole() != UserRole.INSTRUCTOR) {
             throw new RuntimeException("User is not an instructor");
         }
-    
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> 
-                new RuntimeException("Course not found with id: " + courseId));
-    
+
+        Course course = courseRepository.findById(schoolClassDTO.getCourseId()).orElseThrow(() -> 
+                new RuntimeException("Course not found with id: " + schoolClassDTO.getCourseId()));
+
+        SchoolClass schoolClass = new SchoolClass();
+        schoolClass.setClassCode(schoolClassDTO.getClassCode());
+        schoolClass.setClassSchedule(schoolClassDTO.getClassSchedule());
         schoolClass.setInstructor(instructor);
         schoolClass.setCourse(course);
-    
+
         try {
             return schoolClassRepository.save(schoolClass);
         } catch (Exception e) {
-            return null; // Return null if insertion fails
+            throw new RuntimeException("Failed to create class", e);
         }
     }
-    
+
     @Override
-public void deleteScheduled(Long userId, Long classId) {
-    // Retrieve the user
-    User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+    public void deleteScheduled(Long userId, Long classId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-            if (user.getRole() != UserRole.INSTRUCTOR && user.getRole() != UserRole.ADMINISTRATOR) {
-                throw new RuntimeException("Only instructors or administrators can delete scheduled classes");
-            }
-            
-    // Retrieve the class
-    SchoolClass scheduledClass = schoolClassRepository.findById(classId)
-            .orElseThrow(() -> new RuntimeException("Class not found"));
+        if (user.getRole() != UserRole.INSTRUCTOR && user.getRole() != UserRole.ADMINISTRATOR) {
+            throw new RuntimeException("Only instructors or administrators can delete scheduled classes");
+        }
 
-    // Check if the class is assigned to this instructor
-    if (!scheduledClass.getInstructor().getUserId().equals(userId)) {
-        throw new RuntimeException("This class is not assigned to you");
+        SchoolClass scheduledClass = schoolClassRepository.findById(classId)
+                .orElseThrow(() -> new RuntimeException("Class not found"));
+
+        if (!scheduledClass.getInstructor().getUserId().equals(userId)) {
+            throw new RuntimeException("This class is not assigned to you");
+        }
+
+        schoolClassRepository.delete(scheduledClass);
     }
 
-    // Delete the scheduled class
-    schoolClassRepository.delete(scheduledClass);
-}
+    @Override
+    public SchoolClass updateClass(Long userId, Long classId, SchoolClassDTO schoolClassDTO) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
+        if (user.getRole() != UserRole.INSTRUCTOR && user.getRole() != UserRole.ADMINISTRATOR) {
+            throw new RuntimeException("Only instructors or administrators can update scheduled classes");
+        }
 
+        SchoolClass scheduledClass = schoolClassRepository.findById(classId)
+                .orElseThrow(() -> new RuntimeException("Class not found"));
 
-@Override
-public SchoolClass updateClass(Long userId, Long classId, SchoolClass updatedSchoolClass) {
-    // Retrieve the user
-    User user = userRepository.findById(userId)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+        if (user.getRole() == UserRole.INSTRUCTOR && 
+                !scheduledClass.getInstructor().getUserId().equals(userId)) {
+            throw new RuntimeException("This class is not assigned to you");
+        }
 
-    // Check if the user has the appropriate role
-    if (user.getRole() != UserRole.INSTRUCTOR && user.getRole() != UserRole.ADMINISTRATOR) {
-        throw new RuntimeException("Only instructors or administrators can update scheduled classes");
+        scheduledClass.setClassCode(schoolClassDTO.getClassCode());
+        scheduledClass.setClassSchedule(schoolClassDTO.getClassSchedule());
+
+        if (schoolClassDTO.getCourseId() != null) {
+            Course course = courseRepository.findById(schoolClassDTO.getCourseId())
+                    .orElseThrow(() -> new RuntimeException("Course not found"));
+            scheduledClass.setCourse(course);
+        }
+
+        return schoolClassRepository.save(scheduledClass);
     }
 
-    // Retrieve the class
-    SchoolClass scheduledClass = schoolClassRepository.findById(classId)
-            .orElseThrow(() -> new RuntimeException("Class not found"));
-
-    // Check if the class is assigned to this instructor (only if the user is an instructor)
-    if (user.getRole() == UserRole.INSTRUCTOR && 
-        !scheduledClass.getInstructor().getUserId().equals(userId)) {
-        throw new RuntimeException("This class is not assigned to you");
+    @Override
+    public long count() {
+        return schoolClassRepository.count();
     }
 
-    // Update only non-referenced fields
-    scheduledClass.setClassCode(updatedSchoolClass.getClassCode());
-    scheduledClass.setClassSchedule(updatedSchoolClass.getClassSchedule());
+    @Override
+    public SchoolClass getClassById(Long classId) {
+        return schoolClassRepository.findById(classId)
+                .orElseThrow(() -> new RuntimeException("Class not found with id " + classId));
+    }
 
-    // Save the updated class
-    return schoolClassRepository.save(scheduledClass);
-}
-
-//count all classes scheduled
-public long count(){
-    return schoolClassRepository.count();
-}
-public SchoolClass getClassById(Long classid) {
-    // Use the repository to find a class by ID
-    return schoolClassRepository.findById(classid)
-            .orElseThrow(() -> new RuntimeException("Class not found with id " + classid));
-}
-
+  
 }

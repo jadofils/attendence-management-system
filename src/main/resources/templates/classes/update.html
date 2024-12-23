@@ -1,0 +1,39 @@
+<!-- Update Class Modal -->
+<div id="updateClassModal" class="modal" th:fragment="update_form">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeModal('updateClassModal')">&times;</span>
+        <h2>Update Class</h2>
+
+        <!-- Form Starts Here -->
+        <form id="updateClassForm" method="post">
+
+            <!-- Success or Error Messages -->
+            <div>
+                <div style="color: green;">
+                    <p id="successMessage"></p>
+                </div>
+                <div style="color: red;">
+                    <p id="errorMessage"></p>
+                </div>
+            </div>
+
+            <!-- Course Dropdown -->
+            <label for="updateCourseId">Select Course:</label>
+            <select id="updateCourseId" name="courseId" required>
+                <option value="">Select a Course</option>
+                <option th:each="course : ${courses}" th:value="${course.courseId}" th:text="${course.courseName}"></option>
+            </select>
+
+            <!-- Class Fields -->
+            <label for="updateClassCode">Class Code:</label>
+            <input type="text" id="updateClassCode" name="classCode" required>
+
+            <label for="updateClassSchedule">Schedule:</label>
+            <input type="text" id="updateClassSchedule" name="classSchedule" required>
+
+            <!-- Submit Button -->
+            <button type="submit" style="background-color: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Update Class</button>
+        </form>
+    </div>
+</div>
+

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <title>Course List</title>
+    <title>Class List</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/styles.css}">
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
@@ -62,7 +62,7 @@
             box-shadow: 0 0 0 3px rgba(25, 55, 138, 0.1);
         }
 
-        .add-course-button {
+        .add-class-button {
             padding: 10px 15px;
             border: none;
             background-color: var(--primary-color);
@@ -73,12 +73,12 @@
             transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
-        .add-course-button:hover {
+        .add-class-button:hover {
             background-color: var(--primary-light);
             transform: scale(1.05);
         }
 
-        .course-table {
+        .class-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
@@ -86,23 +86,23 @@
             overflow-x: auto;
         }
 
-        .course-table th,
-        .course-table td {
+        .class-table th,
+        .class-table td {
             padding: 12px 15px;
             border: 1px solid var(--border-color);
             text-align: left;
         }
 
-        .course-table th {
+        .class-table th {
             background-color: var(--primary-color);
             color: white;
         }
 
-        .course-table tbody tr:nth-child(even) {
+        .class-table tbody tr:nth-child(even) {
             background-color: var(--light-gray);
         }
 
-        .course-table tbody tr:hover {
+        .class-table tbody tr:hover {
             background-color: rgba(25, 55, 138, 0.05);
         }
 
@@ -120,52 +120,6 @@
         .action-icons a:hover {
             color: var(--primary-light);
         }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-content {
-            background-color: #fff;
-            margin: 5% auto;
-            padding: 20px;
-            border-radius: 8px;
-            width: 50%;
-            max-height: 80%;
-            overflow-y: auto;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .close-button {
-            float: right;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close-button:hover {
-            color: #f00;
-        }
-
-        .submit-button {
-            padding: 10px 15px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .submit-button:hover {
-            background-color: var(--primary-dark);
-        }
     </style>
 </head>
 <body>
@@ -173,58 +127,56 @@
     <div th:replace="~{dashboardLayout/base::page_sidebar}"></div>
 
     <div class="container">
-        <h1>All Courses</h1>
+        <h1>All Classes</h1>
 
         <div class="search-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="Search for courses..."
+            <input type="text" id="searchInput" class="search-input" placeholder="Search for classes..."
                 onkeyup="searchTable()">
-            <a href="#" class="add-course-link">
-                <button class="add-course-button" onclick="openModal(); openInsertModal();">Add New Course</button>
+            <a href="#" class="add-class-link">
+                <button class="add-class-button" onclick="openModal(); openInsertModal();">Add New Class</button>
             </a>
         </div>
 
-        <!-- Insert and Update Modal -->
-        <div id="updateFormContainer" th:replace="~{'classes/update' :: update_form}"></div>
-        <div id="insertFormContainer" th:replace="~{courses/insertModel::insert_form}"></div>
-
-        <!-- Courses Table -->
-        <table class="course-table">
+        <!-- Classes Table -->
+        <table class="class-table">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Course Name</th>
-                    <th>Description</th>
-                    <th>Credits</th>
+                    <th>Class Code</th>
+                    <th>Schedule</th>
+                    <th>Course ID</th>
                     <th>Program ID</th>
+                    <th>Instructor ID</th>
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody id="courseTableBody">
-                <tr th:each="course : ${courses}">
-                    <td th:text="${course.courseId}"></td>
-                    <td th:text="${course.courseName}"></td>
-                    <td th:text="${course.courseDescription}"></td>
-                    <td th:text="${course.credits}"></td>
-                    <td th:text="${course.programId}"></td>
+            <tbody id="classTableBody">
+                <tr th:each="class : ${classes}">
+                    <td th:text="${class.classId}"></td>
+                    <td th:text="${class.classCode}"></td>
+                    <td th:text="${class.classSchedule}"></td>
+                    <td th:text="${class.courseId}"></td>
+                    <td th:text="${class.programId}"></td>
+                    <td th:text="${class.instructorId}"></td>
                     <td class="action-icons">
                         <!-- Update Link -->
-                        <a th:fragment="updateBtn" href="#" class="update-link" 
-                           onclick="openUpdateModal(this.getAttribute('data-course-id'))" 
-                           th:attr="data-course-id=${course.courseId}" 
+                        <a href="#" class="update-link" 
+                           onclick="openUpdateModal(this.getAttribute('data-class-id'))" 
+                           th:attr="data-class-id=${class.classId}" 
                            title="Update">
                             <i class="fas fa-edit"></i>
                         </a>
 
                         <!-- View Link -->
                         <a href="#" class="view-link" 
-                           th:attr="data-course-id=${course.courseId}" 
+                           th:attr="data-class-id=${class.classId}" 
                            title="View">
                             <i class="fas fa-eye"></i>
                         </a>
 
                         <!-- Delete Link -->
                         <a href="#" class="delete-link" 
-                           th:attr="data-course-id=${course.courseId}" 
+                           th:attr="data-class-id=${class.classId}" 
                            title="Delete">
                             <i class="fas fa-trash-alt"></i>
                         </a>
