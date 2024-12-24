@@ -2,11 +2,13 @@ package com.codealpha.attendance.controller;
 import com.codealpha.attendance.dto.CourseDTO;
 import com.codealpha.attendance.service.courseService.CourseService;
 
-
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/courses")
@@ -19,10 +21,27 @@ public class CourseController {
         this.courseService = courseService;
     }
     
-    @PostMapping
-    public ResponseEntity<CourseDTO> createCourse(@RequestBody CourseDTO courseDTO) {
-        return ResponseEntity.ok(courseService.createCourse(courseDTO));
+    @PostMapping("/{programId}")
+    public ResponseEntity<Map<String, String>> createCourse(
+            @PathVariable Long programId,
+            @RequestBody CourseDTO courseDTO) {
+    
+        Map<String, String> response = new HashMap<>();
+    
+        try {
+            CourseDTO createdCourse = courseService.createCourse(courseDTO, programId);
+            response.put("status", "success");
+            response.put("message", "Course added successfully!");
+            response.put("courseId", createdCourse.getCourseId().toString());
+            return ResponseEntity.ok(response);
+    
+        } catch (IllegalArgumentException e) {
+            response.put("status", "error");
+            response.put("message", e.getMessage()); // Send error message if course exists
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        }
     }
+    
 
     @PutMapping("/{courseId}")
     public ResponseEntity<CourseDTO> updateCourse(@PathVariable Long courseId, @RequestBody CourseDTO courseDTO) {

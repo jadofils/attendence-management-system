@@ -23,8 +23,8 @@ public class Program {
     private String programDescription;
 
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
-    
     private List<Course> courses;
+        
 
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Student> students;

@@ -178,9 +178,11 @@
         <div class="search-container">
             <input type="text" id="searchInput" class="search-input" placeholder="Search for courses..."
                 onkeyup="searchTable()">
-            <a href="#" class="add-course-link">
-                <button class="add-course-button" onclick="openModal(); openInsertModal();">Add New Course</button>
-            </a>
+                
+                <a href="#" class="add-course-link">
+                    <button class="add-course-button" onclick="openModal()">Add New Course</button>
+                </a>
+                
         </div>
 
         <!-- Insert and Update Modal -->
@@ -235,5 +237,68 @@
 
         <button id="loadMoreBtn" onclick="loadMore()">Load More</button>
     </div>
+
+    <script>
+ // Open the add course modal
+function openModal() {
+    const modal = document.getElementById('addCourseModal');
+    modal.style.display = 'block'; // Display the modal
+}
+
+// Close the modal
+function closeModal() {
+    const modal = document.getElementById('addCourseModal');
+    modal.style.display = 'none'; // Hide the modal
+}
+
+// Close modal if user clicks outside the modal content
+window.onclick = function (event) {
+    const modal = document.getElementById('addCourseModal');
+    if (event.target === modal) {
+        closeModal(); // Close modal if click is outside content
+    }
+};
+
+function submitCourseForm() {
+    const programId = document.getElementById('programId').value;
+
+    // Alert if no program is selected
+    if (!programId) {
+        alert("Please select a program.");
+        return;
+    }
+
+    // Collect form data
+    const courseData = {
+        courseName: document.getElementById('courseName').value,
+        courseDescription: document.getElementById('courseDescription').value,
+        credits: parseInt(document.getElementById('credits').value)
+    };
+
+    // Send POST request
+    fetch(`/api/courses/${programId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(courseData)
+    })
+    .then(response => response.json()) // Parse JSON response
+    .then(data => {
+        if (data.status === "success") {
+            alert(data.message); // Success alert
+            closeModal(); // Close modal
+            location.reload(); // Refresh the page
+        } else if (data.status === "error") {
+            alert(data.message); // Error alert for duplicate course
+        }
+    })
+    .catch(error => {
+        alert("Failed to add course. Error: " + error.message); // General error
+    });
+}
+
+
+    </script>
 </body>
 </html>

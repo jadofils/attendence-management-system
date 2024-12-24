@@ -1,46 +1,49 @@
 <!-- Insert Course Modal -->
-<div id="addCourseModal" class="modal" th:fragment="insert_form">
+<div id="addCourseModal" class="modal" th:fragment="insert_form" style="display: none;">
     <div class="modal-content">
+        <!-- Close Button -->
         <span class="close-button" onclick="closeModal()">&times;</span>
         <h2>Add New Course</h2>
 
-        <!-- Form Starts Here -->
-        <form th:action="@{/api/courses}" method="post" th:object="${courseDTO}">
+        <!-- Success or Error Messages -->
+        <div th:if="${success}" style="color: green;">
+            <p th:text="${success}"></p>
+        </div>
+        <div th:if="${error}" style="color: red;">
+            <p th:text="${error}"></p>
+        </div>
 
-            <!-- Success or Error Messages -->
-            <div th:fragment="error_success_message">
-                <div th:if="${success}" style="color: green;">
-                    <p th:text="${success}"></p>
-                </div>
-                <div th:if="${error}" style="color: red;">
-                    <p th:text="${error}"></p>
-                </div>
-            </div>
-
+        <!-- Course Form -->
+        <form id="addCourseForm">
             <!-- Program Dropdown -->
             <label for="programId">Select Program:</label>
-            <select id="programId" th:field="*{programId}" required>
+            <select id="programId" required>
                 <option value="">Select a Program</option>
                 <option th:each="program : ${programs}" th:value="${program.programId}" th:text="${program.programName}"></option>
             </select>
 
-            <!-- Course Fields -->
+            <!-- Course Name -->
             <label for="courseName">Course Name:</label>
-            <input type="text" id="courseName" th:field="*{courseName}" name="courseName" required>
+            <input type="text" id="courseName" required>
 
+            <!-- Course Description -->
             <label for="courseDescription">Description:</label>
-            <textarea id="courseDescription" th:field="*{courseDescription}" required></textarea>
+            <textarea id="courseDescription" required></textarea>
 
+            <!-- Credits -->
             <label for="credits">Credits:</label>
-            <input type="number" id="credits" th:field="*{credits}" required>
+            <input type="number" id="credits" required>
 
             <!-- Submit Button -->
-            <button type="submit" style="background-color: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Add Course</button>
+            <button type="button" onclick="submitCourseForm()" style="background-color: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                Add Course
+            </button>
         </form>
     </div>
 </div>
 
-<!-- Update Button Fragment -->
-<a th:fragment="updateBtn" href="#" class="update-link" onclick="openUpdateModal(this.getAttribute('data-course-id'))" th:attr="data-course-id=${course.courseId}" title="Update">
-    <i class="fas fa-edit"></i>
-</a>
+<script>
+
+
+
+</script>

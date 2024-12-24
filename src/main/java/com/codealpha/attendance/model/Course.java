@@ -1,8 +1,6 @@
 package com.codealpha.attendance.model;
 
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,14 +9,21 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "courses")
+@Table(
+    name = "courses",
+    uniqueConstraints = @UniqueConstraint(
+        name = "unique_course_name_per_program", 
+        columnNames = {"course_name", "program_id"}
+    )
+)
 public class Course {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "course_id")
     private Long courseId;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(nullable = false, length = 100)
     private String courseName;
 
     @Column(columnDefinition = "TEXT")
@@ -27,21 +32,20 @@ public class Course {
     @Column(nullable = false)
     private Integer credits;
 
-    // Cascade delete from Program
+    // Foreign key with cascade delete
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-        name = "program_id", 
-        nullable = false, 
-        foreignKey = @ForeignKey(name = "FK_program_course", value = ConstraintMode.CONSTRAINT)
+        name = "program_id",
+        nullable = false,
+        foreignKey = @ForeignKey(name = "FK_program_course")
     )
     private Program program;
 
-    // Cascade delete for related classes
+    // One-to-Many relationship with classes
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SchoolClass> classes;
 
-    // Cascade delete relationships in student_courses table
-    @ManyToMany(mappedBy = "courses", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JsonBackReference
+    // Many-to-Many relationship with students (no cascade)
+    @ManyToMany(mappedBy = "courses")
     private List<Student> students;
 }

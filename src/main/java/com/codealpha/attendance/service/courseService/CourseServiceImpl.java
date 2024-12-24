@@ -20,20 +20,28 @@ public class CourseServiceImpl implements CourseService {
     private final ProgramRepository programRepository;
 
     @Override
-    public CourseDTO createCourse(CourseDTO courseDTO) {
-        Program program = programRepository.findById(courseDTO.getProgramId()).orElseThrow(() ->
-            new IllegalArgumentException("Program with ID " + courseDTO.getProgramId() + " does not exist."));
-        
+    public CourseDTO createCourse(CourseDTO courseDTO, Long programId) {
+        // Check if a course with the same name exists in the program
+        if (courseRepository.existsByCourseNameAndProgramProgramId(courseDTO.getCourseName(), programId)) {
+            throw new IllegalArgumentException(
+                "Course with name '" + courseDTO.getCourseName() + "' already exists in the program.");
+        }
+    
+        // Find the program
+        Program program = programRepository.findById(programId).orElseThrow(() ->
+            new IllegalArgumentException("Program with ID " + programId + " does not exist."));
+    
+        // Create course
         Course course = Course.builder()
             .courseName(courseDTO.getCourseName())
             .courseDescription(courseDTO.getCourseDescription())
             .credits(courseDTO.getCredits())
             .program(program)
             .build();
-        
+    
         return convertToDTO(courseRepository.save(course));
     }
-
+    
     @Override
     public CourseDTO updateCourse(Long courseId, CourseDTO courseDTO) {
         Course existingCourse = courseRepository.findById(courseId).orElseThrow(() -> 
@@ -82,5 +90,10 @@ public class CourseServiceImpl implements CourseService {
             .credits(course.getCredits())
             .programId(course.getProgram().getProgramId())
             .build();
+    }
+
+    @Override
+    public boolean existsByCourseName(String courseName) {
+        return courseRepository.existsByCourseName(courseName);
     }
 }

@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface CourseService {
 
-    CourseDTO createCourse(CourseDTO courseDTO);
+    CourseDTO createCourse(CourseDTO courseDTO,Long programId);
 
     CourseDTO updateCourse(Long courseId, CourseDTO courseDTO);
 
@@ -16,4 +16,6 @@ public interface CourseService {
     List<CourseDTO> getAllCourses();
 
     void deleteCourse(Long courseId);
+
+    boolean existsByCourseName(String courseName);
 }
