@@ -1,245 +1,621 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
-<head>
+  <head>
     <title>Student List</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
 
     <style>
-        :root {
-            --primary-color: #19378a;
-            --primary-light: #2a4ba8;
-            --primary-dark: #122a6d;
-            --accent-color: #4d638c;
-            --light-gray: #f5f7fa;
-            --border-color: #e1e5eb;
-        }
+      :root {
+        --primary-color: #19378a;
+        --primary-light: #2a4ba8;
+        --primary-dark: #122a6d;
+        --accent-color: #4d638c;
+        --light-gray: #f5f7fa;
+        --border-color: #e1e5eb;
+      }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            background-color: #f8f9fc;
-        }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        background-color: #f8f9fc;
+      }
 
-        .container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
+      .container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
 
-        h1 {
-            color: var(--primary-color);
-            margin-bottom: 30px;
-            font-size: 2em;
-            text-align: center;
-        }
+      h1 {
+        color: var(--primary-color);
+        margin-bottom: 30px;
+        font-size: 2em;
+        text-align: center;
+      }
 
-        .search-container {
-            margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-left: 12rem;
-        }
+      .search-container {
+        margin-bottom: 20px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-left: 12rem;
+      }
 
-        .search-input {
-            flex: 1;
-            padding: 12px 20px;
-            border: 2px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
+      .search-input {
+        flex: 1;
+        padding: 12px 20px;
+        border: 2px solid var(--border-color);
+        border-radius: 6px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+      }
 
-        .search-input:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(25, 55, 138, 0.1);
-        }
+      .search-input:focus {
+        border-color: var(--primary-color);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(25, 55, 138, 0.1);
+      }
 
-        .add-program-button {
-            padding: 10px 15px;
-            border: none;
-            background-color: var(--primary-color);
-            color: #fff;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
+      .add-program-button {
+        padding: 10px 15px;
+        border: none;
+        background-color: var(--primary-color);
+        color: #fff;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+      }
 
-        .add-program-button:hover {
-            background-color: var(--primary-light);
-            transform: scale(1.05);
-        }
+      .add-program-button:hover {
+        background-color: var(--primary-light);
+        transform: scale(1.05);
+      }
 
-        .program-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            margin-left: 15rem;
-            overflow-x: auto;
-        }
+      .program-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        margin-left: 15rem;
+        overflow-x: auto;
+      }
 
-        .program-table th,
-        .program-table td {
-            padding: 12px 15px;
-            border: 1px solid var(--border-color);
-            text-align: left;
-        }
+      .program-table th,
+      .program-table td {
+        padding: 12px 15px;
+        border: 1px solid var(--border-color);
+        text-align: left;
+      }
 
-        .program-table th {
-            background-color: var(--primary-color);
-            color: white;
-        }
+      .program-table th {
+        background-color: var(--primary-color);
+        color: white;
+      }
 
-        .program-table tbody tr:nth-child(even) {
-            background-color: var(--light-gray);
-        }
+      .program-table tbody tr:nth-child(even) {
+        background-color: var(--light-gray);
+      }
 
-        .program-table tbody tr:hover {
-            background-color: rgba(25, 55, 138, 0.05);
-        }
+      .program-table tbody tr:hover {
+        background-color: rgba(25, 55, 138, 0.05);
+      }
 
-        .action-icons {
-            display: flex;
-            gap: 8px;
-        }
+      .action-icons {
+        display: flex;
+        gap: 8px;
+      }
 
-        .action-icons a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-size: 1rem;
-        }
+      .action-icons a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-size: 1rem;
+      }
 
-        .action-icons a:hover {
-            color: var(--primary-light);
-        }
+      .action-icons a:hover {
+        color: var(--primary-light);
+      }
 
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
 
-        .modal-content {
-            background-color: #fff;
-            margin: 5% auto;
-            padding: 20px;
-            border-radius: 8px;
-            width: 50%;
-            max-height: 80%;
-            overflow-y: auto;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
+      .modal-content {
+        background-color: #fff;
+        margin: 5% auto;
+        padding: 20px;
+        border-radius: 8px;
+        width: 50%;
+        max-height: 80%;
+        overflow-y: auto;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
 
-        .close-button {
-            float: right;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+      .close-button {
+        float: right;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+      }
 
-        .close-button:hover {
-            color: #f00;
-        }
+      .close-button:hover {
+        color: #f00;
+      }
 
-        .submit-button {
-            padding: 10px 15px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+      .submit-button {
+        padding: 10px 15px;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
 
-        .submit-button:hover {
-            background-color: var(--primary-dark);
-        }
+      .submit-button:hover {
+        background-color: var(--primary-dark);
+      }
+      #confirmDeleteBtn {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 12px;
+}
+
+#cancelDeleteBtn {
+    background-color: grey;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 12px;
+}
+
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div th:replace="~{dashboardLayout/base::page_navbar}"></div>
     <div th:replace="~{dashboardLayout/base::page_sidebar}"></div>
 
     <div class="container">
-        <h1>All Programs</h1>
+      <h1>All Programs</h1>
 
-        <div class="search-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="Search for programs..."
-                onkeyup="searchTable()">
-            <a href="#" class="add-program-link">
-                <button class="add-program-button" onclick="openModal(); openInsertModal();">Add New Program</button>
-            </a>
+      <div class="search-container">
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="Search for programs..."
+          onkeyup="searchTable()"
+        />
+        <a href="#" class="add-program-link">
+            <button class="add-program-button">
+                Add New Program
+            </button>
+        </a>
+      </div>
+
+      <div
+  id="updateFormContainer"
+  th:replace="~{programs/update::update_form}"
+></div>
+
+<div
+  id="insertFormContainer"
+  th:replace="~{programs/insertModel::insert_form}"
+></div>
+
+      <!-- Programs Table -->
+      <table class="program-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Program Name</th>
+            <th>Description</th>
+            <th>Courses</th>
+            <th>Students</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="programTableBody">
+          <tr th:each="program : ${programs}">
+            <td th:text="${program.programId}"></td>
+            <td th:text="${program.programName}"></td>
+            <td th:text="${program.programDescription}"></td>
+            <td>
+              <span
+                th:each="course, iterStat : ${program.courseNames}"
+                th:text="${course} + (iterStat.last ? '' : ', ')"
+              ></span>
+            </td>
+            <td>
+              <span
+                th:each="student, iterStat : ${program.studentNames}"
+                th:text="${student} + (iterStat.last ? '' : ', ')"
+              ></span>
+            </td>
+            <td class="action-icons">
+              <!-- Update Link -->
+              <a th:fragment="updateBtn" 
+              href="#" 
+              class="update-link" 
+              th:data-program-id="${program.programId}" 
+              title="Update">
+               <i class="fas fa-edit"></i>
+           </a>
+
+           <a href="#" class="view-link" th:attr="data-program-id=${program.programId}" title="View">
+            <i class="fas fa-eye"></i>
+        </a>
+        
+              <!-- Delete Link -->
+              <a
+                href="#"
+                class="delete-link"
+                th:attr="data-program-id=${program.programId}"
+                title="Delete"
+              >
+                <i class="fas fa-trash-alt"></i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+
+      <div id="deleteConfirmModal" class="modal">
+        <div class="modal-content">
+            <h3>Confirm Deletion</h3>
+            <p>Are you sure you want to delete this program?</p>
+            <button id="confirmDeleteBtn">Yes, Delete</button>
+            <button id="cancelDeleteBtn">Cancel</button>
         </div>
-
-        <!-- Insert and Update Modal -->
-        <div id="updateFormContainer" th:replace="~{programs/update::update_form}"></div>
-        <div id="insertFormContainer" th:replace="~{programs/insertModel::insert_form}"></div>
-
-        <!-- Programs Table -->
-        <table class="program-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Program Name</th>
-                    <th>Description</th>
-                    <th>Courses</th>
-                    <th>Students</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="programTableBody">
-                <tr th:each="program : ${programs}">
-                    <td th:text="${program.programId}"></td>
-                    <td th:text="${program.programName}"></td>
-                    <td th:text="${program.programDescription}"></td>
-                    <td>
-                        <span th:each="course, iterStat : ${program.courseNames}"
-                            th:text="${course} + (iterStat.last ? '' : ', ')"></span>
-                    </td>
-                    <td>
-                        <span th:each="student, iterStat : ${program.studentNames}"
-                            th:text="${student} + (iterStat.last ? '' : ', ')"></span>
-                    </td>
-                    <td class="action-icons">
-                        <!-- Update Link -->
-                        <a th:fragment="updateBtn" href="#" class="update-link" 
-   onclick="openUpdateModal(this.getAttribute('data-program-id'))" 
-   th:attr="data-program-id=${program.programId}" 
-   title="Update">
-    <i class="fas fa-edit"></i>
-</a>
-
-                        <!-- View Link -->
-                        <a href="#" class="view-link" 
-                           th:attr="data-program-id=${program.programId}" 
-                           title="View">
-                            <i class="fas fa-eye"></i>
-                        </a>
-
-                        <!-- Delete Link -->
-                        <a href="#" class="delete-link" 
-                           th:attr="data-program-id=${program.programId}" 
-                           title="Delete">
-                            <i class="fas fa-trash-alt"></i>
-                        </a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <button id="loadMoreBtn" onclick="loadMore()">Load More</button>
     </div>
-</body>
+
+    <div id="viewProgramModal" class="modal" >
+      <div class="modal-content">
+          <span class="close-button" id="viewCloseBtn">&times;</span>
+          <h3>Program Details</h3>
+          <p><strong>Name:</strong> <span id="viewProgramName"></span></p>
+          <p><strong>Description:</strong> <span id="viewProgramDescription"></span></p>
+          <p><strong>Courses:</strong> <span id="viewProgramCourses"></span></p>
+          <p><strong>Students:</strong> <span id="viewProgramStudents"></span></p>
+      </div>
+  </div>
+<button id="loadMoreBtn" onclick="loadMore()">Load More</button>
+    </div>
+
+    <script>
+      // Get modal elements
+const addProgramModal = document.getElementById('addProgramModal');
+const closeBtn = document.querySelector('#addProgramModal .close-button');
+const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+const deleteConfirmBtn = document.getElementById('confirmDeleteBtn');
+const deleteCancelBtn = document.getElementById('cancelDeleteBtn');
+let programIdToDelete = null;
+
+// Function to open modal
+function openModal() {
+    addProgramModal.style.display = 'block';
+}
+
+// Function to close modal
+function closeModal() {
+    addProgramModal.style.display = 'none';
+    // Clear form data when closing
+    document.getElementById('addProgramForm').reset();
+}
+
+// Function to open delete confirmation modal
+function openDeleteConfirmModal(programId) {
+    programIdToDelete = programId;
+    deleteConfirmModal.style.display = 'block';
+}
+
+// Function to close delete confirmation modal
+function closeDeleteConfirmModal() {
+    deleteConfirmModal.style.display = 'none';
+    programIdToDelete = null;
+}
+
+// Add click event to the Add Program button
+document.querySelector('.add-program-link').addEventListener('click', function(e) {
+    e.preventDefault();
+    openModal();
+});
+
+// Handle form submission
+document.querySelector("#addProgramModal form").addEventListener("submit", async function (event) {
+    event.preventDefault();
+    
+    // Validate form data
+    const programName = document.getElementById("programName").value.trim();
+    const programDescription = document.getElementById("programDescription").value.trim();
+
+    // Validation checks
+    if (!programName) {
+        alert("Program Name is required!");
+        return;
+    }
+    
+    if (!programDescription) {
+        alert("Program Description is required!");
+        return;
+    }
+
+    // Prepare form data
+    const formData = {
+        programName: programName,
+        programDescription: programDescription
+    };
+
+    try {
+        // Send POST request
+        const response = await fetch("/api/programs", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            throw new Error(errorData?.message || "Failed to add program");
+        }
+
+        const data = await response.json();
+        
+        // Success handling
+        alert("Program added successfully!");
+        closeModal();
+        window.location.reload();
+    } catch (error) {
+        console.error("Error:", error);
+        alert(`Failed to add program: ${error.message}`);
+    }
+});
+
+// Close modal when clicking outside
+window.addEventListener('click', function(e) {
+    if (e.target === addProgramModal) {
+        closeModal();
+    }
+    if (e.target === deleteConfirmModal) {
+        closeDeleteConfirmModal();
+    }
+});
+
+// Close modal using the button
+closeBtn.addEventListener('click', closeModal);
+deleteCancelBtn.addEventListener('click', closeDeleteConfirmModal);
+
+// Handle program deletion confirmation
+deleteConfirmBtn.addEventListener('click', async function () {
+    if (!programIdToDelete) return;
+
+    try {
+        const response = await fetch(`/api/programs/${programIdToDelete}`, {
+            method: "DELETE"
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => null);
+            throw new Error(errorData?.message || "Failed to delete program");
+        }
+
+        alert("Program deleted successfully!");
+        closeDeleteConfirmModal();
+        window.location.reload();
+    } catch (error) {
+        console.error("Error:", error);
+        alert(`Failed to delete program: ${error.message}`);
+    }
+});
+
+// Add click event listener to delete links
+document.querySelectorAll('.delete-link').forEach(link => {
+    link.addEventListener('click', function (e) {
+        e.preventDefault();
+        const programId = this.getAttribute('data-program-id');
+        openDeleteConfirmModal(programId);
+    });
+});
+
+
+// Get modal element
+const updateModal = document.getElementById('updateProgramModal');
+
+// Add click event to all update links
+document.querySelectorAll('.update-link').forEach(link => {
+    link.addEventListener('click', async function(e) {
+        e.preventDefault();
+        const programId = this.getAttribute('data-program-id');
+        await fetchAndPopulateProgram(programId);
+    });
+});
+
+// Function to fetch program data and populate the form
+async function fetchAndPopulateProgram(programId) {
+    try {
+        // Show loading state
+        updateModal.style.display = 'block';
+        const form = document.getElementById('updateProgramForm');
+        form.innerHTML += '<div id="loadingMessage">Loading program data...</div>';
+
+        // Fetch program data from API
+        const response = await fetch(`/api/programs/${programId}`);
+        
+        // Remove loading message
+        const loadingMessage = document.getElementById('loadingMessage');
+        if (loadingMessage) loadingMessage.remove();
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch program data');
+        }
+
+        const programData = await response.json();
+
+        // Populate form fields
+        document.getElementById('updateProgramId').value = programData.programId;
+        document.getElementById('updateProgramName').value = programData.programName;
+        document.getElementById('updateProgramDescription').value = programData.programDescription;
+
+        // Handle multi-select for courses
+        const courseSelect = document.getElementById('updateCourseNames');
+        if (courseSelect && programData.courseNames) {
+            Array.from(courseSelect.options).forEach(option => {
+                option.selected = programData.courseNames.includes(option.value);
+            });
+        }
+
+        // Handle multi-select for students
+        const studentSelect = document.getElementById('updateStudentNames');
+        if (studentSelect && programData.studentNames) {
+            Array.from(studentSelect.options).forEach(option => {
+                option.selected = programData.studentNames.includes(option.value);
+            });
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to load program data');
+        closeUpdateModal();
+    }
+}
+
+// Handle form submission
+document.getElementById('updateProgramForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const programId = document.getElementById('updateProgramId').value;
+
+    const formData = {
+        programId: programId,
+        programName: document.getElementById('updateProgramName').value,
+        programDescription: document.getElementById('updateProgramDescription').value,
+        courseNames: Array.from(document.getElementById('updateCourseNames').selectedOptions).map(opt => opt.value),
+        studentNames: Array.from(document.getElementById('updateStudentNames').selectedOptions).map(opt => opt.value)
+    };
+
+    try {
+        const response = await fetch(`/api/programs/${programId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update program');
+        }
+
+        alert('Program updated successfully');
+        closeUpdateModal();
+        window.location.reload(); // Refresh the page to see changes
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to update program');
+    }
+});
+
+// Function to close modal
+function closeUpdateModal() {
+    updateModal.style.display = 'none';
+}
+
+// Close modal when clicking outside
+window.addEventListener('click', function(e) {
+    if (e.target === updateModal) {
+        closeUpdateModal();
+    }
+});
+
+
+
+
+
+
+// Function to open view modal with program details
+async function openViewModal(programId) {
+    const viewModal = document.getElementById('viewProgramModal');
+    const viewProgramName = document.getElementById('viewProgramName');
+    const viewProgramDescription = document.getElementById('viewProgramDescription');
+    const viewProgramCourses = document.getElementById('viewProgramCourses');
+    const viewProgramStudents = document.getElementById('viewProgramStudents');
+
+    try {
+        const response = await fetch(`/api/programs/${programId}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch program details');
+        }
+
+        const program = await response.json();
+        viewProgramName.innerText = program.programName;
+        viewProgramDescription.innerText = program.programDescription;
+        viewProgramCourses.innerText = program.courseNames.join(', ');
+        viewProgramStudents.innerText = program.studentNames.join(', ');
+
+        viewModal.style.display = 'block';
+    } catch (error) {
+        alert(`Error fetching program details: ${error.message}`);
+    }
+}
+
+// Close the view modal
+function closeViewModal() {
+    document.getElementById('viewProgramModal').style.display = 'none';
+}
+
+// Add click event for view links
+document.querySelectorAll('.view-link').forEach(link => {
+    link.addEventListener('click', function (e) {
+        e.preventDefault();
+        const programId = this.getAttribute('data-program-id');
+        openViewModal(programId);
+    });
+});
+
+// Add click event to close button
+document.getElementById('viewCloseBtn').addEventListener('click', closeViewModal);
+
+// Close modal when clicking outside the modal content
+window.addEventListener('click', function (e) {
+    const viewModal = document.getElementById('viewProgramModal');
+    if (e.target === viewModal) {
+        closeViewModal();
+    }
+});
+
+
+
+
+    </script>
+
+  </body>
 </html>

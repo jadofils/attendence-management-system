@@ -37,22 +37,26 @@ public class Student {
     @Column(name = "enrollment_date")
     private LocalDate enrollmentDate;
 
+    // Cascade delete when program is deleted
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "program_id")
+    @JoinColumn(name = "program_id", nullable = false, foreignKey = @ForeignKey(name = "FK_program_student", value = ConstraintMode.CONSTRAINT))
     private Program program;
 
+    // Cascade delete when user is deleted
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "FK_user_student", value = ConstraintMode.CONSTRAINT))
     private User user;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    // Many-to-Many relationship for courses
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
         name = "student_courses",
-        joinColumns = @JoinColumn(name = "student_id"),
-        inverseJoinColumns = @JoinColumn(name = "course_id")
+        joinColumns = @JoinColumn(name = "student_id", nullable = false, foreignKey = @ForeignKey(name = "FK_student_course")),
+        inverseJoinColumns = @JoinColumn(name = "course_id", nullable = false, foreignKey = @ForeignKey(name = "FK_course_student"))
     )
     private List<Course> courses = new ArrayList<>();
 
+    // Attendance records with cascading delete
     @OneToMany(mappedBy = "student", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Attendance> attendanceRecords = new ArrayList<>();
 }

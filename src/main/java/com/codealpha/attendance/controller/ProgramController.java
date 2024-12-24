@@ -1,10 +1,11 @@
 package com.codealpha.attendance.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import com.codealpha.attendance.dto.ProgramDTO;
 import com.codealpha.attendance.service.programservice.ProgramService;
 
@@ -14,40 +15,70 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/programs")
 @RequiredArgsConstructor
 public class ProgramController {
-
     private final ProgramService programService;
 
+    
     @PostMapping
-    public ResponseEntity<ProgramDTO> createProgram(@RequestBody ProgramDTO programDTO) {
-        ProgramDTO savedProgram = programService.saveProgram(programDTO);
-        return ResponseEntity.ok(savedProgram);
+    public ResponseEntity<?> saveProgram(@RequestBody ProgramDTO programDTO) {
+        System.out.println("Program Name: " + programDTO.getProgramName());
+        System.out.println("Program Description: " + programDTO.getProgramDescription());
+    
+        // Simulate saving the program
+        programService.saveProgram(programDTO);
+    
+        // Return a proper JSON response
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Program saved successfully");
+        return ResponseEntity.ok(response);
     }
+    
+    
 
     @GetMapping
     public ResponseEntity<List<ProgramDTO>> getAllPrograms() {
-        return ResponseEntity.ok(programService.getAllPrograms());
+        try {
+            List<ProgramDTO> programs = programService.getAllPrograms();
+            return ResponseEntity.ok(programs);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProgramDTO> getProgramById(@PathVariable Long id) {
-        return ResponseEntity.ok(programService.findProgramById(id));
+        try {
+            ProgramDTO program = programService.findProgramById(id);
+            if (program != null) {
+                return ResponseEntity.ok(program);
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ProgramDTO> updateProgram(
-            @PathVariable Long id, @RequestBody ProgramDTO programDTO) {
-        ProgramDTO updatedProgram = programService.updateProgram(id, programDTO);
-        return ResponseEntity.ok(updatedProgram);
+            @PathVariable Long id, 
+            @RequestBody ProgramDTO programDTO) {
+        try {
+            ProgramDTO updatedProgram = programService.updateProgram(id, programDTO);
+            if (updatedProgram != null) {
+                return ResponseEntity.ok(updatedProgram);
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProgram(@PathVariable Long id) {
-        programService.deleteProgram(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/count")
-    public ResponseEntity<Long> countPrograms() {
-        return ResponseEntity.ok(programService.countPrograms());
+        try {
+            programService.deleteProgram(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }

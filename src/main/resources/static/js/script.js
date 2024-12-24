@@ -43,7 +43,7 @@ function searchDropdown(selectElement) {
     }
 }
 
-let rowsToShow = 10;
+let rowsToShow = 5;
 
 function loadMore() {
     const rows = document.querySelectorAll('.student-table tbody tr');
