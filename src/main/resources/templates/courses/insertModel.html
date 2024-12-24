@@ -41,7 +41,46 @@
         </form>
     </div>
 </div>
+<script>
+    function submitCourseForm() {
+    const programId = document.getElementById('programId').value;
 
+    // Alert if no program is selected
+    if (!programId) {
+        alert("Please select a program.");
+        return;
+    }
+
+    // Collect form data
+    const courseData = {
+        courseName: document.getElementById('courseName').value,
+        courseDescription: document.getElementById('courseDescription').value,
+        credits: parseInt(document.getElementById('credits').value)
+    };
+
+    // Send POST request
+    fetch(`/api/courses/${programId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(courseData)
+    })
+    .then(response => response.json()) // Parse JSON response
+    .then(data => {
+        if (data.status === "success") {
+            alert(data.message); // Success alert
+            closeModal(); // Close modal
+            location.reload(); // Refresh the page
+        } else if (data.status === "error") {
+            alert(data.message); // Error alert for duplicate course
+        }
+    })
+    .catch(error => {
+        alert("Failed to add course. Error: " + error.message); // General error
+    });
+}
+</script>
 <script>
 
 
