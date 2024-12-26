@@ -10,6 +10,7 @@
     <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
 
     <style>
+      /* Root Variables */
       :root {
         --primary-color: #19378a;
         --primary-light: #2a4ba8;
@@ -19,6 +20,7 @@
         --border-color: #e1e5eb;
       }
 
+      /* Body and Container */
       body {
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         margin: 0;
@@ -41,12 +43,14 @@
         text-align: center;
       }
 
+      /* Search and Button Styles */
       .search-container {
         margin-bottom: 20px;
         display: flex;
         gap: 10px;
-        align-items: center;
         margin-left: 12rem;
+        align-items: center;
+        justify-content: center;
       }
 
       .search-input {
@@ -80,11 +84,82 @@
         transform: scale(1.05);
       }
 
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        margin: 5.5rem 0 0 24rem;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        max-width: 500px;
+        width: 100%;
+      }
+
+      .close-button,
+      .close {
+        float: right;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .close-button:hover,
+      .close:hover {
+        color: #f00;
+      }
+
+      /* Card Styles */
+      .card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-header {
+        font-size: 1.5em;
+        margin-bottom: 10px;
+        font-weight: bold;
+      }
+
+      .card-body p {
+        margin: 5px 0;
+      }
+
+      /* Buttons */
+      .submit-button {
+        padding: 10px 15px;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .submit-button:hover {
+        background-color: var(--primary-dark);
+      }
+
+      /* Table Styles */
       .course-table {
         width: 100%;
         border-collapse: collapse;
         margin-bottom: 20px;
-        margin-left: 15rem;
+        margin-left: 12rem;
         overflow-x: auto;
       }
 
@@ -123,50 +198,26 @@
         color: var(--primary-light);
       }
 
-      .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-      }
-
-      .modal-content {
-        background-color: #fff;
-        margin: 5% auto;
+      .course-card {
+        /* Styles for the course card */
         padding: 20px;
-        border-radius: 8px;
-        width: 50%;
-        max-height: 80%;
-        overflow-y: auto;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 20px;
       }
 
-      .close-button {
-        float: right;
-        font-size: 20px;
+      .course-card h3 {
+        margin-top: 0;
+        margin-bottom: 10px;
+      }
+
+      .course-card p {
+        margin-bottom: 5px;
+      }
+
+      .course-card p strong {
         font-weight: bold;
-        cursor: pointer;
-      }
-
-      .close-button:hover {
-        color: #f00;
-      }
-
-      .submit-button {
-        padding: 10px 15px;
-        background-color: var(--primary-color);
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-
-      .submit-button:hover {
-        background-color: var(--primary-dark);
+        margin-right: 5px;
       }
     </style>
   </head>
@@ -186,22 +237,77 @@
           onkeyup="searchTable()"
         />
 
+        <!-- Button to open the Insert Modal -->
         <a href="#" class="add-course-link">
-          <button class="add-course-button" onclick="openModal()">
+          <button
+            class="add-course-button"
+            onclick="openInsertModal(this.getAttribute('data-program-id'))"
+            th:attr="data-program-id=${selectedProgramId}"
+          >
             Add New Course
           </button>
         </a>
       </div>
+<!-- Success Message Popup -->
+<div th:if="${successMessage}" 
+     th:text="${successMessage}" 
+     id="successPopup"
+     style="position: fixed; 
+            top: 20px; 
+            right: 20px; 
+            background-color: #4CAF50; /* Green */
+            color: white; 
+            padding: 15px; 
+            border-radius: 5px; 
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+            z-index: 1000; 
+            font-size: 16px; 
+            display: flex; 
+            align-items: center;">
+
+    <!-- Close Button -->
+    <span style="margin-left: 10px; 
+                 font-weight: bold; 
+                 cursor: pointer;" 
+          onclick="closePopup('successPopup')">&times;</span>
+</div>
+
+<!-- Error Message Popup -->
+<div th:if="${errorMessage}" 
+     th:text="${errorMessage}" 
+     id="errorPopup"
+     style="position: fixed; 
+            top: 20px; 
+            right: 20px; 
+            background-color: #f44336; /* Red */
+            color: white; 
+            padding: 15px; 
+            border-radius: 5px; 
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+            z-index: 1000; 
+            font-size: 16px; 
+            display: flex; 
+            align-items: center;">
+
+    <!-- Close Button -->
+    <span style="margin-left: 10px; 
+                 font-weight: bold; 
+                 cursor: pointer;" 
+          onclick="closePopup('errorPopup')">&times;</span>
+</div>
 
       <!-- Insert and Update Modal -->
       <div
         id="updateFormContainer"
-        th:replace="~{'classes/update' :: update_form}"
+        th:replace="~{'courses/update' :: update_form}"
       ></div>
+      <!-- this render update card -->
+      <div id="updateFormContainer"></div>
+
       <div
         id="insertFormContainer"
         th:replace="~{courses/insertModel::insert_form}"
-      ></div>      
+      ></div>
       <!-- Courses Table -->
       <table class="course-table">
         <thead>
@@ -222,9 +328,6 @@
             <td th:text="${course.credits}"></td>
             <td th:text="${course.programId}"></td>
             <td class="action-icons">
-             
-
-              <!-- Update Link -->
               <a
                 href="#"
                 class="update-link"
@@ -235,122 +338,369 @@
                 <i class="fas fa-edit"></i>
               </a>
 
-
-               <!-- View Course Link -->
-               <a href="#" class="view-link" onclick="viewCourseDetails(this.getAttribute('data-course-id'))" th:attr="data-course-id=${course.courseId}" title="View Course">
+              <!-- View Course Link -->
+              <a
+                href="#"
+                class="view-link"
+                onclick="viewCourseDetails(this.getAttribute('data-course-id'))"
+                th:attr="data-course-id=${course.courseId}"
+                title="View Course"
+              >
                 <i class="fas fa-eye"></i>
-            </a>
+              </a>
               <!-- Delete Link -->
-             <!-- Delete Link --> 
-              <a href="#" class="delete-link" onclick="confirmDeleteCourse(this.getAttribute('data-course-id'))" th:attr="data-course-id=${course.courseId}" title="Delete"> <i class="fas fa-trash-alt"></i> </a>
+              <!-- Delete Link -->
+              <a
+                href="#"
+                class="delete-link"
+                onclick="openDeleteModal(this.getAttribute('data-course-id'))"
+                th:attr="data-course-id=${course.courseId}"
+                title="Delete"
+              >
+                <i class="fas fa-trash-alt"></i>
+              </a>
             </td>
           </tr>
         </tbody>
       </table>
+      <!-- Modal Structure -->
+      <!-- Modal Structure -->
+      <div id="courseModal" class="modal" style="display: none">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <div id="courseCard"></div>
+        </div>
+      </div>
+      <!-- Delete Confirmation Modal -->
+      <div id="deleteModal" class="modal" style="display: none">
+        <div class="modal-content">
+          <span class="close-button" onclick="closeDeleteModal()">&times;</span>
+          <h2>Confirm Delete</h2>
+          <p>Are you sure you want to delete this course?</p>
+          <div class="modal-buttons">
+            <button
+              onclick="confirmDelete()"
+              style="
+                background-color: #dc3545;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+              "
+            >
+              Yes, Delete
+            </button>
+            <button
+              onclick="closeDeleteModal()"
+              style="
+                background-color: #6c757d;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                border-radius: 5px;
+              "
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+        
       <button id="loadMoreBtn" onclick="loadMore()">Load More</button>
     </div>
-<script>
-  function viewCourseDetails(courseId) {
-    fetch(`/api/courses/${courseId}`)
-        .then(response => response.json())
-        .then(data => {
-            console.log('API Response:', data);
+    <script>
+      // Close popup when 'x' is clicked
+      function closePopup(popupId) {
+          document.getElementById(popupId).style.display = 'none';
+      }
+      
+      // Auto-hide popup after 5 seconds
+      window.onload = function () {
+          setTimeout(() => {
+              let successPopup = document.getElementById('successPopup');
+              let errorPopup = document.getElementById('errorPopup');
+              if (successPopup) successPopup.style.display = 'none';
+              if (errorPopup) errorPopup.style.display = 'none';
+          }, 5000); // Hide after 5 seconds
+      };
+      </script>
+      
 
-            // Dynamically create rows based on fetched data
-            const tableBody = document.getElementById('courseTableBody');
-            tableBody.innerHTML = ''; // Clear existing rows
+    <script>
+      // Add event listeners to all update icons
+      document.addEventListener("DOMContentLoaded", function () {
+        const updateLinks = document.querySelectorAll(".update-link");
+        updateLinks.forEach((link) => {
+          link.addEventListener("click", function (e) {
+            e.preventDefault();
+            const courseId = this.getAttribute("data-course-id");
+            showUpdateModal(courseId);
+          });
+        });
+      });
 
-            const row = document.createElement('tr');
-            row.innerHTML =
-                '<td>' + data.courseId + '</td>' +
-                '<td>' + data.courseName + '</td>' +
-                '<td>' + data.courseDescription + '</td>' +
-                '<td>' + data.credits + '</td>' +
-                '<td>' + data.programId + '</td>';
-            tableBody.appendChild(row);
+      // Function to show the update modal and populate form data
+      async function showUpdateModal(courseId) {
+        const modal = document.getElementById("updateCourseModal");
+        document.getElementById("courseId").value = courseId;
 
-            // Show the modal
-            document.getElementById('courseModal').style.display = 'block';
-        })
-        .catch(error => console.error('Error fetching course details:', error));
-}
+        // Show the modal
+        modal.style.display = "block";
 
-// Close the modal when the user clicks on <span> (x)
-document.querySelector('.close').addEventListener('click', function() {
-    document.getElementById('courseModal').style.display = 'none';
-});
+        // Fetch and populate course details
+        await fetchCourseDetails(courseId);
+      }
 
-// Also close the modal when the user clicks anywhere outside of the modal
-window.onclick = function(event) {
-    if (event.target == document.getElementById('courseModal')) {
-        document.getElementById('courseModal').style.display = 'none';
-    }
-};
+      // Function to hide the update modal
+      function hideUpdateModal() {
+        console.log("hideUpdateModal function invoked");
+        const modal = document.getElementById("updateCourseModal");
+        if (modal) {
+          modal.style.display = "none";
+        } else {
+          console.error("Modal not found");
+        }
+      }
 
-</script>
-    
+      // Function to fetch course details and populate the form
+      async function fetchCourseDetails(courseId) {
+        try {
+          const response = await fetch(`/courses/update/${courseId}`);
+          const course = await response.json();
+
+          // Populate the form fields
+          document.getElementById("programId").value = course.programId;
+          document.getElementById("courseDescription").value =
+            course.courseDescription;
+          document.getElementById("credits").value = course.credits;
+
+          // Load courses for the selected program
+          await loadCoursesByProgram(course.programId, course.courseName);
+        } catch (error) {
+          console.error("Error fetching course details:", error);
+        }
+      }
+
+      // Function to load courses based on selected program
+      async function loadCoursesByProgram(
+        selectedProgramId,
+        selectedCourseName = null
+      ) {
+        const programId =
+          selectedProgramId || document.getElementById("programId").value;
+        const courseDropdown = document.getElementById("courseName");
+
+        // Clear existing options
+        courseDropdown.innerHTML = '<option value="">Select a course</option>';
+
+        if (programId) {
+          try {
+            const response = await fetch(`/api/programs/${programId}`);
+            const program = await response.json();
+
+            console.log("Program Response:", program);
+
+            // Check if program.courseNames exists and is an array
+            const courses = program.courseNames || [];
+            if (Array.isArray(courses)) {
+              courses.forEach((courseName) => {
+                const option = document.createElement("option");
+                option.value = courseName;
+                option.textContent = courseName;
+                courseDropdown.appendChild(option);
+              });
+
+              // If this is an update operation and we have a course to select
+              if (selectedCourseName) {
+                courseDropdown.value = selectedCourseName;
+              }
+            } else {
+              console.error("Invalid course data structure:", program);
+            }
+          } catch (error) {
+            console.error("Error loading courses:", error);
+            // Add a disabled option to indicate the error
+            const errorOption = document.createElement("option");
+            errorOption.textContent = "Error loading courses";
+            errorOption.disabled = true;
+            courseDropdown.appendChild(errorOption);
+          }
+        }
+      }
+
+      // Handle form submission
+      document
+        .getElementById("updateCourseForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const courseId = document.getElementById("courseId").value;
+          const formData = {
+            programId: document.getElementById("programId").value,
+            courseName:
+              document.getElementById("courseNameInput").value ||
+              inputElement.value,
+            courseDescription:
+              document.getElementById("courseDescription").value,
+            credits: document.getElementById("credits").value,
+          };
+
+          try {
+            const response = await fetch(`/api/courses/${courseId}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+              // Hide modal and refresh page or update UI
+              hideUpdateModal();
+              alert("Course has been Updated successfully");
+              hideUpdateModal();
+              window.location.reload();
+            } else {
+              const errorMsg = await response.text();
+              console.error("Update failed:", errorMsg);
+              alert(`Update failed: ${errorMsg}`);
+            }
+          } catch (error) {
+            console.error("Error updating course:", error);
+          }
+        });
+
+      const selectElement = document.getElementById("courseName");
+      const inputElement = document.getElementById("courseNameInput");
+
+      selectElement.addEventListener("change", () => {
+        inputElement.value = selectElement.value;
+        inputElement.style.display = "block";
+      });
+
+      inputElement.addEventListener("blur", () => {
+        if (inputElement.value !== "") {
+          inputElement.style.display = "none";
+        } else {
+          inputElement.value = "";
+          inputElement.style.display = "none";
+        }
+      });
+    </script>
+
     <script>
       // Open the add course modal
-      function openModal() {
+      // Open the modal and set the program ID dynamically
+      function openInsertModal(programId) {
         const modal = document.getElementById("addCourseModal");
-        modal.style.display = "block"; // Display the modal
+        modal.style.display = "block";
+
+        // Set programId in the hidden field
+        document.getElementById("programId").value = programId;
       }
 
       // Close the modal
       function closeModal() {
         const modal = document.getElementById("addCourseModal");
-        modal.style.display = "none"; // Hide the modal
+        modal.style.display = "none";
+
+        // Clear form fields (optional)
+        document.getElementById("courseName").value = "";
+        document.getElementById("courseDescription").value = "";
+        document.getElementById("credits").value = "";
       }
 
-      // Close modal if user clicks outside the modal content
+      // Close modal if clicked outside the modal content
       window.onclick = function (event) {
         const modal = document.getElementById("addCourseModal");
         if (event.target === modal) {
-          closeModal(); // Close modal if click is outside content
+          closeModal();
         }
       };
-   
 
+      let courseIdToDelete; // Store the course ID to delete
 
-    let courseIdToDelete;
-    
-    function confirmDeleteCourse(courseId) {
+      // Open Delete Confirmation Modal
+      function openDeleteModal(courseId) {
+        // Store course ID for deletion
         courseIdToDelete = courseId;
-        document.getElementById('deleteModal').style.display = 'block';
-    }
-    
-    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+
+        // Show the modal
+        const modal = document.getElementById("deleteModal");
+        modal.style.display = "block";
+      }
+
+      // Close Delete Modal
+      function closeDeleteModal() {
+        const modal = document.getElementById("deleteModal");
+        modal.style.display = "none";
+      }
+
+      // Confirm Delete Action
+      function confirmDelete() {
         fetch(`/api/courses/${courseIdToDelete}`, {
-            method: 'DELETE'
+          method: "DELETE",
         })
-        .then(response => {
+          .then((response) => {
             if (response.ok) {
-                alert('Course deleted successfully');
-                document.getElementById('deleteModal').style.display = 'none';
-                // You can also add code to remove the course from the UI
+              alert("Course deleted successfully.");
+              closeDeleteModal(); // Close modal
+              // Remove the deleted course row from the table (optional)
+              const row = document
+                .querySelector(`[data-course-id='${courseIdToDelete}']`)
+                .closest("tr");
+              row.parentNode.removeChild(row);
             } else {
-                alert('Failed to delete course');
+              alert("Failed to delete course.");
             }
-        })
-        .catch(error => console.error('Error:', error));
-    });
-    
-    document.getElementById('cancelDeleteBtn').addEventListener('click', function() {
-        document.getElementById('deleteModal').style.display = 'none';
-    });
-    
-    // Close the modal when the user clicks on <span> (x)
-    document.querySelector('.close').addEventListener('click', function() {
-        document.getElementById('deleteModal').style.display = 'none';
-    });
-    
-    // Also close the modal when the user clicks anywhere outside of the modal
-    window.onclick = function(event) {
-        if (event.target == document.getElementById('deleteModal')) {
-            document.getElementById('deleteModal').style.display = 'none';
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("An error occurred while deleting the course.");
+          });
+      }
+
+      // Close modal if clicked outside
+      window.onclick = function (event) {
+        const modal = document.getElementById("deleteModal");
+        if (event.target === modal) {
+          closeDeleteModal();
         }
-    };
+      };
     </script>
-    
+    <script>
+      // Open View Modal
+      function viewCourseDetails(courseId) {
+        fetch(`/api/courses/${courseId}`)
+          .then((response) => response.json())
+          .then((data) => {
+            // Populate modal with course details
+            const courseCard = document.getElementById("courseCard");
+            courseCard.innerHTML = `
+              <div class="card" style="width: 60%; margin: 0 auto; background-color: #f0f0f0; padding: 20px; border-radius: 5px;"> 
+    <h3 style="color: #333;">${data.courseName}</h3>
+    <p style="color: #333;"><strong>ID:</strong> ${data.courseId}</p>
+    <p style="color: #333;"><strong>Description:</strong> ${data.courseDescription}</p>
+    <p style="color: #333;"><strong>Credits:</strong> ${data.credits}</p>
+    <p style="color: #333;"><strong>Program ID:</strong> ${data.programId}</p>
+</div>`;
+
+            // Display the modal
+            const modal = document.getElementById("courseModal");
+            modal.style.display = "block";
+          })
+          .catch((error) =>
+            console.error("Error fetching course details:", error)
+          );
+      }
+
+      // Close View Modal
+      document.querySelector(".close").addEventListener("click", function () {
+        const modal = document.getElementById("courseModal");
+        modal.style.display = "none";
+      });
+    </script>
+
+   
   </body>
 </html>

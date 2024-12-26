@@ -23,7 +23,7 @@ public class CourseController {
     
     @PostMapping("/{programId}")
     public ResponseEntity<Map<String, String>> createCourse(
-            @PathVariable Long programId,
+            @PathVariable Long programId, 
             @RequestBody CourseDTO courseDTO) {
     
         Map<String, String> response = new HashMap<>();
@@ -32,7 +32,7 @@ public class CourseController {
             CourseDTO createdCourse = courseService.createCourse(courseDTO, programId);
             response.put("status", "success");
             response.put("message", "Course added successfully!");
-            response.put("courseId", createdCourse.getCourseId().toString());
+            response.put("courseId", String.valueOf(createdCourse.getCourseId())); // Use String.valueOf() for better type safety
             return ResponseEntity.ok(response);
     
         } catch (IllegalArgumentException e) {
@@ -42,14 +42,19 @@ public class CourseController {
         }
     }
     
-
     @PutMapping("/{courseId}")
     public ResponseEntity<CourseDTO> updateCourse(@PathVariable Long courseId, @RequestBody CourseDTO courseDTO) {
+        System.out.println("CourseDTO: " + courseDTO);
+        System.out.println("CourseID: " + courseId);
+        
+        
         return ResponseEntity.ok(courseService.updateCourse(courseId, courseDTO));
     }
 
     @GetMapping("/{courseId}")
     public ResponseEntity<CourseDTO> getCourseById(@PathVariable Long courseId) {
+            System.out.println("CourseID: " + courseId);
+
         return ResponseEntity.ok(courseService.getCourseById(courseId));
     }
 

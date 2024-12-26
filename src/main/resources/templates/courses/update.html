@@ -1,52 +1,65 @@
-<!-- Main container for the update form -->
-<div id="updateFormContainer"></div>
-
 <!-- Update Course Modal -->
-<div id="updateCourseModal" class="modal" th:fragment="update_form">
-    <div class="modal-content">
-        <!-- Close Button -->
-        <span class="close-button" onclick="closeModal()">&times;</span>
-        <h2>Update Course</h2>
-        
-        <!-- Course Form -->
-        <form id="updateCourseForm" th:object="${course}">
-            <input type="hidden" id="courseId" name="courseId" th:value="*{courseId}">
-            
-            <div class="form-group">
-                <label for="programId">Select Program:</label>
-                <select id="programId" name="programId" required>
-                    <option value="">Select a program</option>
-                    <option th:each="program : ${programs}" 
-                            th:value="${program.programId}"
-                            th:selected="${program.programId == course.programId}"
-                            th:text="${program.programName}">
-                    </option>
-                </select>
-            </div>
+<div
+  id="updateCourseModal"
+  class="modal"
+  style="display: none"
+  th:fragment="update_form"
+>
+  <div class="modal-content">
+    <!-- Close Button -->
+    <span class="close-button" onclick="hideUpdateModal()">&times;</span>
+    <h2>Update Course</h2>
 
-            <div class="form-group">
-                <label for="courseName">Course Name:</label>
-                <input type="text" id="courseName" name="courseName" 
-                       th:value="*{courseName}" required>
-            </div>
+    <!-- Form -->
+    <form id="updateCourseForm">
+      <!-- Course ID -->
+      <input type="hidden" id="courseId" name="courseId" />
+      <!-- Program Dropdown -->
+      <div class="form-group">
+        <label for="programId">Select Program:</label>
+        <select
+          id="programId"
+          name="programId"
+          required
+          onchange="loadCoursesByProgram()"
+        >
+          <option value="">Select a program</option>
+          <option
+            th:each="program : ${programs}"
+            th:value="${program.programId}"
+            th:text="${program.programName} + ' (' + ${program.programId} + ')'"
+          ></option>
+        </select>
+      </div>
 
-            <div class="form-group">
-                <label for="courseDescription">Description:</label>
-                <textarea id="courseDescription" name="courseDescription" 
-                         th:text="*{courseDescription}" required></textarea>
-            </div>
+      <div class="form-group">
+        <label for="courseName">Select Course (optional):</label>
+        <select id="courseName" name="courseName">
+          <option value="">Select a course</option>
+        </select>
+        <input type="text" id="courseNameInput" style="display: none" />
+      </div>
 
-            <div class="form-group">
-                <label for="credits">Credits:</label>
-                <input type="number" id="credits" name="credits" 
-                       th:value="*{credits}" required>
-            </div>
+      <!-- Description -->
+      <div class="form-group">
+        <label for="courseDescription">Description:</label>
+        <textarea
+          id="courseDescription"
+          name="courseDescription"
+          required
+        ></textarea>
+      </div>
 
-            <button type="button" onclick="submitUpdateForm()">Update Course</button>
-        </form>
-    </div>
+      <!-- Credits -->
+      <div class="form-group">
+        <label for="credits">Credits:</label>
+        <input type="number" id="credits" name="credits" required />
+      </div>
+
+      <!-- Buttons -->
+      <button type="submit" onclick="updateFormSubmitted()">
+        Update Course
+      </button>
+    </form>
+  </div>
 </div>
-
-<script th:inline="javascript">
-
-</script>

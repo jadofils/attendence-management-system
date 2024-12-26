@@ -2,13 +2,14 @@ package com.codealpha.attendance.controller.ViewControllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
-
 import com.codealpha.attendance.dto.CourseDTO;
 import com.codealpha.attendance.dto.ProgramDTO;
 import com.codealpha.attendance.service.courseService.CourseService;
 import com.codealpha.attendance.service.programservice.ProgramService;
+
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -27,36 +28,46 @@ public class CourseViewController {
 
     @GetMapping
     public String getAllCourses(Model model) {
-        // Add an empty CourseDTO for form binding
-        model.addAttribute("courseDTO", new CourseDTO());
-
-        // Fetch all programs for the dropdown
-        List<ProgramDTO> programs = programService.getAllPrograms();
+        model.addAttribute("courseDTO", new CourseDTO()); // For form binding
+        List<ProgramDTO> programs = programService.getAllPrograms(); 
         model.addAttribute("programs", programs);
-
-        // Fetch courses from the service
-        List<CourseDTO> courses = courseService.getAllCourses();
+        List<CourseDTO> courses = courseService.getAllCourses(); 
         model.addAttribute("courses", courses);
+        return "courses/select"; 
+    }
 
-        // Render the courses/select.html template
+   @PostMapping("/add")
+public String addCourse(
+        @RequestParam("programId") Long programId,
+        @Valid @ModelAttribute("courseDTO") CourseDTO courseDTO,
+        BindingResult result,
+        Model model) {
+
+    // Validation error handling
+    if (result.hasErrors()) {
+        model.addAttribute("errorMessage", "Validation failed. Please correct the errors and try again.");
+        model.addAttribute("programs", programService.getAllPrograms());
+        model.addAttribute("courses", courseService.getAllCourses());
         return "courses/select";
     }
 
+    try {
+        // Save the course using the service
+        courseService.createCourse(courseDTO, programId);
+        model.addAttribute("successMessage", "Course added successfully!");
 
-    // Endpoint to display a specific course by ID
-    @GetMapping("/{courseId}")
-    public String getCourseById(@PathVariable Long courseId, Model model) {
-        // Fetch the course by its ID
-        CourseDTO course = courseService.getCourseById(courseId);
-
-        // Add the course to the model
-        model.addAttribute("course", course);
-
-        // Fetch all programs for the dropdown (if necessary)
-        List<ProgramDTO> programs = programService.getAllPrograms();
-        model.addAttribute("programs", programs);
-
-        // Render the course details template
-        return "courses/select";
+    } catch (IllegalArgumentException e) {
+        model.addAttribute("errorMessage", e.getMessage());
     }
+
+    // Reload dropdowns and courses
+    model.addAttribute("courseDTO", new CourseDTO());
+    model.addAttribute("programs", programService.getAllPrograms());
+    model.addAttribute("courses", courseService.getAllCourses());
+
+    return "courses/select";
+}
+
+
+    
 }

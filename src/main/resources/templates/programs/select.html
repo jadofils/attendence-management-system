@@ -169,33 +169,32 @@
         background-color: var(--primary-dark);
       }
       #confirmDeleteBtn {
-    background-color: red;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 12px;
-}
+        background-color: red;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 12px;
+      }
 
-#cancelDeleteBtn {
-    background-color: grey;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 12px;
-}
-
+      #cancelDeleteBtn {
+        background-color: grey;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 12px;
+      }
     </style>
   </head>
   <body>
@@ -214,21 +213,19 @@
           onkeyup="searchTable()"
         />
         <a href="#" class="add-program-link">
-            <button class="add-program-button">
-                Add New Program
-            </button>
+          <button class="add-program-button">Add New Program</button>
         </a>
       </div>
 
       <div
-  id="updateFormContainer"
-  th:replace="~{programs/update::update_form}"
-></div>
+        id="updateFormContainer"
+        th:replace="~{programs/update::update_form}"
+      ></div>
 
-<div
-  id="insertFormContainer"
-  th:replace="~{programs/insertModel::insert_form}"
-></div>
+      <div
+        id="insertFormContainer"
+        th:replace="~{programs/insertModel::insert_form}"
+      ></div>
 
       <!-- Programs Table -->
       <table class="program-table">
@@ -248,31 +245,39 @@
             <td th:text="${program.programName}"></td>
             <td th:text="${program.programDescription}"></td>
             <td>
-              <span
-                th:each="course, iterStat : ${program.courseNames}"
-                th:text="${course} + (iterStat.last ? '' : ', ')"
-              ></span>
+              
+              <ol>
+                <li th:each="course : ${program.courseNames}" th:text="${course}"></li>
+              </ol>
+              
             </td>
             <td>
-              <span
-                th:each="student, iterStat : ${program.studentNames}"
-                th:text="${student} + (iterStat.last ? '' : ', ')"
-              ></span>
+              <ol>
+                <li th:each="student : ${program.studentNames}" th:text="${student}"></li>
+              </ol>
+              
             </td>
             <td class="action-icons">
               <!-- Update Link -->
-              <a th:fragment="updateBtn" 
-              href="#" 
-              class="update-link" 
-              th:data-program-id="${program.programId}" 
-              title="Update">
-               <i class="fas fa-edit"></i>
-           </a>
+              <a
+                th:fragment="updateBtn"
+                href="#"
+                class="update-link"
+                th:data-program-id="${program.programId}"
+                title="Update"
+              >
+                <i class="fas fa-edit"></i>
+              </a>
 
-           <a href="#" class="view-link" th:attr="data-program-id=${program.programId}" title="View">
-            <i class="fas fa-eye"></i>
-        </a>
-        
+              <a
+                href="#"
+                class="view-link"
+                th:attr="data-program-id=${program.programId}"
+                title="View"
+              >
+                <i class="fas fa-eye"></i>
+              </a>
+
               <!-- Delete Link -->
               <a
                 href="#"
@@ -287,335 +292,354 @@
         </tbody>
       </table>
 
-
       <div id="deleteConfirmModal" class="modal">
         <div class="modal-content">
-            <h3>Confirm Deletion</h3>
-            <p>Are you sure you want to delete this program?</p>
-            <button id="confirmDeleteBtn">Yes, Delete</button>
-            <button id="cancelDeleteBtn">Cancel</button>
+          <h3>Confirm Deletion</h3>
+          <p>Are you sure you want to delete this program?</p>
+          <button id="confirmDeleteBtn">Yes, Delete</button>
+          <button id="cancelDeleteBtn">Cancel</button>
         </div>
-    </div>
+      </div>
 
-    <div id="viewProgramModal" class="modal" >
-      <div class="modal-content">
+      <div id="viewProgramModal" class="modal">
+        <div class="modal-content">
           <span class="close-button" id="viewCloseBtn">&times;</span>
           <h3>Program Details</h3>
           <p><strong>Name:</strong> <span id="viewProgramName"></span></p>
-          <p><strong>Description:</strong> <span id="viewProgramDescription"></span></p>
+          <p>
+            <strong>Description:</strong>
+            <span id="viewProgramDescription"></span>
+          </p>
           <p><strong>Courses:</strong> <span id="viewProgramCourses"></span></p>
-          <p><strong>Students:</strong> <span id="viewProgramStudents"></span></p>
+          <p>
+            <strong>Students:</strong> <span id="viewProgramStudents"></span>
+          </p>
+        </div>
       </div>
-  </div>
-<button id="loadMoreBtn" onclick="loadMore()">Load More</button>
+      <button id="loadMoreBtn" onclick="loadMore()">Load More</button>
     </div>
 
     <script>
       // Get modal elements
-const addProgramModal = document.getElementById('addProgramModal');
-const closeBtn = document.querySelector('#addProgramModal .close-button');
-const deleteConfirmModal = document.getElementById('deleteConfirmModal');
-const deleteConfirmBtn = document.getElementById('confirmDeleteBtn');
-const deleteCancelBtn = document.getElementById('cancelDeleteBtn');
-let programIdToDelete = null;
+      const addProgramModal = document.getElementById("addProgramModal");
+      const closeBtn = document.querySelector("#addProgramModal .close-button");
+      const deleteConfirmModal = document.getElementById("deleteConfirmModal");
+      const deleteConfirmBtn = document.getElementById("confirmDeleteBtn");
+      const deleteCancelBtn = document.getElementById("cancelDeleteBtn");
+      let programIdToDelete = null;
 
-// Function to open modal
-function openModal() {
-    addProgramModal.style.display = 'block';
-}
+      // Function to open modal
+      function openModal() {
+        addProgramModal.style.display = "block";
+      }
 
-// Function to close modal
-function closeModal() {
-    addProgramModal.style.display = 'none';
-    // Clear form data when closing
-    document.getElementById('addProgramForm').reset();
-}
+      // Function to close modal
+      function closeModal() {
+        addProgramModal.style.display = "none";
+        // Clear form data when closing
+        document.getElementById("addProgramForm").reset();
+      }
 
-// Function to open delete confirmation modal
-function openDeleteConfirmModal(programId) {
-    programIdToDelete = programId;
-    deleteConfirmModal.style.display = 'block';
-}
+      // Function to open delete confirmation modal
+      function openDeleteConfirmModal(programId) {
+        programIdToDelete = programId;
+        deleteConfirmModal.style.display = "block";
+      }
 
-// Function to close delete confirmation modal
-function closeDeleteConfirmModal() {
-    deleteConfirmModal.style.display = 'none';
-    programIdToDelete = null;
-}
+      // Function to close delete confirmation modal
+      function closeDeleteConfirmModal() {
+        deleteConfirmModal.style.display = "none";
+        programIdToDelete = null;
+      }
 
-// Add click event to the Add Program button
-document.querySelector('.add-program-link').addEventListener('click', function(e) {
-    e.preventDefault();
-    openModal();
-});
-
-// Handle form submission
-document.querySelector("#addProgramModal form").addEventListener("submit", async function (event) {
-    event.preventDefault();
-    
-    // Validate form data
-    const programName = document.getElementById("programName").value.trim();
-    const programDescription = document.getElementById("programDescription").value.trim();
-
-    // Validation checks
-    if (!programName) {
-        alert("Program Name is required!");
-        return;
-    }
-    
-    if (!programDescription) {
-        alert("Program Description is required!");
-        return;
-    }
-
-    // Prepare form data
-    const formData = {
-        programName: programName,
-        programDescription: programDescription
-    };
-
-    try {
-        // Send POST request
-        const response = await fetch("/api/programs", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(formData)
+      // Add click event to the Add Program button
+      document
+        .querySelector(".add-program-link")
+        .addEventListener("click", function (e) {
+          e.preventDefault();
+          openModal();
         });
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => null);
-            throw new Error(errorData?.message || "Failed to add program");
+      // Handle form submission
+      document
+        .querySelector("#addProgramModal form")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          // Validate form data
+          const programName = document
+            .getElementById("programName")
+            .value.trim();
+          const programDescription = document
+            .getElementById("programDescription")
+            .value.trim();
+
+          // Validation checks
+          if (!programName) {
+            alert("Program Name is required!");
+            return;
+          }
+
+          if (!programDescription) {
+            alert("Program Description is required!");
+            return;
+          }
+
+          // Prepare form data
+          const formData = {
+            programName: programName,
+            programDescription: programDescription,
+          };
+
+          try {
+            // Send POST request
+            const response = await fetch("/api/programs", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(formData),
+            });
+
+            if (!response.ok) {
+              const errorData = await response.json().catch(() => null);
+              throw new Error(errorData?.message || "Failed to add program");
+            }
+
+            const data = await response.json();
+
+            // Success handling
+            alert("Program added successfully!");
+            closeModal();
+            window.location.reload();
+          } catch (error) {
+            console.error("Error:", error);
+            alert(`Failed to add program: ${error.message}`);
+          }
+        });
+
+      // Close modal when clicking outside
+      window.addEventListener("click", function (e) {
+        if (e.target === addProgramModal) {
+          closeModal();
         }
+        if (e.target === deleteConfirmModal) {
+          closeDeleteConfirmModal();
+        }
+      });
 
-        const data = await response.json();
-        
-        // Success handling
-        alert("Program added successfully!");
-        closeModal();
-        window.location.reload();
-    } catch (error) {
-        console.error("Error:", error);
-        alert(`Failed to add program: ${error.message}`);
-    }
-});
+      // Close modal using the button
+      closeBtn.addEventListener("click", closeModal);
+      deleteCancelBtn.addEventListener("click", closeDeleteConfirmModal);
 
-// Close modal when clicking outside
-window.addEventListener('click', function(e) {
-    if (e.target === addProgramModal) {
-        closeModal();
-    }
-    if (e.target === deleteConfirmModal) {
-        closeDeleteConfirmModal();
-    }
-});
+      // Handle program deletion confirmation
+      deleteConfirmBtn.addEventListener("click", async function () {
+        if (!programIdToDelete) return;
 
-// Close modal using the button
-closeBtn.addEventListener('click', closeModal);
-deleteCancelBtn.addEventListener('click', closeDeleteConfirmModal);
+        try {
+          const response = await fetch(`/api/programs/${programIdToDelete}`, {
+            method: "DELETE",
+          });
 
-// Handle program deletion confirmation
-deleteConfirmBtn.addEventListener('click', async function () {
-    if (!programIdToDelete) return;
-
-    try {
-        const response = await fetch(`/api/programs/${programIdToDelete}`, {
-            method: "DELETE"
-        });
-
-        if (!response.ok) {
+          if (!response.ok) {
             const errorData = await response.json().catch(() => null);
             throw new Error(errorData?.message || "Failed to delete program");
+          }
+
+          alert("Program deleted successfully!");
+          closeDeleteConfirmModal();
+          window.location.reload();
+        } catch (error) {
+          console.error("Error:", error);
+          alert(`Failed to delete program: ${error.message}`);
         }
+      });
 
-        alert("Program deleted successfully!");
-        closeDeleteConfirmModal();
-        window.location.reload();
-    } catch (error) {
-        console.error("Error:", error);
-        alert(`Failed to delete program: ${error.message}`);
-    }
-});
+      // Add click event listener to delete links
+      document.querySelectorAll(".delete-link").forEach((link) => {
+        link.addEventListener("click", function (e) {
+          e.preventDefault();
+          const programId = this.getAttribute("data-program-id");
+          openDeleteConfirmModal(programId);
+        });
+      });
 
-// Add click event listener to delete links
-document.querySelectorAll('.delete-link').forEach(link => {
-    link.addEventListener('click', function (e) {
-        e.preventDefault();
-        const programId = this.getAttribute('data-program-id');
-        openDeleteConfirmModal(programId);
-    });
-});
+      // Get modal element
+      const updateModal = document.getElementById("updateProgramModal");
 
+      // Add click event to all update links
+      document.querySelectorAll(".update-link").forEach((link) => {
+        link.addEventListener("click", async function (e) {
+          e.preventDefault();
+          const programId = this.getAttribute("data-program-id");
+          await fetchAndPopulateProgram(programId);
+        });
+      });
 
-// Get modal element
-const updateModal = document.getElementById('updateProgramModal');
+      // Function to fetch program data and populate the form
+      async function fetchAndPopulateProgram(programId) {
+        try {
+          // Show loading state
+          updateModal.style.display = "block";
+          const form = document.getElementById("updateProgramForm");
+          form.innerHTML +=
+            '<div id="loadingMessage">Loading program data...</div>';
 
-// Add click event to all update links
-document.querySelectorAll('.update-link').forEach(link => {
-    link.addEventListener('click', async function(e) {
-        e.preventDefault();
-        const programId = this.getAttribute('data-program-id');
-        await fetchAndPopulateProgram(programId);
-    });
-});
+          // Fetch program data from API
+          const response = await fetch(`/api/programs/${programId}`);
 
-// Function to fetch program data and populate the form
-async function fetchAndPopulateProgram(programId) {
-    try {
-        // Show loading state
-        updateModal.style.display = 'block';
-        const form = document.getElementById('updateProgramForm');
-        form.innerHTML += '<div id="loadingMessage">Loading program data...</div>';
+          // Remove loading message
+          const loadingMessage = document.getElementById("loadingMessage");
+          if (loadingMessage) loadingMessage.remove();
 
-        // Fetch program data from API
-        const response = await fetch(`/api/programs/${programId}`);
-        
-        // Remove loading message
-        const loadingMessage = document.getElementById('loadingMessage');
-        if (loadingMessage) loadingMessage.remove();
+          if (!response.ok) {
+            throw new Error("Failed to fetch program data");
+          }
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch program data');
-        }
+          const programData = await response.json();
 
-        const programData = await response.json();
+          // Populate form fields
+          document.getElementById("updateProgramId").value =
+            programData.programId;
+          document.getElementById("updateProgramName").value =
+            programData.programName;
+          document.getElementById("updateProgramDescription").value =
+            programData.programDescription;
 
-        // Populate form fields
-        document.getElementById('updateProgramId').value = programData.programId;
-        document.getElementById('updateProgramName').value = programData.programName;
-        document.getElementById('updateProgramDescription').value = programData.programDescription;
-
-        // Handle multi-select for courses
-        const courseSelect = document.getElementById('updateCourseNames');
-        if (courseSelect && programData.courseNames) {
-            Array.from(courseSelect.options).forEach(option => {
-                option.selected = programData.courseNames.includes(option.value);
+          // Handle multi-select for courses
+          const courseSelect = document.getElementById("updateCourseNames");
+          if (courseSelect && programData.courseNames) {
+            Array.from(courseSelect.options).forEach((option) => {
+              option.selected = programData.courseNames.includes(option.value);
             });
-        }
+          }
 
-        // Handle multi-select for students
-        const studentSelect = document.getElementById('updateStudentNames');
-        if (studentSelect && programData.studentNames) {
-            Array.from(studentSelect.options).forEach(option => {
-                option.selected = programData.studentNames.includes(option.value);
+          // Handle multi-select for students
+          const studentSelect = document.getElementById("updateStudentNames");
+          if (studentSelect && programData.studentNames) {
+            Array.from(studentSelect.options).forEach((option) => {
+              option.selected = programData.studentNames.includes(option.value);
             });
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("Failed to load program data");
+          closeUpdateModal();
         }
+      }
 
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Failed to load program data');
-        closeUpdateModal();
-    }
-}
+      // Handle form submission
+      document
+        .getElementById("updateProgramForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const programId = document.getElementById("updateProgramId").value;
 
-// Handle form submission
-document.getElementById('updateProgramForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const programId = document.getElementById('updateProgramId').value;
+          const formData = {
+            programId: programId,
+            programName: document.getElementById("updateProgramName").value,
+            programDescription: document.getElementById(
+              "updateProgramDescription"
+            ).value,
+            courseNames: Array.from(
+              document.getElementById("updateCourseNames").selectedOptions
+            ).map((opt) => opt.value),
+            studentNames: Array.from(
+              document.getElementById("updateStudentNames").selectedOptions
+            ).map((opt) => opt.value),
+          };
 
-    const formData = {
-        programId: programId,
-        programName: document.getElementById('updateProgramName').value,
-        programDescription: document.getElementById('updateProgramDescription').value,
-        courseNames: Array.from(document.getElementById('updateCourseNames').selectedOptions).map(opt => opt.value),
-        studentNames: Array.from(document.getElementById('updateStudentNames').selectedOptions).map(opt => opt.value)
-    };
+          try {
+            const response = await fetch(`/api/programs/${programId}`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(formData),
+            });
 
-    try {
-        const response = await fetch(`/api/programs/${programId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
+            if (!response.ok) {
+              throw new Error("Failed to update program");
+            }
+
+            alert("Program updated successfully");
+            closeUpdateModal();
+            window.location.reload(); // Refresh the page to see changes
+          } catch (error) {
+            console.error("Error:", error);
+            alert("Failed to update program");
+          }
         });
 
-        if (!response.ok) {
-            throw new Error('Failed to update program');
+      // Function to close modal
+      function closeUpdateModal() {
+        updateModal.style.display = "none";
+      }
+
+      // Close modal when clicking outside
+      window.addEventListener("click", function (e) {
+        if (e.target === updateModal) {
+          closeUpdateModal();
         }
+      });
 
-        alert('Program updated successfully');
-        closeUpdateModal();
-        window.location.reload(); // Refresh the page to see changes
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Failed to update program');
-    }
-});
+      // Function to open view modal with program details
+      async function openViewModal(programId) {
+        const viewModal = document.getElementById("viewProgramModal");
+        const viewProgramName = document.getElementById("viewProgramName");
+        const viewProgramDescription = document.getElementById(
+          "viewProgramDescription"
+        );
+        const viewProgramCourses =
+          document.getElementById("viewProgramCourses");
+        const viewProgramStudents = document.getElementById(
+          "viewProgramStudents"
+        );
 
-// Function to close modal
-function closeUpdateModal() {
-    updateModal.style.display = 'none';
-}
+        try {
+          const response = await fetch(`/api/programs/${programId}`);
+          if (!response.ok) {
+            throw new Error("Failed to fetch program details");
+          }
 
-// Close modal when clicking outside
-window.addEventListener('click', function(e) {
-    if (e.target === updateModal) {
-        closeUpdateModal();
-    }
-});
+          const program = await response.json();
+          viewProgramName.innerText = program.programName;
+          viewProgramDescription.innerText = program.programDescription;
+          viewProgramCourses.innerText = program.courseNames.join(", ");
+          viewProgramStudents.innerText = program.studentNames.join(", ");
 
-
-
-
-
-
-// Function to open view modal with program details
-async function openViewModal(programId) {
-    const viewModal = document.getElementById('viewProgramModal');
-    const viewProgramName = document.getElementById('viewProgramName');
-    const viewProgramDescription = document.getElementById('viewProgramDescription');
-    const viewProgramCourses = document.getElementById('viewProgramCourses');
-    const viewProgramStudents = document.getElementById('viewProgramStudents');
-
-    try {
-        const response = await fetch(`/api/programs/${programId}`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch program details');
+          viewModal.style.display = "block";
+        } catch (error) {
+          alert(`Error fetching program details: ${error.message}`);
         }
+      }
 
-        const program = await response.json();
-        viewProgramName.innerText = program.programName;
-        viewProgramDescription.innerText = program.programDescription;
-        viewProgramCourses.innerText = program.courseNames.join(', ');
-        viewProgramStudents.innerText = program.studentNames.join(', ');
+      // Close the view modal
+      function closeViewModal() {
+        document.getElementById("viewProgramModal").style.display = "none";
+      }
 
-        viewModal.style.display = 'block';
-    } catch (error) {
-        alert(`Error fetching program details: ${error.message}`);
-    }
-}
+      // Add click event for view links
+      document.querySelectorAll(".view-link").forEach((link) => {
+        link.addEventListener("click", function (e) {
+          e.preventDefault();
+          const programId = this.getAttribute("data-program-id");
+          openViewModal(programId);
+        });
+      });
 
-// Close the view modal
-function closeViewModal() {
-    document.getElementById('viewProgramModal').style.display = 'none';
-}
+      // Add click event to close button
+      document
+        .getElementById("viewCloseBtn")
+        .addEventListener("click", closeViewModal);
 
-// Add click event for view links
-document.querySelectorAll('.view-link').forEach(link => {
-    link.addEventListener('click', function (e) {
-        e.preventDefault();
-        const programId = this.getAttribute('data-program-id');
-        openViewModal(programId);
-    });
-});
-
-// Add click event to close button
-document.getElementById('viewCloseBtn').addEventListener('click', closeViewModal);
-
-// Close modal when clicking outside the modal content
-window.addEventListener('click', function (e) {
-    const viewModal = document.getElementById('viewProgramModal');
-    if (e.target === viewModal) {
-        closeViewModal();
-    }
-});
-
-
-
-
+      // Close modal when clicking outside the modal content
+      window.addEventListener("click", function (e) {
+        const viewModal = document.getElementById("viewProgramModal");
+        if (e.target === viewModal) {
+          closeViewModal();
+        }
+      });
     </script>
-
   </body>
 </html>
