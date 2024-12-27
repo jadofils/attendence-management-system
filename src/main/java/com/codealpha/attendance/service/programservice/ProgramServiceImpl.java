@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.codealpha.attendance.dto.CourseDTO;
 import com.codealpha.attendance.dto.ProgramDTO;
 import com.codealpha.attendance.model.Course;
 import com.codealpha.attendance.model.Program;
@@ -72,20 +73,25 @@ public class ProgramServiceImpl implements ProgramService {
         return programRepository.count();
     }
 
-   private ProgramDTO convertToDTO(Program program) {
+  private ProgramDTO convertToDTO(Program program) {
     ProgramDTO dto = new ProgramDTO();
     dto.setProgramId(program.getProgramId());
     dto.setProgramName(program.getProgramName());
     dto.setProgramDescription(program.getProgramDescription());
 
-    // Set course names
+    // Set courses (with ID and Name)
     if (program.getCourses() != null) {
-        dto.setCourseNames(program.getCourses().stream()
-                .map(Course::getCourseName) // Ensure Course has this method
-                .collect(Collectors.toList()));
+        dto.setCourses(program.getCourses().stream()
+                .map(course -> {
+                    CourseDTO courseDTO = new CourseDTO();
+                    courseDTO.setCourseId(course.getCourseId());   // Include ID
+                    courseDTO.setCourseName(course.getCourseName()); // Include Name
+                    return courseDTO;
+                })
+                .collect(Collectors.toList())); // Collect as list
     }
 
-    // Set student full names (firstName + lastName)
+    // Set student full names
     if (program.getStudents() != null) {
         dto.setStudentNames(program.getStudents().stream()
                 .map(student -> student.getFirstName() + " " + student.getLastName()) // Combine names
@@ -93,6 +99,14 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     return dto;
+}
+
+
+
+
+@Override
+public boolean existsById(Long programId) {
+    return programRepository.existsById(programId);
 }
 
 }

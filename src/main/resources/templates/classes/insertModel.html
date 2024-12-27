@@ -1,38 +1,86 @@
-<!-- Insert Class Modal -->
-<div id="insertClassModal" class="modal" th:fragment="insert_form">
-    <div class="modal-content">
-        <span class="close-button" onclick="closeModal('insertClassModal')">&times;</span>
+<div
+      id="insertClassModal"
+      class="modal"
+      style="display: none"
+      th:fragment="insert_class_form"
+    >
+      <div class="modal-content">
+        <!-- Close Button -->
+        <span class="close-button" onclick="closeModal('insertClassModal')"
+          >&times;</span
+        >
         <h2>Add New Class</h2>
 
-        <!-- Form Starts Here -->
-        <form id="insertClassForm" method="post">
+        <!-- Success/Error Messages -->
+        <div style="color: green;">
+          <p id="insertSuccessMessage"></p>
+        </div>
+        <div style="color: red;">
+          <p id="insertErrorMessage"></p>
+        </div>
+        
 
-            <!-- Success or Error Messages -->
-            <div>
-                <div style="color: green;">
-                    <p id="insertSuccessMessage"></p>
-                </div>
-                <div style="color: red;">
-                    <p id="insertErrorMessage"></p>
-                </div>
-            </div>
+        <!-- Form -->
+        <form
+          id="insertClassForm"
+          
+        >
+          <!-- Program Dropdown -->
+          <label for="programDropdown">Select Program:</label>
+          <select
+            id="programDropdown"
+            name="programId"
+            required
+            onchange="loadCoursesByProgram()"
+          >
+            <option value="">Select a Program</option>
+            <option
+              th:each="program : ${programs}"
+              th:value="${program.programId}"
+              th:text="${program.programName}"
+            ></option>
+          </select>
 
-            <!-- Course Dropdown -->
-            <label for="insertCourseId">Select Course:</label>
-            <select id="insertCourseId" name="courseId" required>
-                <option value="">Select a Course</option>
-                <option th:each="course : ${courses}" th:value="${course.courseId}" th:text="${course.courseName}"></option>
-            </select>
+          <!-- Course Dropdown -->
+          <label for="courseDropdown">Select Course:</label>
+          <select id="courseDropdown" name="courseId" required>
+            <option value="">Select a Course</option>
+          </select>
 
-            <!-- Class Fields -->
-            <label for="insertClassCode">Class Code:</label>
-            <input type="text" id="insertClassCode" name="classCode" required>
+          <!-- Instructor Dropdown -->
+          <label for="insertInstructorId">Select Instructor:</label>
+          <select id="insertInstructorId" name="instructorId" required>
+            <option value="">Select an Instructor</option>
+            <option
+              th:each="instructor : ${instructors}"
+              th:value="${instructor.instructorId}"
+              th:text="${instructor.instructorName}"
+            ></option>
+          </select>
 
-            <label for="insertClassSchedule">Schedule:</label>
-            <input type="text" id="insertClassSchedule" name="classSchedule" required>
+          <!-- Class Code -->
+          <label for="insertClassCode">Class Code:</label>
+          <input
+            type="text"
+            id="insertClassCode"
+            name="classCode"
+            required
+            class="form-control"
+            readonly
+          />
 
-            <!-- Submit Button -->
-            <button type="submit" style="background-color: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Add Class</button>
+          <!-- Schedule -->
+          <label for="insertClassSchedule">Schedule:</label>
+          <input
+            type="date"
+            id="insertClassSchedule"
+            name="classSchedule"
+            required
+            class="form-control"
+          />
+
+          <!-- Submit Button -->
+          <button type="submit">Add Class</button>
         </form>
+      </div>
     </div>
-</div>

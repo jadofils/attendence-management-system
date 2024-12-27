@@ -10,4 +10,5 @@ public interface ProgramService {
     ProgramDTO updateProgram(Long programId, ProgramDTO updatedProgramDTO);
     void deleteProgram(Long id);
     long countPrograms(); // Count total programs
+    boolean existsById(Long programId);
 }

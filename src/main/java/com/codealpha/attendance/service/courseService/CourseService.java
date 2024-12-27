@@ -18,4 +18,6 @@ public interface CourseService {
     void deleteCourse(Long courseId);
 
     boolean existsByCourseName(String courseName);
+
+    boolean existsById(Long courseId);
 }

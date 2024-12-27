@@ -2,6 +2,8 @@ package com.codealpha.attendance.controller;
 
 import com.codealpha.attendance.dto.SchoolClassDTO;
 import com.codealpha.attendance.model.SchoolClass;
+import com.codealpha.attendance.service.courseService.CourseService;
+import com.codealpha.attendance.service.programservice.ProgramService;
 import com.codealpha.attendance.service.schoolService.SchoolClassService;
 
 import jakarta.validation.Valid;
@@ -18,30 +20,74 @@ public class SchoolClassController {
 
     @Autowired
     private SchoolClassService schoolClassService;
-
+private ProgramService programService;
+private CourseService courseService;
     // Endpoint to get all classes
     @GetMapping
-    public List<SchoolClass> getAllClasses() {
-        return schoolClassService.getAllClasses();
+    public ResponseEntity<List<SchoolClassDTO>> getAllClasses() {
+        List<SchoolClassDTO> classDTOs = schoolClassService.getAllClasses()
+                .stream()
+                .map(schoolClass -> {
+                    SchoolClassDTO dto = new SchoolClassDTO();
+                    dto.setClassId(schoolClass.getClassId());
+                    dto.setClassCode(schoolClass.getClassCode());
+                    dto.setClassSchedule(schoolClass.getClassSchedule());
+    
+                    // Set Course details
+                    dto.setCourseId(schoolClass.getCourse().getCourseId());
+                    dto.setCourseName(schoolClass.getCourse().getCourseName()); // Add name
+    
+                    // Set Program details
+                    dto.setProgramId(schoolClass.getProgram().getProgramId());
+                    dto.setProgramName(schoolClass.getProgram().getProgramName()); // Add name
+    
+                    // Set Instructor details
+                    dto.setInstructorId(schoolClass.getInstructor().getUserId());
+                    dto.setInstructorName(schoolClass.getInstructor().getUsername()); // Add name
+    
+                    return dto;
+                })
+                .toList();
+    
+        return ResponseEntity.ok(classDTOs);
     }
+    
 
-    // Endpoint to create a class
-    @PostMapping("/{userId}")
-    public ResponseEntity<?> createClass(@PathVariable Long userId,
-                                         @RequestBody @Valid SchoolClassDTO schoolClassDTO) {
-        try {
-            SchoolClass createdClass = schoolClassService.createClass(userId, schoolClassDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdClass);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    @PostMapping("/{instructorId}")
+public ResponseEntity<?> createClass(
+        @PathVariable Long instructorId,
+        @RequestBody @Valid SchoolClassDTO schoolClassDTO) {
+
+    try {
+        // Validation: Check if programId and courseId are provided
+        if (schoolClassDTO.getProgramId() == null || schoolClassDTO.getCourseId() == null) {
+            return ResponseEntity.badRequest().body("Program ID and Course ID cannot be null!");
         }
+
+        // Check if the Program exists
+        if (!programService.existsById(schoolClassDTO.getProgramId())) {
+            return ResponseEntity.badRequest().body("Program ID does not exist!");
+        }
+
+        // Check if the Course exists
+        if (!courseService.existsById(schoolClassDTO.getCourseId())) {
+            return ResponseEntity.badRequest().body("Course ID does not exist!");
+        }
+
+        // Create the class
+        SchoolClass createdClass = schoolClassService.createClass(instructorId, schoolClassDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdClass);
+
+    } catch (RuntimeException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
+}
 
     // Endpoint to delete a scheduled class
-    @DeleteMapping("/{userId}/{classId}")
-    public ResponseEntity<String> deleteScheduledClass(@PathVariable Long userId, @PathVariable Long classId) {
+    @DeleteMapping("/{instructorId}/{classId}")
+    public ResponseEntity<String> deleteScheduledClass(@PathVariable Long instructorId, @PathVariable Long classId) {
         try {
-            schoolClassService.deleteScheduled(userId, classId);
+            schoolClassService.deleteScheduled(instructorId, classId);
             return ResponseEntity.ok("Scheduled class successfully deleted.");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -49,12 +95,12 @@ public class SchoolClassController {
     }
 
     // Endpoint to update a class
-    @PutMapping("/{userId}/{classId}")
-    public ResponseEntity<?> updateClass(@PathVariable Long userId,
+    @PutMapping("/{instructorId}/{classId}")
+    public ResponseEntity<?> updateClass(@PathVariable Long instructorId,
                                          @PathVariable Long classId,
                                          @RequestBody @Valid SchoolClassDTO schoolClassDTO) {
         try {
-            SchoolClass updatedClass = schoolClassService.updateClass(userId, classId, schoolClassDTO);
+            SchoolClass updatedClass = schoolClassService.updateClass(instructorId, classId, schoolClassDTO);
             return ResponseEntity.ok(updatedClass);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

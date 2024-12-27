@@ -55,6 +55,14 @@ public class SchoolClassServiceImpl implements SchoolClassService {
         }
     }
 
+
+    
+        @Override
+        public List<User> getAllInstructors() {
+            return userRepository.findByRole(UserRole.INSTRUCTOR);
+        }
+    
+
     @Override
     public void deleteScheduled(Long userId, Long classId) {
         User user = userRepository.findById(userId)

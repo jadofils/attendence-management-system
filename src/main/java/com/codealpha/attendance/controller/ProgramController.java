@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.codealpha.attendance.dto.ProgramDTO;
@@ -44,18 +45,35 @@ public class ProgramController {
         }
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ProgramDTO> getProgramById(@PathVariable Long id) {
-        try {
-            ProgramDTO program = programService.findProgramById(id);
-            if (program != null) {
-                return ResponseEntity.ok(program);
-            }
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+   @GetMapping("/{id}")
+public ResponseEntity<?> getProgramById(@PathVariable Long id) {
+    try {
+        // Validate ID
+        if (id == null || id <= 0) {
+            return ResponseEntity.badRequest().body("Invalid ID provided.");
         }
+
+        // Fetch Program
+        ProgramDTO program = programService.findProgramById(id);
+
+        if (program != null) {
+            return ResponseEntity.ok(program);
+        }
+
+        // Program not found
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Program with ID " + id + " not found.");
+    } catch (IllegalArgumentException e) {
+        // Handle illegal arguments
+        return ResponseEntity.badRequest().body("Invalid input: " + e.getMessage());
+    } catch (Exception e) {
+        // Log error for debugging
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("An internal server error occurred.");
     }
+}
+
 
     @PutMapping("/{id}")
     public ResponseEntity<ProgramDTO> updateProgram(

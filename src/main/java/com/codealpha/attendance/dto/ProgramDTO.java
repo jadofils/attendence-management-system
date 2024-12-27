@@ -5,9 +5,12 @@ import lombok.Data;
 
 @Data
 public class ProgramDTO {
-    private Long programId;                   // Expose the program ID
-    private String programName;               // Expose the program name
-    private String programDescription;        // Expose the description
-    private List<String> courseNames;         // Expose course names (if needed)
-    private List<String> studentNames;        // Expose student names (if needed)
+    private Long programId;                          // Program ID
+    private String programName;                      // Program Name
+    private String programDescription;               // Description
+
+    // Update to include both ID and Name
+    private List<CourseDTO> courses;                 // List of Courses with ID and Name
+
+    private List<String> studentNames;               // Optional students
 }
