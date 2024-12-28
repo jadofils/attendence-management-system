@@ -23,7 +23,8 @@
           required
           onchange="loadCoursesByProgram()"
         >
-          <option value="">Select a program</option>
+          <option value="" selected>Select a program</option>
+=
           <option
             th:each="program : ${programs}"
             th:value="${program.programId}"

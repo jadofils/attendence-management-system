@@ -164,6 +164,90 @@
       }
     </style>
   </head>
+<!-- Success Message Popup -->
+<div
+  th:if="${successMessage}"
+  th:text="${successMessage}"
+  id="successPopup"
+  style="
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #4caf50; /* Green */
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+  "
+>
+  <!-- Close Button -->
+  <span
+    style="margin-left: 10px; font-weight: bold; cursor: pointer"
+    onclick="closePopup('successPopup')"
+    >&times;</span
+  >
+</div>
+
+<!-- Error Message Popup -->
+<div
+  th:if="${errorMessage}"
+  th:text="${errorMessage}"
+  id="errorPopup"
+  style="
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #f44336; /* Red */
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+  "
+>
+  <!-- Close Button -->
+  <span
+    style="margin-left: 10px; font-weight: bold; cursor: pointer"
+    onclick="closePopup('errorPopup')"
+    >&times;</span
+  >
+</div>
+
+<!-- JavaScript -->
+<script>
+  // Function to close popup manually
+  function closePopup(popupId) {
+    const popup = document.getElementById(popupId);
+    if (popup) {
+      popup.style.display = "none";
+    }
+  }
+
+  // Function to auto-hide popup after 5 seconds
+  function autoHidePopup(popupId) {
+    const popup = document.getElementById(popupId);
+    if (popup) {
+      setTimeout(() => {
+        popup.style.display = "none";
+      }, 5000); // 5 seconds
+    }
+  }
+
+  // Call auto-hide for success and error popups if they exist
+  window.onload = function () {
+    autoHidePopup("successPopup");
+    autoHidePopup("errorPopup");
+  };
+</script>
+
+
   <body>
     <div th:replace="~{dashboardLayout/base::page_navbar}"></div>
     <div th:replace="~{dashboardLayout/base::page_sidebar}"></div>
@@ -365,23 +449,35 @@
           .catch((error) =>
             console.error("Error fetching instructors:", error)
           );
+          
           insertClassForm.addEventListener("submit", async (event) => {
+    // Prevent default form submission behavior
     event.preventDefault();
 
+    // Retrieve input values
     const selectedProgramId = programDropdown.value;
     const selectedCourseId = courseDropdown.value;
     const selectedInstructorId = insertInstructorId.value;
     const classCode = insertClassCodeInput.value;
     const classSchedule = insertClassSchedule.value;
 
-    // Create schoolClassDTO with only required fields
+    // Validate the selected program ID
+    if (!selectedProgramId) {
+        insertErrorMessage.textContent = "Program ID cannot be null!";
+        return;
+    }
+
+    // Create the DTO object for the API request
     const schoolClassDTO = {
-        courseId: parseInt(selectedCourseId), 
+        programId: parseInt(selectedProgramId),
+        courseId: parseInt(selectedCourseId),
+        instructorId: parseInt(selectedInstructorId),
         classCode: classCode,
         classSchedule: classSchedule,
     };
 
     try {
+        // Send the POST request to the API endpoint
         const response = await fetch(`/api/classes/${selectedInstructorId}`, {
             method: "POST",
             headers: {
@@ -390,19 +486,26 @@
             body: JSON.stringify(schoolClassDTO),
         });
 
+        // Handle the response from the API
         if (response.ok) {
             const data = await response.json();
             insertSuccessMessage.textContent = "Class created successfully!";
-            insertErrorMessage.textContent = "";
+            insertErrorMessage.textContent = ""; // Clear any previous error messages
         } else {
             const errorMessage = await response.text();
+            console.log(`programId is:${selectedProgramId} and courseId isL${selectedCourseId}`)
+            console.log("schoolClassDTO:", schoolClassDTO);
+
             insertErrorMessage.textContent = `Error creating class: ${errorMessage}`;
         }
     } catch (error) {
+        // Handle errors during the request
         console.error("Error creating class:", error);
         insertErrorMessage.textContent = `Error creating class: ${error.message}`;
     }
 });
+
+        
 
 });
     </script>

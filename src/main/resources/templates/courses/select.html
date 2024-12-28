@@ -248,53 +248,61 @@
           </button>
         </a>
       </div>
-<!-- Success Message Popup -->
-<div th:if="${successMessage}" 
-     th:text="${successMessage}" 
-     id="successPopup"
-     style="position: fixed; 
-            top: 20px; 
-            right: 20px; 
-            background-color: #4CAF50; /* Green */
-            color: white; 
-            padding: 15px; 
-            border-radius: 5px; 
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-            z-index: 1000; 
-            font-size: 16px; 
-            display: flex; 
-            align-items: center;">
+      <!-- Success Message Popup -->
+      <div
+        th:if="${successMessage}"
+        th:text="${successMessage}"
+        id="successPopup"
+        style="
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background-color: #4caf50; /* Green */
+          color: white;
+          padding: 15px;
+          border-radius: 5px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          z-index: 1000;
+          font-size: 16px;
+          display: flex;
+          align-items: center;
+        "
+      >
+        <!-- Close Button -->
+        <span
+          style="margin-left: 10px; font-weight: bold; cursor: pointer"
+          onclick="closePopup('successPopup')"
+          >&times;</span
+        >
+      </div>
 
-    <!-- Close Button -->
-    <span style="margin-left: 10px; 
-                 font-weight: bold; 
-                 cursor: pointer;" 
-          onclick="closePopup('successPopup')">&times;</span>
-</div>
-
-<!-- Error Message Popup -->
-<div th:if="${errorMessage}" 
-     th:text="${errorMessage}" 
-     id="errorPopup"
-     style="position: fixed; 
-            top: 20px; 
-            right: 20px; 
-            background-color: #f44336; /* Red */
-            color: white; 
-            padding: 15px; 
-            border-radius: 5px; 
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-            z-index: 1000; 
-            font-size: 16px; 
-            display: flex; 
-            align-items: center;">
-
-    <!-- Close Button -->
-    <span style="margin-left: 10px; 
-                 font-weight: bold; 
-                 cursor: pointer;" 
-          onclick="closePopup('errorPopup')">&times;</span>
-</div>
+      <!-- Error Message Popup -->
+      <div
+        th:if="${errorMessage}"
+        th:text="${errorMessage}"
+        id="errorPopup"
+        style="
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background-color: #f44336; /* Red */
+          color: white;
+          padding: 15px;
+          border-radius: 5px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          z-index: 1000;
+          font-size: 16px;
+          display: flex;
+          align-items: center;
+        "
+      >
+        <!-- Close Button -->
+        <span
+          style="margin-left: 10px; font-weight: bold; cursor: pointer"
+          onclick="closePopup('errorPopup')"
+          >&times;</span
+        >
+      </div>
 
       <!-- Insert and Update Modal -->
       <div
@@ -371,6 +379,7 @@
           <div id="courseCard"></div>
         </div>
       </div>
+      
       <!-- Delete Confirmation Modal -->
       <div id="deleteModal" class="modal" style="display: none">
         <div class="modal-content">
@@ -405,26 +414,25 @@
           </div>
         </div>
       </div>
-        
+
       <button id="loadMoreBtn" onclick="loadMore()">Load More</button>
     </div>
     <script>
       // Close popup when 'x' is clicked
       function closePopup(popupId) {
-          document.getElementById(popupId).style.display = 'none';
+        document.getElementById(popupId).style.display = "none";
       }
-      
+
       // Auto-hide popup after 5 seconds
       window.onload = function () {
-          setTimeout(() => {
-              let successPopup = document.getElementById('successPopup');
-              let errorPopup = document.getElementById('errorPopup');
-              if (successPopup) successPopup.style.display = 'none';
-              if (errorPopup) errorPopup.style.display = 'none';
-          }, 5000); // Hide after 5 seconds
+        setTimeout(() => {
+          let successPopup = document.getElementById("successPopup");
+          let errorPopup = document.getElementById("errorPopup");
+          if (successPopup) successPopup.style.display = "none";
+          if (errorPopup) errorPopup.style.display = "none";
+        }, 5000); // Hide after 5 seconds
       };
-      </script>
-      
+    </script>
 
     <script>
       // Add event listeners to all update icons
@@ -486,6 +494,7 @@
         selectedProgramId,
         selectedCourseName = null
       ) {
+        // Get the program ID from the parameter or fallback to the input field value
         const programId =
           selectedProgramId || document.getElementById("programId").value;
         const courseDropdown = document.getElementById("courseName");
@@ -493,38 +502,47 @@
         // Clear existing options
         courseDropdown.innerHTML = '<option value="">Select a course</option>';
 
-        if (programId) {
-          try {
-            const response = await fetch(`/api/programs/${programId}`);
-            const program = await response.json();
+        try {
+          // Fetch courses based on the selected program ID
+          const response = await fetch(`/api/programs/${programId}`);
 
-            console.log("Program Response:", program);
-
-            // Check if program.courseNames exists and is an array
-            const courses = program.courseNames || [];
-            if (Array.isArray(courses)) {
-              courses.forEach((courseName) => {
-                const option = document.createElement("option");
-                option.value = courseName;
-                option.textContent = courseName;
-                courseDropdown.appendChild(option);
-              });
-
-              // If this is an update operation and we have a course to select
-              if (selectedCourseName) {
-                courseDropdown.value = selectedCourseName;
-              }
-            } else {
-              console.error("Invalid course data structure:", program);
-            }
-          } catch (error) {
-            console.error("Error loading courses:", error);
-            // Add a disabled option to indicate the error
-            const errorOption = document.createElement("option");
-            errorOption.textContent = "Error loading courses";
-            errorOption.disabled = true;
-            courseDropdown.appendChild(errorOption);
+          // Check if the response is OK (status 200)
+          if (!response.ok) {
+            throw new Error(
+              `Failed to load courses. Status: ${response.status}`
+            );
           }
+
+          // Parse the JSON response
+          const program = await response.json();
+          console.log("Program Response:", program);
+
+          // Check if courses array exists in the response
+          if (program && Array.isArray(program.courses)) {
+            // Populate the dropdown with courses
+            program.courses.forEach((course) => {
+              const option = document.createElement("option");
+              option.value = course.courseId; // Use courseId as the value
+              option.textContent = `${course.courseName} (${course.courseId})`; // Display course name
+              courseDropdown.appendChild(option);
+            });
+
+            // If this is an update operation, preselect the provided course
+            if (selectedCourseName) {
+              courseDropdown.value = selectedCourseName;
+            }
+          } else {
+            console.error("Invalid course data structure:", program);
+            throw new Error("Courses not found in program data.");
+          }
+        } catch (error) {
+          console.error("Error loading courses:", error);
+
+          // Add a disabled option to indicate the error
+          const errorOption = document.createElement("option");
+          errorOption.textContent = "Error loading courses";
+          errorOption.disabled = true;
+          courseDropdown.appendChild(errorOption);
         }
       }
 
@@ -700,7 +718,5 @@
         modal.style.display = "none";
       });
     </script>
-
-   
   </body>
 </html>

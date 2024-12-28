@@ -12,5 +12,7 @@ public class ProgramDTO {
     // Update to include both ID and Name
     private List<CourseDTO> courses;                 // List of Courses with ID and Name
 
-    private List<String> studentNames;               // Optional students
-}
+ // Add the missing fields for courses and students
+ private List<String> courseNames;   // List of course names
+ private List<String> studentNames;  // List of student names
+ }

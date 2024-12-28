@@ -29,10 +29,7 @@ public class ProgramViewController {
         // Add an empty ProgramDTO for form binding
         model.addAttribute("programDTO", new ProgramDTO());
     
-        // Mock data for dropdowns (courses and students)
-        model.addAttribute("courses", List.of("CCNA", "Java", "Python"));
-        model.addAttribute("students", List.of("John Doe", "Jane Smith"));
-    
+      
         // Fetch programs from API
         String apiUrl = "http://localhost:8080/api/programs";
         ResponseEntity<List<ProgramDTO>> response = restTemplate.exchange(

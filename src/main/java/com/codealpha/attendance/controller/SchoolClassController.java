@@ -17,11 +17,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/classes")
 public class SchoolClassController {
+    @Autowired
+    private ProgramService programService;
+
+    @Autowired
+    private CourseService courseService;
 
     @Autowired
     private SchoolClassService schoolClassService;
-private ProgramService programService;
-private CourseService courseService;
     // Endpoint to get all classes
     @GetMapping
     public ResponseEntity<List<SchoolClassDTO>> getAllClasses() {
@@ -53,35 +56,49 @@ private CourseService courseService;
     }
     
 
-    @PostMapping("/{instructorId}")
-public ResponseEntity<?> createClass(
-        @PathVariable Long instructorId,
-        @RequestBody @Valid SchoolClassDTO schoolClassDTO) {
+ 
+    
+        
+    
+        @PostMapping("/{instructorId}")
+        public ResponseEntity<?> createClass(
+                @PathVariable Long instructorId,
+                @RequestBody @Valid SchoolClassDTO schoolClassDTO) {
 
-    try {
-        // Validation: Check if programId and courseId are provided
-        if (schoolClassDTO.getProgramId() == null || schoolClassDTO.getCourseId() == null) {
-            return ResponseEntity.badRequest().body("Program ID and Course ID cannot be null!");
+System.out.println("Received DTO: " + schoolClassDTO);
+System.out.println("Program ID: " + schoolClassDTO.getProgramId());
+System.out.println("Course ID: " + schoolClassDTO.getCourseId());
+System.out.println("Instructor ID: " + schoolClassDTO.getInstructorId());
+System.out.println("Class Code: " + schoolClassDTO.getClassCode());
+System.out.println("Class Schedule: " + schoolClassDTO.getClassSchedule());
+
+    
+            try {
+                // Validation: Check if programId and courseId are provided
+                if (schoolClassDTO.getProgramId() == null || schoolClassDTO.getCourseId() == null) {
+                    return ResponseEntity.badRequest().body("Program ID and Course ID cannot be null!");
+                }
+    
+                // Check if the Program exists
+                if (!programService.existsById(schoolClassDTO.getProgramId())) {
+                    return ResponseEntity.badRequest().body("Program ID does not exist!");
+                }
+    
+                // Check if the Course exists
+                if (!courseService.existsById(schoolClassDTO.getCourseId())) {
+                    return ResponseEntity.badRequest().body("Course ID does not exist!");
+                }
+    
+                // Create the class
+                SchoolClass createdClass = schoolClassService.createClass(instructorId, schoolClassDTO);
+                return ResponseEntity.status(HttpStatus.CREATED).body(createdClass);
+    
+            } catch (RuntimeException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            }
         }
-
-        // Check if the Program exists
-        if (!programService.existsById(schoolClassDTO.getProgramId())) {
-            return ResponseEntity.badRequest().body("Program ID does not exist!");
-        }
-
-        // Check if the Course exists
-        if (!courseService.existsById(schoolClassDTO.getCourseId())) {
-            return ResponseEntity.badRequest().body("Course ID does not exist!");
-        }
-
-        // Create the class
-        SchoolClass createdClass = schoolClassService.createClass(instructorId, schoolClassDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdClass);
-
-    } catch (RuntimeException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
-}
+    
+    
 
     // Endpoint to delete a scheduled class
     @DeleteMapping("/{instructorId}/{classId}")
