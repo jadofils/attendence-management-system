@@ -10,4 +10,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface SchoolClassRepository extends JpaRepository<SchoolClass, Long> {
 
     Optional<SchoolClass> findByClassIdAndInstructor(Long classId, User instructor);
+
+    Optional<SchoolClass> findByInstructorUserIdAndCourseCourseId(Long userId, Long courseId);
 }

@@ -94,6 +94,10 @@
     <!-- Login Section -->
     <section id="login" class="login-container">
         <h2>Login</h2>
+<!-- Display Logout Success Message -->
+<div id="logoutMessage" th:if="${logoutMessage}" style="color: green; text-align: center; margin-bottom: 10px;">
+    <p th:text="${logoutMessage}"></p>
+</div>
 
         <!-- Alert Messages -->
         <!-- Flash message from RedirectAttributes -->
@@ -136,7 +140,18 @@
             <!-- Sign Up Link -->
             <p>Don't have an account? <a th:href="@{/signup}" class="signup-link">Sign Up</a></p>
         </form>
+<script>
+    window.onload = function () {
+    const logoutMessage = document.getElementById('logoutMessage');
+    if (logoutMessage) {
+        // Hide the message after 5 seconds
+        setTimeout(() => {
+            logoutMessage.style.display = 'none';
+        }, 5000); // 5000ms = 5 seconds
+    }
+};
 
+</script>
         <!-- JavaScript for Validation and Redirection -->
         <script th:inline="javascript">
             // Get messages from Thymeleaf

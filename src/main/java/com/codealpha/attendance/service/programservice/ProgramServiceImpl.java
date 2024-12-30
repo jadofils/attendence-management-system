@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import com.codealpha.attendance.dto.CourseDTO;
 import com.codealpha.attendance.dto.ProgramDTO;
-import com.codealpha.attendance.model.Course;
 import com.codealpha.attendance.model.Program;
 import com.codealpha.attendance.repository.ProgramRepository;
 

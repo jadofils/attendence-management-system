@@ -1,0 +1,49 @@
+<div
+  id="insertAttendanceModal"
+  class="modal"
+  style="display: none"
+  th:fragment="insert_attendance_form"
+>
+  <!-- Modal Content -->
+  <div class="modal-content">
+    <!-- Close Button -->
+    <span class="close-button" onclick="closeModal('insertAttendanceModal')">&times;</span>
+    
+    <!-- Modal Header -->
+    <h2>Add Attendance</h2>
+
+    <!-- Success/Error Messages -->
+    <div style="color: green;">
+      <p id="insertSuccessMessage"></p>
+    </div>
+    <div style="color: red;">
+      <p id="insertErrorMessage"></p>
+    </div>
+
+    <!-- Attendance Form -->
+    <form id="insertAttendanceForm">
+      <!-- Attendance Date -->
+      <label for="attendanceDate">Attendance Date:</label>
+      <input type="date" id="attendanceDate" name="attendanceDate" required />
+
+      <!-- Class ID -->
+      <label for="classId">Class ID:</label>
+      <input type="number" id="classId" name="classId" required />
+
+      <!-- Student ID -->
+      <label for="studentId">Student ID:</label>
+      <input type="number" id="studentId" name="studentId" required />
+
+      <!-- Attendance Status -->
+      <label for="attendanceStatus">Status:</label>
+      <select id="attendanceStatus" name="attendanceStatus" required>
+        <option value="PRESENT">Present</option>
+        <option value="ABSENT">Absent</option>
+        <option value="LATE">Late</option>
+      </select>
+
+      <!-- Submit Button -->
+      <button type="submit">Save Attendance</button>
+    </form>
+  </div>
+</div>
