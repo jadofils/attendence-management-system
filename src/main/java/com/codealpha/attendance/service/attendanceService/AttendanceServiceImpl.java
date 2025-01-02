@@ -6,17 +6,14 @@ import com.codealpha.attendance.repository.AttendanceRepository;
 import com.codealpha.attendance.repository.SchoolClassRepository;
 import com.codealpha.attendance.repository.StudentRepository;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.System;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
